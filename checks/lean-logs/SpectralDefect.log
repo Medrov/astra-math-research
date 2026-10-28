@@ -1,0 +1,37 @@
+'MathResearch.SpectralDefect.octonionSizeSq_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.P_idempotent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.octonionSizeSq_smul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.octonionSizeSq_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.octonionSizeSq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.sizeSq_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.peirceResidual_sizeSq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.peirceResidual_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.residual_eq_peirceResidual' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.residual_sizeSq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.residual_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.quarter_residual_sizeSq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.thirtysecond_residual_sizeSq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.quarter_equality_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.thirtysecond_equality_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.sharpWitness_sizeSq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.sharpWitness_residual_sizeSq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.productError_eq_residual' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.productError_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.quarter_productError_lower_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.SpectralDefect.thirtysecond_productError_lower_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.SpectralDefect.sizeSq_subtract_self' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.product_preserving_forces_zero_size' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.SpectralDefect.product_not_preserved_of_positive_size' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.SpectralDefect.operatorPeirceDefect_eigenvector' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.SpectralDefect.quarter_peircePolynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.SpectralDefect.thirtysecond_peircePolynomial' depends on axioms: [propext, Classical.choice, Quot.sound]

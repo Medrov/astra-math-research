@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Пайплайн математических исследований с Astra</title>
+<meta name="description" content="Три выполненные математические задачи: работа агентов, сужение поиска и проверка доказательств в Lean.">
+<style>
+:root{color-scheme:light;--ink:#272724;--muted:#686760;--accent:#b75a2b;--line:#e5e0d7;--wash:#faf7f2}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:17px/1.65 system-ui,-apple-system,sans-serif}main{max-width:1000px;margin:auto;padding:76px 30px 50px}header{max-width:810px;margin-bottom:42px}.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:650}h1{font:400 clamp(34px,5.2vw,56px)/1.13 Georgia,serif;letter-spacing:-.025em;margin:20px 0}header p{font-size:20px;color:var(--muted);max-width:750px}a{color:var(--accent);text-underline-offset:4px}a:focus-visible{outline:3px solid #e49c6d;outline-offset:5px}nav{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.button{display:inline-block;border:1px solid var(--line);padding:10px 16px;border-radius:6px;text-decoration:none;color:var(--ink)}.primary{background:var(--ink);border-color:var(--ink);color:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{border:1px solid var(--line);border-radius:10px;padding:26px;background:var(--wash)}.card small{color:var(--accent);font-size:12px;letter-spacing:.07em}h2{font:400 27px/1.2 Georgia,serif;margin:12px 0}.card p{color:var(--muted);margin:15px 0 20px}.links{display:flex;gap:18px;flex-wrap:wrap}aside{margin:36px 0 0;padding:20px 0;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}footer{font-size:13px;color:var(--muted);margin-top:16px}@media(max-width:650px){main{padding:36px 20px}.grid{grid-template-columns:1fr}header p{font-size:18px}.card{padding:23px}}
+</style>
+</head>
+<body><main>
+<header><div class="eyebrow">Astra · агенты · Lean</div>
+<h1>Пайплайн математических исследований с Astra</h1>
+<p>Как организована работа агентов, ставятся задачи и сужается поиск — на трёх выполненных задачах.</p>
+<nav aria-label="Начать работу"><a class="button primary" href="https://github.com/Medrov/astra-math-research/blob/main/WALKTHROUGH.md">Повторить работу с агентами</a><a class="button" href="https://github.com/Medrov/astra-math-research/blob/main/REPRODUCE.md">Проверить доказательства</a></nav></header>
+<section class="grid" aria-label="Материалы исследования">
+<article class="card"><small>01 · ХОД РАБОТЫ</small><h2>Задания и решения</h2><p>Роли, девять опорных промптов, переход от широкого вопроса к точной формулировке и проверке.</p><div class="links"><a href="docs/Pipeline.html">Читать</a><a href="docs/Pipeline.pdf">PDF</a><a href="docs/Pipeline.docx">DOCX</a></div></article>
+<article class="card"><small>02 · ВИЗУАЛИЗАЦИЯ</small><h2>Три связи в действии</h2><p>Ассоциатор и расстояния, спектральный остаток, инцидентность и исправление ошибок.</p><div class="links"><a href="docs/Interactive.html">Открыть интерактивный атлас</a></div></article>
+<article class="card"><small>03 · МАТЕМАТИКА</small><h2>Препринт</h2><p>Объекты каждой пары, точные предпосылки, доказанные связи и границы результатов.</p><div class="links"><a href="docs/Preprint.pdf">Читать PDF</a><a href="docs/Preprint.tex">Исходник TeX</a></div></article>
+<article class="card"><small>04 · ПОВТОРНАЯ ПРОВЕРКА</small><h2>Исходники и журналы</h2><p>11 Lean-файлов, 149 деклараций теорем и лемм, версии зависимостей и команды запуска.</p><div class="links"><a href="https://github.com/Medrov/astra-math-research">GitHub</a><a href="checks/last-run-summary.json">Результат Lean</a><a href="https://github.com/Medrov/astra-math-research/releases/latest">Скачать комплект</a></div></article>
+</section>
+<aside>Lean проверяет формальные утверждения с записанными предпосылками. Научная новизна связей и существование универсального «суперобъекта» не установлены. Повторение работы агентов использует готовые решения этих трёх задач.</aside>
+<footer>Все материалы можно скачать и читать локально. Для повторной проверки нужны Lean и закреплённая версия mathlib.</footer>
+</main></body></html>

@@ -1,0 +1,300 @@
+{
+  "title": "astra-math-research",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "07954934dedbc1551149d1ec421dbd1342135a0915cd6a8ea9315773ef5e2304",
+      "size": 88
+    },
+    {
+      "path": ".nojekyll",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "453d6f8a4d0724fdc86e2081f4ae47e8610fd36db2c5b0de20240413d0170906",
+      "size": 6340
+    },
+    {
+      "path": "MathResearch/AlbertMatrix.lean",
+      "sha256": "c9052a5fffbb948025641b65bbc1342a9a970cad9b8d23736a17b36f322f6c5a",
+      "size": 5140
+    },
+    {
+      "path": "MathResearch/AlbertObstruction.lean",
+      "sha256": "49a1dfa01e3ef9ee5dce14136efb9aeb79626c43219cbcc235086099c328115e",
+      "size": 3445
+    },
+    {
+      "path": "MathResearch/AlbertSpectralGeometry.lean",
+      "sha256": "6c148e0bb302fe94202945e90d66cb90f78a070743dd3fdfd3621ff69f10d019",
+      "size": 11034
+    },
+    {
+      "path": "MathResearch/AssociativeBridge.lean",
+      "sha256": "12c04bc3a5360359acdc90f62865724f8b8663cb45b0e0c6bf65a2f4bbea6de1",
+      "size": 1960
+    },
+    {
+      "path": "MathResearch/Derivations.lean",
+      "sha256": "1beb33964181c296e3697e78347bc72cc188b9bb8abcccbaa2158b2201fa47b5",
+      "size": 3313
+    },
+    {
+      "path": "MathResearch/MinimalAInfinity.lean",
+      "sha256": "6738387e2de2b93bee480406edc2774b18caad29f7897e4948473a4c8a68b7e0",
+      "size": 2371
+    },
+    {
+      "path": "MathResearch/OctonionIncidence.lean",
+      "sha256": "a70b3d1012235130e56d6060657992a65e07576909ede9a5b07a9e0da7e841a0",
+      "size": 32167
+    },
+    {
+      "path": "MathResearch/ProbeLowerBound.lean",
+      "sha256": "8be0b4f60c5657c69a3d427f21f6120cfc208fafc1aad7d799546e3df0b0e577",
+      "size": 3188
+    },
+    {
+      "path": "MathResearch/SpectralDefect.lean",
+      "sha256": "e25ccfe23b1293a123d163911d7b1c2e5d5513e397375f51b7c4cbe80e03501e",
+      "size": 13062
+    },
+    {
+      "path": "MathResearch/TripleBridge.lean",
+      "sha256": "ef940e4c18302b44fa7a0817d8278173fe967ed0f2eca5aff0dd7a1c7e996ad3",
+      "size": 1807
+    },
+    {
+      "path": "MathResearch.lean",
+      "sha256": "2af36a3b909037097226eca510e78793f13f453431514ac277152545670ba989",
+      "size": 579
+    },
+    {
+      "path": "PUBLISH.md",
+      "sha256": "0bf51c925478e87048b6bd309153e6a2201fe33ff7672635bccb90947ff525b0",
+      "size": 2859
+    },
+    {
+      "path": "README.md",
+      "sha256": "412ec29686f81530ad364b9ab7357a40cc1ef1d88cb6e12d43adb22340047155",
+      "size": 7849
+    },
+    {
+      "path": "REPRODUCE.md",
+      "sha256": "c643f1fe1bbc982cf8fadc9555665e67c81106170e31afdb98dea7a0e80dd779",
+      "size": 8075
+    },
+    {
+      "path": "WALKTHROUGH.md",
+      "sha256": "98218cd47240325aebbbe76ef2d7c078ccb37e32b17bc29df21f207873db8e8d",
+      "size": 17023
+    },
+    {
+      "path": "checks/last-run-summary.json",
+      "sha256": "fb2c1fc76ae9ee5da3ed41f7ed49f02f040d469437c116074ebdeac46b1be4f4",
+      "size": 30404
+    },
+    {
+      "path": "checks/lean-logs/AlbertMatrix.log",
+      "sha256": "5738868bf321b78b2d149f72529671276f3dc800a5f89835b8f4e594ba4c0212",
+      "size": 1093
+    },
+    {
+      "path": "checks/lean-logs/AlbertObstruction.log",
+      "sha256": "6753d648e8ca0a0e1892268e0a377fa4943ff235510043f9c86af4405aa52485",
+      "size": 421
+    },
+    {
+      "path": "checks/lean-logs/AlbertSpectralGeometry.log",
+      "sha256": "250ba7b7a85dcbc292f7bbf97a18cf1cb422766ad1c3c3bd18f86a318e015a14",
+      "size": 2158
+    },
+    {
+      "path": "checks/lean-logs/AssociativeBridge.log",
+      "sha256": "bc1562a6295120e05c13e7356e3cb45c4ecf32e0ca08e269a408b125f7e4b295",
+      "size": 389
+    },
+    {
+      "path": "checks/lean-logs/Derivations.log",
+      "sha256": "e64d62d792c54a4190605184668de794a52bf9ba70cb513c6cd7b2cc12fa096c",
+      "size": 686
+    },
+    {
+      "path": "checks/lean-logs/MathResearch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "checks/lean-logs/MinimalAInfinity.log",
+      "sha256": "059df113fbf99cd828de5bb7fdcaa257c2f980590c9f08ab8131ce9790187e3e",
+      "size": 166
+    },
+    {
+      "path": "checks/lean-logs/OctonionIncidence.log",
+      "sha256": "43fb286b8dc1c7435d028454561a13a9f53fe3d7c3f449cf583eb18010dd19e7",
+      "size": 6145
+    },
+    {
+      "path": "checks/lean-logs/ProbeLowerBound.log",
+      "sha256": "9cb68db9d3ff52b682f040a12f571892978b84cbfc69341e6ee1e92f08fd4d4e",
+      "size": 570
+    },
+    {
+      "path": "checks/lean-logs/SpectralDefect.log",
+      "sha256": "7ca6a3663edaa3425d14fb9a3cd0fcb428b637264f4dca5b8f8172b00937cc57",
+      "size": 3088
+    },
+    {
+      "path": "checks/lean-logs/TripleBridge.log",
+      "sha256": "dc47b7ddbc8030cff956337fad98d91373043d2180092c031b204ab02e5717d4",
+      "size": 199
+    },
+    {
+      "path": "checks/probe-experiment.json",
+      "sha256": "47c57c327b52157219675200c7bf9b8f7661f8ffbf3c44ed9e86b18fea6e7b66",
+      "size": 4147
+    },
+    {
+      "path": "checks/release-audit.json",
+      "sha256": "eefbfef6e1f82390c0504534fee94e48b19e7466d82f3ee655e6f976a8e06fc8",
+      "size": 971
+    },
+    {
+      "path": "docs/Interactive.html",
+      "sha256": "478e3aaa6a9c7ceda961c69efa92ed7cb279c230629da6e7aa84bb427c1d9095",
+      "size": 94096
+    },
+    {
+      "path": "docs/Pipeline.docx",
+      "sha256": "e227ffdae2d705452d88eaba691575e3d6b9b4281cbb9f3365b48be0f209a3c7",
+      "size": 224456
+    },
+    {
+      "path": "docs/Pipeline.html",
+      "sha256": "841e5602787d84d3a697945f5d615fc1f4b8f2962aa29af4e3592c1c2ca88237",
+      "size": 39218
+    },
+    {
+      "path": "docs/Pipeline.pdf",
+      "sha256": "b0da0217468432e4346cc940c5c64d4227d940a18d9f845fb3f002c2b5a6e8be",
+      "size": 339007
+    },
+    {
+      "path": "docs/Preprint.pdf",
+      "sha256": "4fe13f5d18f0c596f69d89f472bc15d2fac26f9ca423289ff9f02afccb14f138",
+      "size": 128280
+    },
+    {
+      "path": "docs/Preprint.tex",
+      "sha256": "f17245f1c4208711d0f63b47e930d73cd5a9dbcc87f05de85e3fda17ab67a914",
+      "size": 67443
+    },
+    {
+      "path": "docs/source-document.json",
+      "sha256": "044f08a33c73b8324afb7878e9dfee794b89931bd3ac2e47bcf1389db2e8e375",
+      "size": 40642
+    },
+    {
+      "path": "experiments/q10_local_search_seed17.py",
+      "sha256": "b6d30eab41852ed5ca546b40db72c5e89bd620b085823140fc047defdfefb063",
+      "size": 802
+    },
+    {
+      "path": "experiments/q18_greedy_search_unseeded.py",
+      "sha256": "ab6ae4b6c3248b0c1bde679269631a92885bc93be02e766b50e45fdafed9d2bd",
+      "size": 994
+    },
+    {
+      "path": "experiments/q9_local_search_seed0.py",
+      "sha256": "1b7f215c9f61546570b46f1eccbd51bd29daea2ef682ced3a5b1d454ff18c160",
+      "size": 908
+    },
+    {
+      "path": "index.html",
+      "sha256": "18b3f53b3af99c2b0a245512be1d2e32e6645d0478e9ea71e1f30b3cfbcfc54b",
+      "size": 5280
+    },
+    {
+      "path": "lake-manifest.json",
+      "sha256": "179e60ef401f18d38b19a38fe1592a81dd6e75ef794ea799cfd2248be42a3627",
+      "size": 3526
+    },
+    {
+      "path": "lakefile.toml",
+      "sha256": "973abcc02ebaa8f7d61babc066b9797af99b24b78b556546e3aacd0c7596f6dc",
+      "size": 257
+    },
+    {
+      "path": "lean-toolchain",
+      "sha256": "55e97be96000b5e9e290c9e74482e5e317861499a5540353ce845471bded8cea",
+      "size": 25
+    },
+    {
+      "path": "prompts/01-coordinator.md",
+      "sha256": "981483610a78772559d98ef6c124e4fdf2e7c51bfd7a50d5805b6fd8825f89d3",
+      "size": 3293
+    },
+    {
+      "path": "prompts/02-candidates.md",
+      "sha256": "4cec17343d65952cdd4d3675f4f6ffef755df0d36abba0c247dcfd308853bef4",
+      "size": 1886
+    },
+    {
+      "path": "prompts/03-literature.md",
+      "sha256": "9328305ffb5c0d0decf5396783763deb85dface588b92d9925d16ea426f13454",
+      "size": 1683
+    },
+    {
+      "path": "prompts/04-geometry.md",
+      "sha256": "457b827a8f0fcffc01bf01371da0a91b83822c8df6a57145bf8371f94e9007aa",
+      "size": 1646
+    },
+    {
+      "path": "prompts/05-spectral.md",
+      "sha256": "3e316b0da993097f690b7c096d6647acb59cce4d70c74fdc325b45a427f6cbda",
+      "size": 1388
+    },
+    {
+      "path": "prompts/06-incidence.md",
+      "sha256": "e3535532e2cf5ca40c6667644a5206d51fe90806817b2b93461fcaeb41dfe574",
+      "size": 2207
+    },
+    {
+      "path": "prompts/07-lean.md",
+      "sha256": "d87a5717025ad763c18227054a8412ad18eaa4cf833abad156a1fb4757e3d88b",
+      "size": 2244
+    },
+    {
+      "path": "prompts/08-review.md",
+      "sha256": "8db1c28de404f6866dbe88268dc07147a0db0e09d57c269948d439af4e43499f",
+      "size": 1149
+    },
+    {
+      "path": "prompts/09-handoff.md",
+      "sha256": "7b1ed14d6ab7167ecf49b30c62c244666d12fa4b3140fe34a4da4abb383c65e8",
+      "size": 1693
+    },
+    {
+      "path": "prompts/README.md",
+      "sha256": "b5d6694c67cefad94de6d913c889bf6091fa78cd8623becfbdfee6a888782d3b",
+      "size": 2432
+    },
+    {
+      "path": "scripts/check.py",
+      "sha256": "0e7d299f8790522fb73d6edf41bc60424a6485bbee541ccac82e54f98170a86d",
+      "size": 10671
+    },
+    {
+      "path": "scripts/probe_experiment.py",
+      "sha256": "cd3678345a793d8fb123c6c1131419c4fae566edea1891a88bc1834f60e7520d",
+      "size": 3569
+    },
+    {
+      "path": "scripts/verify.py",
+      "sha256": "14d78766ecb950dc056f622bdc4d27efcb9c587f51c4537c7926ac75c514c555",
+      "size": 7041
+    }
+  ]
+}

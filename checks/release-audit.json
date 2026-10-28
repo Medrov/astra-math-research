@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "checked_at_utc": "2026-10-28T22:53:35.544069+00:00",
+  "former_project_name_absent": true,
+  "absolute_machine_paths_absent": true,
+  "scan_scope": [
+    "Published filenames",
+    "UTF-8 text files",
+    "DOCX XML and relationships",
+    "PDF extracted page text, metadata, annotations and raw bytes"
+  ],
+  "local_links_resolve": true,
+  "fresh_lean_files": 11,
+  "theorem_lemma_declarations": 149,
+  "verification_sha256": "fb2c1fc76ae9ee5da3ed41f7ed49f02f040d469437c116074ebdeac46b1be4f4",
+  "documents": [
+    {
+      "path": "docs/Pipeline.docx",
+      "sha256": "e227ffdae2d705452d88eaba691575e3d6b9b4281cbb9f3365b48be0f209a3c7"
+    },
+    {
+      "path": "docs/Pipeline.pdf",
+      "sha256": "b0da0217468432e4346cc940c5c64d4227d940a18d9f845fb3f002c2b5a6e8be",
+      "pages": 10
+    },
+    {
+      "path": "docs/Preprint.pdf",
+      "sha256": "4fe13f5d18f0c596f69d89f472bc15d2fac26f9ca423289ff9f02afccb14f138",
+      "pages": 15
+    }
+  ]
+}

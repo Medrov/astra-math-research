@@ -1,0 +1,7 @@
+'MathResearch.ProbeLowerBound.total_deficit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.ProbeLowerBound.weight_add_deficit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.ProbeLowerBound.thirty_distinct_words_weight' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.ProbeLowerBound.eight_probes_impossible' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.ProbeLowerBound.at_most_eight_probes_impossible' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

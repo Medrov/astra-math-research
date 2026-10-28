@@ -1,0 +1,2 @@
+'MathResearch.TripleBridge.involution_triple_reverse' depends on axioms: [propext, Quot.sound]
+'MathResearch.TripleBridge.generalized_jordan_triple_identity' depends on axioms: [propext, Quot.sound]

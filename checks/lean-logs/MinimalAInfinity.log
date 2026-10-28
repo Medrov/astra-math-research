@@ -1,0 +1,2 @@
+'MathResearch.third_stasheff_zero_differential' depends on axioms: [propext, Quot.sound]
+'MathResearch.witness_excludes_minimal_binary' does not depend on any axioms

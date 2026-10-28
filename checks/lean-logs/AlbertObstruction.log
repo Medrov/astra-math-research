@@ -1,0 +1,4 @@
+'MathResearch.Albert.left_bracketing_value' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.Albert.right_bracketing_value' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.Albert.nonassociative_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.Albert.not_minimal_binary_condition' depends on axioms: [propext, Classical.choice, Quot.sound]

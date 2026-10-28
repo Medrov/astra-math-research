@@ -1,0 +1,28 @@
+'MathResearch.AlbertSpectralGeometry.octScalar_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.octStar_scalar' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.octMul_scalar_left' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.octMul_scalar_right' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.octMul_zero_left' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.octMul_zero_right' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.octStar_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.jordan_diagonal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.diagonal_square' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.diagonalDefect_formula' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.edgeWeight_nonnegative' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.fin3_pointwise' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.squared_distances_rigid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MathResearch.AlbertSpectralGeometry.edgeWeights_of_defect_eq' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.AlbertSpectralGeometry.diagonalDefect_eq_iff_translation_or_reflection' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.AlbertSpectralGeometry.associatorDirichlet_squares' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.AlbertSpectralGeometry.associatorDirichlet_graphLaplacian' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MathResearch.AlbertSpectralGeometry.associatorDirichlet_nonnegative' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -1,0 +1,4 @@
+'MathResearch.AssociativeBridge.enveloping_bracket' depends on axioms: [propext, Quot.sound]
+'MathResearch.AssociativeBridge.enveloping_associative' depends on axioms: [propext, Quot.sound]
+'MathResearch.AssociativeBridge.enveloping_associator_zero' depends on axioms: [propext, Quot.sound]
+'MathResearch.AssociativeBridge.enveloping_lift_extends' depends on axioms: [propext, Quot.sound]

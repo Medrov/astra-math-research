@@ -1,0 +1,7 @@
+'MathResearch.BilinearDerivations.zero_isDerivation' depends on axioms: [propext, Quot.sound]
+'MathResearch.BilinearDerivations.add_isDerivation' depends on axioms: [propext, Quot.sound]
+'MathResearch.BilinearDerivations.smul_isDerivation' depends on axioms: [propext, Quot.sound]
+'MathResearch.BilinearDerivations.commutator_isDerivation' depends on axioms: [propext, Quot.sound]
+'MathResearch.BilinearDerivations.mem_derivationLieSubalgebra' depends on axioms: [propext, Quot.sound]
+'MathResearch.BilinearDerivations.endomorphism_commutator_jacobi' depends on axioms: [propext, Quot.sound]
+'MathResearch.BilinearDerivations.derivation_jacobi' depends on axioms: [propext, Quot.sound]
