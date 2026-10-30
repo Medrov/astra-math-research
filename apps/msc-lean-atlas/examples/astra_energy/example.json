@@ -1,0 +1,11 @@
+{
+  "id": "astra-energy",
+  "title": "Наш проект: ассоциатор и энергия графа",
+  "description": "Два адаптера к опубликованной рациональной модели Astra. Bridge заново проверяет известное равенство двух энергий; научная новизна не заявляется.",
+  "files": ["AlgebraObject.lean", "GraphObject.lean"],
+  "targets": ["AlgebraObject.energy", "GraphObject.energy"],
+  "bridge_file": "Bridge.lean",
+  "bridge_targets": ["Bridge.energy_correspondence"],
+  "msc_overrides": [["17C40"], ["05C50"]],
+  "source_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/MathResearch/AlbertSpectralGeometry.lean#L221"
+}

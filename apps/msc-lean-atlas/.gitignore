@@ -1,0 +1,13 @@
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+research_data/
+runs/
+verification/
+web/qa/
+.DS_Store
+*.olean
+*.ilean
+.env
+.env.*

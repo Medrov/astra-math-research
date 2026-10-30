@@ -1,0 +1,103 @@
+{
+  "checked_at": "2026-10-29T23:40:05.247Z",
+  "base_url": "http://127.0.0.1:8765",
+  "mocked": false,
+  "model_calls_started": false,
+  "checks": [
+    {
+      "name": "Research direct route retains page and loads actual cases",
+      "passed": true,
+      "evidence": {
+        "cases": 3,
+        "custom": true
+      }
+    },
+    {
+      "name": "Prepared DAG is explicitly awaiting verification",
+      "passed": true,
+      "evidence": {
+        "nodes": 6,
+        "status": "pending"
+      }
+    },
+    {
+      "name": "Map selection transfers real MSC code to a custom research question",
+      "passed": true,
+      "evidence": {
+        "msc": "05C50",
+        "model_started": false
+      }
+    },
+    {
+      "name": "Verified seminar run displays compiler graph and audits",
+      "passed": true,
+      "evidence": {
+        "run": "18aa491c40eb446fa687ba87622fa56c",
+        "nodes": 6,
+        "checks": 4,
+        "dagre_downward": true
+      }
+    },
+    {
+      "name": "Source, events, and artifact downloads are accessible",
+      "passed": true,
+      "evidence": {
+        "artifact": "http://127.0.0.1:8765/api/research/runs/18aa491c40eb446fa687ba87622fa56c/artifacts/pilot/lean-2bc39bcb936a/Candidate.lean",
+        "search": "энергия"
+      }
+    },
+    {
+      "name": "Negative control is refuted rather than falsely proved",
+      "passed": true,
+      "evidence": {
+        "run": "ce509e32bcfa4f7ab80d642177fba91c",
+        "outcome": "refuted"
+      }
+    },
+    {
+      "name": "A real multi-agent result separates formal checks and semantic review",
+      "passed": true,
+      "evidence": {
+        "run": "9304ce8c40f7435bbce3b51fe07f3bc1",
+        "checks": 4,
+        "multiple_attempts": true
+      }
+    },
+    {
+      "name": "Refresh preserves selected run and status",
+      "passed": true,
+      "evidence": {
+        "restored": true
+      }
+    },
+    {
+      "name": "Small screen remains usable without horizontal page overflow",
+      "passed": true,
+      "evidence": {
+        "scroll": 390,
+        "viewport": 390,
+        "graph_fitted": true
+      }
+    },
+    {
+      "name": "Legacy comparison route returns to map",
+      "passed": true,
+      "evidence": {
+        "legacy_redirect": true
+      }
+    },
+    {
+      "name": "No browser errors or unexpected model runs",
+      "passed": true,
+      "evidence": {
+        "browser_errors": 0,
+        "model_runs": 0
+      }
+    }
+  ],
+  "errors": [],
+  "failed_requests": [],
+  "posts": [],
+  "passed": true,
+  "publication_note": "Historical development check, not rerun by publication. Local paths and Codex session identifiers removed."
+}

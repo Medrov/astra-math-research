@@ -1,0 +1,244 @@
+{
+  "checked_at": "2026-10-30T09:32:18.797547+00:00",
+  "base_url": "http://127.0.0.1:8767",
+  "mocked": false,
+  "model_calls_started": false,
+  "checks": [
+    {
+      "name": "Research endpoints return saved cases and runs",
+      "passed": true,
+      "evidence": {
+        "cases": 3,
+        "runs": []
+      }
+    },
+    {
+      "name": "Create, immediately cancel, and observe cancelled local pilot",
+      "passed": true,
+      "evidence": {
+        "run_id": "5fd3e411bb924c1cb2bf0bd9c5f21b53",
+        "statuses": [
+          "running",
+          "cancelled"
+        ],
+        "calls": 0,
+        "outcome": "unknown"
+      }
+    },
+    {
+      "name": "Resume while active is idempotent and preserves the contract",
+      "passed": true,
+      "evidence": {
+        "same_id": "5fd3e411bb924c1cb2bf0bd9c5f21b53",
+        "status": "running",
+        "contract_unchanged": true
+      }
+    },
+    {
+      "name": "Resumed pilot completes once with a real Lean refutation",
+      "passed": true,
+      "evidence": {
+        "statuses": [
+          "running",
+          "complete"
+        ],
+        "outcome": "refuted",
+        "calls": 0,
+        "single_execution_after_resume": true,
+        "completion_events": 1,
+        "run_was_new": true
+      }
+    },
+    {
+      "name": "Fresh GET reloads the same result and persisted contract artifact",
+      "passed": true,
+      "evidence": {
+        "same_id": "5fd3e411bb924c1cb2bf0bd9c5f21b53",
+        "contract_artifact_loaded": true,
+        "source_sha256": "85e478c68d846886a1f819fbc30f7fd6e7347ec7afe39307be7dcb9c74629a93"
+      }
+    },
+    {
+      "name": "Completed research cannot be restarted",
+      "passed": true,
+      "evidence": {
+        "error": "Завершённое исследование неизменно; создайте новое."
+      }
+    },
+    {
+      "name": "Foreign Origin is rejected before creating a run",
+      "passed": true,
+      "evidence": {
+        "error": "Запрос должен исходить из локального приложения."
+      }
+    },
+    {
+      "name": "Artifact traversal is unavailable with HTTP 404",
+      "passed": true,
+      "evidence": {
+        "error": "Артефакт не найден."
+      }
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/research/cases",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53/cancel",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53/resume",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53/resume",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53/artifacts/contract-v1.json",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53/resume",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/5fd3e411bb924c1cb2bf0bd9c5f21b53/artifacts/%2e%2e%2fcontract-v1.json",
+      "status": 404
+    }
+  ],
+  "run_id": "5fd3e411bb924c1cb2bf0bd9c5f21b53",
+  "passed": true,
+  "finished_at": "2026-10-30T09:32:27.496981+00:00",
+  "scope": "Fresh publication-copy localhost API regression; no model calls."
+}

@@ -1,0 +1,652 @@
+{
+  "checked_at": "2026-10-29T23:42:51.255461+00:00",
+  "base_url": "http://127.0.0.1:8765",
+  "mocked": false,
+  "model_calls_started": false,
+  "checks": [
+    {
+      "name": "Research endpoints return saved cases and runs",
+      "passed": true,
+      "evidence": {
+        "cases": 3,
+        "runs": [
+          {
+            "id": "c4f1887b579047e38040758d72c048be",
+            "title": "Ядро энергии конечного графа",
+            "case_id": null,
+            "mode": "multi",
+            "status": "running",
+            "phase": "verify",
+            "outcome": "unknown",
+            "created_at": "2026-10-29T23:41:27.286603+00:00",
+            "updated_at": "2026-10-29T23:42:50.261929+00:00",
+            "msc_codes": [
+              "05C50",
+              "15A63"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 4,
+              "total_tokens": 64451,
+              "elapsed_seconds": 0
+            }
+          },
+          {
+            "id": "aea49632e9a247638c67d9e20b31ea62",
+            "title": "Ядро энергии конечного графа · узкие импорты",
+            "case_id": null,
+            "mode": "multi",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "unknown",
+            "created_at": "2026-10-29T23:34:08.809036+00:00",
+            "updated_at": "2026-10-29T23:37:41.000551+00:00",
+            "msc_codes": [
+              "05C50",
+              "15A63"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 8,
+              "total_tokens": 136290,
+              "elapsed_seconds": 212.184
+            }
+          },
+          {
+            "id": "ce509e32bcfa4f7ab80d642177fba91c",
+            "title": "API-проверка: остановка и продолжение локального пилота",
+            "case_id": "strict_inequality",
+            "mode": "pilot",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "refuted",
+            "created_at": "2026-10-29T23:31:27.527731+00:00",
+            "updated_at": "2026-10-29T23:31:50.934469+00:00",
+            "msc_codes": [
+              "26D05"
+            ],
+            "budget": {
+              "max_calls": 0,
+              "timeout_seconds": 120,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 0,
+              "total_tokens": 0,
+              "elapsed_seconds": 23.255
+            }
+          },
+          {
+            "id": "6e896e2ed68a4fb18de2680d7c0b2684",
+            "title": "API-проверка: остановка и продолжение локального пилота",
+            "case_id": "strict_inequality",
+            "mode": "pilot",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "refuted",
+            "created_at": "2026-10-29T23:26:32.829062+00:00",
+            "updated_at": "2026-10-29T23:26:42.490258+00:00",
+            "msc_codes": [
+              "26D05"
+            ],
+            "budget": {
+              "max_calls": 0,
+              "timeout_seconds": 120,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 0,
+              "total_tokens": 0,
+              "elapsed_seconds": 9.149
+            }
+          },
+          {
+            "id": "46339ef800314daca09729609ff1ed70",
+            "title": "От треугольника к конечному графу: ядро энергии",
+            "case_id": null,
+            "mode": "multi",
+            "status": "budget_exhausted",
+            "phase": "budget_exhausted",
+            "outcome": "unknown",
+            "created_at": "2026-10-29T23:25:58.504265+00:00",
+            "updated_at": "2026-10-29T23:35:58.738225+00:00",
+            "msc_codes": [
+              "05C50",
+              "15A63"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 4,
+              "total_tokens": 64828,
+              "elapsed_seconds": 600.17
+            }
+          },
+          {
+            "id": "ae1250991af7461bb251db5b44627348",
+            "title": "API-проверка: остановка и продолжение локального пилота",
+            "case_id": "strict_inequality",
+            "mode": "pilot",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "refuted",
+            "created_at": "2026-10-29T23:25:02.773828+00:00",
+            "updated_at": "2026-10-29T23:25:10.157939+00:00",
+            "msc_codes": [
+              "26D05"
+            ],
+            "budget": {
+              "max_calls": 0,
+              "timeout_seconds": 120,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 0,
+              "total_tokens": 0,
+              "elapsed_seconds": 6.8709999999999996
+            }
+          },
+          {
+            "id": "7e24be0ecfdd47bab281f67a1c0a0cde",
+            "title": "Ложная аналогия: строгое неравенство",
+            "case_id": "strict_inequality",
+            "mode": "pilot",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "refuted",
+            "created_at": "2026-10-29T23:21:45.740221+00:00",
+            "updated_at": "2026-10-29T23:21:55.547755+00:00",
+            "msc_codes": [
+              "26D05"
+            ],
+            "budget": {
+              "max_calls": 0,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 0,
+              "total_tokens": 0,
+              "elapsed_seconds": 9.806
+            }
+          },
+          {
+            "id": "2140e89fb5e84ad19cd259e99b0a9bb9",
+            "title": "Ложная аналогия: строгое неравенство",
+            "case_id": "strict_inequality",
+            "mode": "multi",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "refuted",
+            "created_at": "2026-10-29T23:18:34.371933+00:00",
+            "updated_at": "2026-10-29T23:20:12.755084+00:00",
+            "msc_codes": [
+              "26D05"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 4,
+              "total_tokens": 61901,
+              "elapsed_seconds": 43.119
+            }
+          },
+          {
+            "id": "8c59385ccb274fc5953e454ecc75270e",
+            "title": "Ложная аналогия: строгое неравенство",
+            "case_id": "strict_inequality",
+            "mode": "single",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "refuted",
+            "created_at": "2026-10-29T23:18:34.357297+00:00",
+            "updated_at": "2026-10-29T23:19:49.312465+00:00",
+            "msc_codes": [
+              "26D05"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 2,
+              "total_tokens": 37948,
+              "elapsed_seconds": 29.861
+            }
+          },
+          {
+            "id": "9304ce8c40f7435bbce3b51fe07f3bc1",
+            "title": "Граф и линейная алгебра: энергия",
+            "case_id": "graph_energy",
+            "mode": "multi",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "proved",
+            "created_at": "2026-10-29T23:18:34.342226+00:00",
+            "updated_at": "2026-10-29T23:19:29.635360+00:00",
+            "msc_codes": [
+              "05C50",
+              "15A63"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 5,
+              "total_tokens": 80083,
+              "elapsed_seconds": 55.292
+            }
+          },
+          {
+            "id": "e6d1e6c1682f4f6384e3871c7f6c75e5",
+            "title": "Граф и линейная алгебра: энергия",
+            "case_id": "graph_energy",
+            "mode": "single",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "proved",
+            "created_at": "2026-10-29T23:18:34.325669+00:00",
+            "updated_at": "2026-10-29T23:19:19.450643+00:00",
+            "msc_codes": [
+              "05C50",
+              "15A63"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 2,
+              "total_tokens": 42380,
+              "elapsed_seconds": 45.122
+            }
+          },
+          {
+            "id": "2a5d01dc409b4373bc108c84b6be11bf",
+            "title": "Ложная аналогия: строгое неравенство",
+            "case_id": "strict_inequality",
+            "mode": "single",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "refuted",
+            "created_at": "2026-10-29T23:16:28.887991+00:00",
+            "updated_at": "2026-10-29T23:16:57.896625+00:00",
+            "msc_codes": [
+              "26D05"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 2,
+              "total_tokens": 37783,
+              "elapsed_seconds": 29.007
+            }
+          },
+          {
+            "id": "0e7648a4d3fc44ffb9a7b3bdaea42802",
+            "title": "Граф и линейная алгебра: энергия",
+            "case_id": "graph_energy",
+            "mode": "pilot",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "proved",
+            "created_at": "2026-10-29T23:14:38.014099+00:00",
+            "updated_at": "2026-10-29T23:15:09.398438+00:00",
+            "msc_codes": [
+              "05C50",
+              "15A63"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 0,
+              "total_tokens": 0,
+              "elapsed_seconds": 13.866
+            }
+          },
+          {
+            "id": "4ae1e3abcbe54a0eb4c485a7bccb4505",
+            "title": "Ложная аналогия: строгое неравенство",
+            "case_id": "strict_inequality",
+            "mode": "pilot",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "refuted",
+            "created_at": "2026-10-29T23:14:37.998753+00:00",
+            "updated_at": "2026-10-29T23:14:55.532473+00:00",
+            "msc_codes": [
+              "26D05"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 0,
+              "total_tokens": 0,
+              "elapsed_seconds": 17.532
+            }
+          },
+          {
+            "id": "18aa491c40eb446fa687ba87622fa56c",
+            "title": "Градиентный метод: граф лемм",
+            "case_id": "seminar_gradient",
+            "mode": "pilot",
+            "status": "complete",
+            "phase": "complete",
+            "outcome": "proved",
+            "created_at": "2026-10-29T23:14:37.982078+00:00",
+            "updated_at": "2026-10-29T23:15:14.227294+00:00",
+            "msc_codes": [
+              "90C25",
+              "90C30"
+            ],
+            "budget": {
+              "max_calls": 8,
+              "timeout_seconds": 600,
+              "max_parallel": 2
+            },
+            "usage": {
+              "calls": 0,
+              "total_tokens": 0,
+              "elapsed_seconds": 36.243
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Create, immediately cancel, and observe cancelled local pilot",
+      "passed": true,
+      "evidence": {
+        "run_id": "fb80b0d190f343eda5ec3fe3d7e79167",
+        "statuses": [
+          "running",
+          "cancelled"
+        ],
+        "calls": 0,
+        "outcome": "unknown"
+      }
+    },
+    {
+      "name": "Resume while active is idempotent and preserves the contract",
+      "passed": true,
+      "evidence": {
+        "same_id": "fb80b0d190f343eda5ec3fe3d7e79167",
+        "status": "running",
+        "contract_unchanged": true
+      }
+    },
+    {
+      "name": "Resumed pilot completes once with a real Lean refutation",
+      "passed": true,
+      "evidence": {
+        "statuses": [
+          "running",
+          "complete"
+        ],
+        "outcome": "refuted",
+        "calls": 0,
+        "single_execution_after_resume": true,
+        "completion_events": 1,
+        "run_was_new": true
+      }
+    },
+    {
+      "name": "Fresh GET reloads the same result and persisted contract artifact",
+      "passed": true,
+      "evidence": {
+        "same_id": "fb80b0d190f343eda5ec3fe3d7e79167",
+        "contract_artifact_loaded": true,
+        "source_sha256": "85e478c68d846886a1f819fbc30f7fd6e7347ec7afe39307be7dcb9c74629a93"
+      }
+    },
+    {
+      "name": "Completed research cannot be restarted",
+      "passed": true,
+      "evidence": {
+        "error": "Завершённое исследование неизменно; создайте новое."
+      }
+    },
+    {
+      "name": "Foreign Origin is rejected before creating a run",
+      "passed": true,
+      "evidence": {
+        "error": "Запрос должен исходить из локального приложения."
+      }
+    },
+    {
+      "name": "Artifact traversal is unavailable with HTTP 404",
+      "passed": true,
+      "evidence": {
+        "error": "Артефакт не найден."
+      }
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/research/cases",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167/cancel",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167/resume",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167/resume",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167/artifacts/contract-v1.json",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167/resume",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/research/runs",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/research/runs/fb80b0d190f343eda5ec3fe3d7e79167/artifacts/%2e%2e%2fcontract-v1.json",
+      "status": 404
+    }
+  ],
+  "run_id": "fb80b0d190f343eda5ec3fe3d7e79167",
+  "passed": true,
+  "finished_at": "2026-10-29T23:43:04.237845+00:00",
+  "publication_note": "Historical development check, not rerun by publication. Local paths and Codex session identifiers removed."
+}

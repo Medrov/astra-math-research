@@ -1,0 +1,200 @@
+{
+  "version": 1,
+  "example_id": "astra-energy",
+  "title": "Одна энергия в двух описаниях",
+  "summary": "Берём два настоящих Lean-файла из нашего проекта. Один описывает энергию через ассоциатор, другой — через лапласиан взвешенного графа. Сравниваем их входные данные, математические конструкции и точное равенство результата.",
+  "objects": [
+    {
+      "slot": "A",
+      "file": "AlgebraObject.lean",
+      "declaration": "AlgebraObject.energy",
+      "title": "Энергия ассоциатора",
+      "description": "Разности значений f вкладываются в три октонионные компоненты рациональной модели. К ним применяется диагональный ассоциатор, после чего вычисляется скалярная энергия.",
+      "expression": "associatorDirichlet d f",
+      "direct_mathematical_dependency": "MathResearch.AlbertSpectralGeometry.associatorDirichlet",
+      "msc_code": "17C40",
+      "msc_title": "Исключительные йордановы структуры",
+      "msc_title_original": "Exceptional Jordan structures",
+      "msc_path": [
+        "17",
+        "17C",
+        "17C40"
+      ]
+    },
+    {
+      "slot": "B",
+      "file": "GraphObject.lean",
+      "declaration": "GraphObject.energy",
+      "title": "Энергия графа",
+      "description": "Для трёх вершин строится взвешенный лапласиан. Энергия получается как сумма произведений значения f в вершине на значение лапласиана в той же вершине.",
+      "expression": "f 0 * graphLaplacian d f 0 + f 1 * graphLaplacian d f 1 + f 2 * graphLaplacian d f 2",
+      "direct_mathematical_dependency": "MathResearch.AlbertSpectralGeometry.graphLaplacian",
+      "msc_code": "05C50",
+      "msc_title": "Графы и линейная алгебра",
+      "msc_title_original": "Graphs and linear algebra (matrices, eigenvalues, etc.)",
+      "msc_path": [
+        "05",
+        "05C",
+        "05C50"
+      ]
+    }
+  ],
+  "shared": [
+    {
+      "id": "inputs",
+      "title": "Одни входные данные",
+      "value": "d, f : Fin 3 → ℚ",
+      "description": "В обоих файлах d задаёт три рациональных параметра, а f — три рациональных значения. Вершины имеют индексы 0, 1 и 2.",
+      "evidence_kind": "lean_environment",
+      "evidence": [
+        "AlgebraObject.energy",
+        "GraphObject.energy"
+      ]
+    },
+    {
+      "id": "type",
+      "title": "Один тип результата",
+      "value": "(Fin 3 → ℚ) → (Fin 3 → ℚ) → ℚ",
+      "description": "Обе функции возвращают рациональное число. Совпадение типов позволяет сформулировать равенство; само равенство требует отдельного доказательства.",
+      "evidence_kind": "lean_environment",
+      "evidence": [
+        "AlgebraObject.energy",
+        "GraphObject.energy"
+      ]
+    },
+    {
+      "id": "weights",
+      "title": "Одни веса рёбер",
+      "value": "wᵢⱼ = (dᵢ − dⱼ)² / 4",
+      "description": "Те же параметры d определяют действие ассоциатора на трёх компонентах и веса рёбер графа. Веса не выбираются независимо.",
+      "evidence_kind": "source_definition_and_theorem",
+      "evidence": [
+        "MathResearch.AlbertSpectralGeometry.edgeWeight",
+        "MathResearch.AlbertSpectralGeometry.diagonalDefect_formula",
+        "MathResearch.AlbertSpectralGeometry.graphLaplacian"
+      ],
+      "source_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/MathResearch/AlbertSpectralGeometry.lean#L74"
+    },
+    {
+      "id": "quadratic_form",
+      "title": "Одна квадратичная форма",
+      "value": "w₀₁(f₀ − f₁)² + w₀₂(f₀ − f₂)² + w₁₂(f₁ − f₂)²",
+      "description": "Оба описания дают эту сумму по трём парам вершин. Это содержательное пересечение двух конструкций в данной модели.",
+      "evidence_kind": "source_theorem",
+      "evidence": [
+        "MathResearch.AlbertSpectralGeometry.associatorDirichlet_squares",
+        "MathResearch.AlbertSpectralGeometry.associatorDirichlet_graphLaplacian"
+      ],
+      "source_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/MathResearch/AlbertSpectralGeometry.lean#L212"
+    }
+  ],
+  "differences": [
+    "Первый файл вычисляет энергию через ассоциатор рациональной координатной модели; второй — через лапласиан графа на трёх вершинах.",
+    "Прямые математические зависимости разные: associatorDirichlet и graphLaplacian. Их связь устанавливает отдельная теорема.",
+    "Файлы отнесены к разным ветвям MSC: 17 → 17C → 17C40 и 05 → 05C → 05C50."
+  ],
+  "bridge": {
+    "title": "Точное равенство подтверждено Lean",
+    "declaration": "Bridge.energy_correspondence",
+    "statement": "∀ (d f : Fin 3 → ℚ), AlgebraObject.energy d f = GraphObject.energy d f",
+    "human_statement": "Для любых трёх рациональных параметров d и трёх рациональных значений f обе функции энергии возвращают одно и то же число.",
+    "status": "verified",
+    "verification_origin": "saved_run",
+    "checked_at": "2026-10-29T18:53:40.097866+00:00",
+    "analysis_id": "5f5e45f3fd2c436d9d8e9e81c99006f0",
+    "verification_id": "5a79219050f84d26baa237c770b40447",
+    "both_inputs_participate": true,
+    "proof_method": "Bridge применяет уже существующую теорему associatorDirichlet_graphLaplacian к определениям из двух входных файлов. Проверка компилировала оба файла и Bridge и подтвердила участие обоих выбранных определений в утверждении.",
+    "source_theorem": "MathResearch.AlbertSpectralGeometry.associatorDirichlet_graphLaplacian",
+    "source_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/MathResearch/AlbertSpectralGeometry.lean#L221",
+    "source_sha256": "ef178c8f85b6e990be47f676c0f293ea798c21c7757fcccf9cb3679dabcd243f",
+    "input_sha256": {
+      "AlgebraObject.lean": "2d2ecfad4e21d78c02575a15ff43d082737e4a1e854869157ca0957b38064e8b",
+      "GraphObject.lean": "45b31215ad48e0152eef9f972f9caa3cf4abdbcb20e001ed8e513b8b9b05ed51"
+    }
+  },
+  "numeric_example": {
+    "title": "Проверим на конкретных числах",
+    "description": "Подстановка в формулы иллюстрирует общее равенство. Само доказательство выше охватывает все d и f указанного типа.",
+    "d": [
+      "0",
+      "2",
+      "4"
+    ],
+    "f": [
+      "1",
+      "0",
+      "1"
+    ],
+    "edge_weights": [
+      {
+        "vertices": [
+          0,
+          1
+        ],
+        "weight": "1",
+        "squared_difference": "1",
+        "contribution": "1"
+      },
+      {
+        "vertices": [
+          0,
+          2
+        ],
+        "weight": "4",
+        "squared_difference": "0",
+        "contribution": "0"
+      },
+      {
+        "vertices": [
+          1,
+          2
+        ],
+        "weight": "1",
+        "squared_difference": "1",
+        "contribution": "1"
+      }
+    ],
+    "laplacian": [
+      "1",
+      "-2",
+      "1"
+    ],
+    "algebra_calculation": "1 · 1² + 4 · 0² + 1 · (−1)² = 2",
+    "graph_calculation": "1 · 1 + 0 · (−2) + 1 · 1 = 2",
+    "energy": "2",
+    "calculation_kind": "exact_rational_substitution"
+  },
+  "classification": {
+    "assignment_kind": "curated_example_tags",
+    "shared_codes": [],
+    "shared_ancestor_codes": [],
+    "description": "Метки MSC заранее назначены для этого контрольного примера. Общей рубрики или общего родителя в иерархии MSC у этой пары нет. Это не мешает существованию конкретного доказанного равенства.",
+    "navigation_note": "Путь по ссылкам классификатора помогает ориентироваться между темами. Математическое равенство подтверждается отдельной Lean-теоремой."
+  },
+  "dependency_overlap": {
+    "direct_common_declarations": [
+      "Fin",
+      "Nat",
+      "OfNat.ofNat",
+      "Rat",
+      "instOfNatNat"
+    ],
+    "meaningful_direct_matches": [],
+    "description": "Общие прямые зависимости относятся к типам и числовым литералам. Они сами по себе не показывают содержательной связи; та возникает при раскрытии конкретных конструкций и проверке теоремы."
+  },
+  "limitations": [
+    "Это воспроизведение известной связи из репозитория проекта, а не результат автоматического открытия новой математики.",
+    "Равенство относится к данной рациональной модели, трём вершинам и весам (dᵢ − dⱼ)² / 4. Оно не устанавливает эквивалентность произвольных алгебр и графов.",
+    "Веса могут быть нулевыми. Утверждение не требует связности графа и не доказывает её.",
+    "Метка 17C40 описывает тему примера. Она не означает, что здесь формально проверены все свойства йордановых алгебр.",
+    "Сохранённый статус проверки относится к конкретным исходникам, указанным их хешами. Изменённые файлы требуют новой проверки."
+  ],
+  "provenance": {
+    "analysis_report": "checks/astra-energy-analysis.json",
+    "verification_report": "checks/astra-energy-verification.json",
+    "project_revision": "4898f7013d626fef293d17bddfd860791e6daed0",
+    "lean_version": "4.19.0",
+    "review_method": "Сверены исходники двух адаптеров и Bridge, определения и теоремы AlbertSpectralGeometry.lean, а также сохранённый отчёт проверки. Числовая иллюстрация вычислена точной рациональной арифметикой; повторная компиляция Lean для этого описания не запускалась."
+  }
+}

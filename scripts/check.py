@@ -68,6 +68,10 @@ def discover_sources():
     found = []
     for folder, directories, names in os.walk(ROOT):
         directories[:] = [name for name in directories if name not in IGNORED_DIRS]
+        # Application fixtures have their own verifier and are outside this
+        # unchanged 11-module mathematical package.
+        if Path(folder) == ROOT and "apps" in directories:
+            directories.remove("apps")
         found.extend(str((Path(folder) / name).relative_to(ROOT))
                      for name in names if name.endswith(".lean"))
     return sorted(found)
