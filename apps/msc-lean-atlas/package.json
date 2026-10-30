@@ -6,6 +6,7 @@
   "scripts": {
     "build:graph": "node tools/build_graph_assets.cjs",
     "test:graph": "node tests/test_graph_model.cjs",
+    "test:objects": "node tests/test_object_graph.cjs",
     "build:graph-bundle": "node tools/build_graph_assets.cjs --bundle-only"
   },
   "dependencies": {

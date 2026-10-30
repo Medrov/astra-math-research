@@ -14,15 +14,15 @@ class MSCGraphView {
       style:[
         {selector:'node',style:{width:'data(size)',height:'data(size)','background-color':'data(color)',
           'border-width':1,'border-color':'#fff',label:'data(code)','font-family':'system-ui, sans-serif',
-          'font-size':12,color:'#555','text-valign':'bottom','text-margin-y':5,'min-zoomed-font-size':9,
+          'font-size':16,color:'#444','text-valign':'bottom','text-margin-y':7,'min-zoomed-font-size':11,
           'overlay-opacity':0,'z-index':2}},
-        {selector:'node[level = 0]',style:{'font-size':28,'min-zoomed-font-size':6,'font-weight':600,color:'#333','z-index':4}},
-        {selector:'node[level = 1]',style:{'font-size':15,'z-index':3}},
+        {selector:'node[level = 0]',style:{'font-size':34,'min-zoomed-font-size':9,'font-weight':600,color:'#333','z-index':4}},
+        {selector:'node[level = 1]',style:{'font-size':20,'z-index':3}},
         {selector:'node[level = 2]',style:{'background-opacity':0.8}},
-        {selector:'node[level = -1]',style:{'background-color':'#111','font-size':28,'font-weight':600,'min-zoomed-font-size':7,'z-index':5}},
-        {selector:'node.context-node',style:{width:14,height:14,'background-color':'#aaa','font-size':12,'font-weight':400,'min-zoomed-font-size':9,'z-index':1}},
+        {selector:'node[level = -1]',style:{'background-color':'#111','font-size':34,'font-weight':600,'min-zoomed-font-size':10,'z-index':5}},
+        {selector:'node.context-node',style:{width:14,height:14,'background-color':'#aaa','font-size':16,'font-weight':400,'min-zoomed-font-size':11,'z-index':1}},
         {selector:'node.focus-node',style:{'border-color':'#252525','border-width':3,
-          'background-opacity':1,'border-opacity':0.85,'border-style':'double','font-weight':700,color:'#111','font-size':18,
+          'background-opacity':1,'border-opacity':0.85,'border-style':'double','font-weight':700,color:'#111','font-size':24,
           'min-zoomed-font-size':0,'z-index':10}},
         {selector:'node.neighbor-node',style:{'background-opacity':1}},
         {selector:'edge',style:{width:1,'line-color':'data(edgeColor)','curve-style':'straight','opacity':0.3,'overlay-opacity':0}},
@@ -134,7 +134,7 @@ class MSCGraphView {
     this.cy.style().selector('node').style({
       'background-color':node=>this.colorMode==='mono'?(node.data('level')<1?'#444':node.data('level')===1?'#888':'#b4b4b4'):node.data('color'),
       label:this.labels?(this.labelStyle==='name'?'data(displayLabel)':'data(code)'):'',
-      'text-wrap':this.labelStyle==='name'?'wrap':'none','text-max-width':130
+      'text-wrap':this.labelStyle==='name'?'wrap':'none','text-max-width':180
     }).selector('edge[type = "broader"]').style('line-color',edge=>this.colorMode==='mono'?'#bbb':edge.data('edgeColor')).update();
   }
   highlightNeighbors(node){

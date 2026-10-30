@@ -1,0 +1,30 @@
+{
+  "versioned_id": "2610.38474v1",
+  "title": "On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications",
+  "authors": [
+    "Frolov, A. S.",
+    "Dorofeev, I. S."
+  ],
+  "source_urls": {
+    "abstract": "https://arxiv.org/abs/2610.38474v1",
+    "html": "https://arxiv.org/html/2610.38474v1",
+    "pdf": "https://arxiv.org/pdf/2610.38474v1"
+  },
+  "snapshot_sha256": {
+    "abstract_html": "1fdbed9243e4f5dab706d2f00c4bbba094a082be7017047afb8f200cfecfc1ac",
+    "article_html": "0c6b56ae0236f3a5263164b8953fc4af7ab97785372bb243631f49d7a8f80625",
+    "chunks": "6959f75ab09ebf1a953547f1aaff67f3c2e8c12ab9c3afe7303c28f5b1c8f1e9"
+  },
+  "math_extraction": {
+    "latex_preserved": 1980,
+    "total": 1980,
+    "without_latex": 0
+  },
+  "selected_sections": [
+    "S9.SS1",
+    "S9.SS3",
+    "S9.SS7",
+    "S9.SS8"
+  ],
+  "coverage": "Only the four listed sections were supplied to extraction; this is not whole-paper verification."
+}

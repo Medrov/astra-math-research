@@ -1,0 +1,46 @@
+{
+  "checked_at": "2026-10-30T23:51:10.832307+00:00",
+  "status": "complete",
+  "public_examples": [
+    "arxiv_2610_38474_graph_subtraction",
+    "published_associator_laplacian"
+  ],
+  "validation": {
+    "python": {
+      "passed": 207,
+      "failed": 0,
+      "skipped": 0
+    },
+    "javascript": {
+      "passed": 28,
+      "failed": 0
+    },
+    "typography": {
+      "passed": 11,
+      "failed": 0
+    },
+    "catalog": {
+      "passed": 9,
+      "failed": 0
+    }
+  },
+  "lean": {
+    "version": "4.19.0",
+    "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "published_identity_report": "checks/published-associator.json",
+    "arxiv_study_report": "checks/arxiv-study.json"
+  },
+  "readable_type": {
+    "body_px": 18,
+    "main_text_px": "16–18",
+    "metadata_min_px": 13,
+    "manual_graph_focus": true
+  },
+  "publication_scope": "Application, two public examples, exact proof sources, docs and curated evidence; runtime data, full article text and Codex sessions excluded.",
+  "model_calls_during_finalization": 0,
+  "limitations": [
+    "Original MathResearch sources are unchanged; complete historical 11-module verification was not rerun.",
+    "arXiv proof covers only final graph subtraction in §9.1, not full rectifiability results.",
+    "Saved evidence is historical; a fresh clone does not acquire a new Lean certificate until it runs the checks."
+  ]
+}

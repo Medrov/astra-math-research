@@ -6,3 +6,6 @@ __pycache__/
 verification/
 experiments/results/
 runs/
+.env
+.env.*
+node_modules/

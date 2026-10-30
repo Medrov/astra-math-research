@@ -118,7 +118,8 @@ class APINormalizationTests(unittest.TestCase):
                 server.normalized_inputs(dict(files=input_pair(),msc_overrides=overrides))
 
     def test_two_files_paths_and_targets_validated(self):
-        for names in (['../A.lean','B.lean'],['/A.lean','B.lean'],['A.lean','A.lean']):
+        for names in (['../A.lean','B.lean'],['/A.lean','B.lean'],['A.lean','A.lean'],
+                      ['C:/A.lean','B.lean'],['C:A.lean','B.lean'],['//host/share/A.lean','B.lean']):
             pair=input_pair()
             for item,name in zip(pair,names):item['name']=name
             with self.subTest(names=names),self.assertRaises(ValueError):

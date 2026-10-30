@@ -1,0 +1,112 @@
+{
+  "export_kind": "historical_evidence",
+  "checked_at": "2026-10-30T23:40:56.938810+00:00",
+  "case_id": "published_associator_laplacian",
+  "source_file": "research_fixtures/PublishedAssociator.lean",
+  "source_sha256": "b5c4b554db9f4b53df7f0c8e502b2c47c40c4c08d1a1df5ccc5d8038070569a8",
+  "model_calls": 0,
+  "verification": {
+    "success": true,
+    "compilation_success": true,
+    "target": "Bridge.energy_correspondence",
+    "expected_statement": "∀ (d f : Fin 3 → ℚ), AlgebraObject.energy d f = GraphObject.energy d f",
+    "actual_statement": "∀ (d f : Fin 3 → ℚ), AlgebraObject.energy d f = GraphObject.energy d f",
+    "target_preserved": true,
+    "obligations_passed": true,
+    "obligations": [
+      {
+        "id": "energy_correspondence",
+        "target": "Bridge.energy_correspondence",
+        "statement_sha256": "8d2286a43eac375e40246300be62963711e260c09cf5366887bdaf975aed1cae",
+        "ok": true,
+        "expected_outcome": "proved"
+      }
+    ],
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "audit": {
+      "status": "passed",
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "unexpected_axioms": [],
+      "unsafe_declarations": [],
+      "ignored_implementation_helpers": [],
+      "audited_roots": [
+        "AlgebraObject.energy",
+        "Bridge.energy_correspondence",
+        "GraphObject.energy",
+        "GraphObject.energy._proof_1"
+      ],
+      "scope": "logical_local_declarations_and_target_axiom_closure"
+    },
+    "contract_sha256": "8d2286a43eac375e40246300be62963711e260c09cf5366887bdaf975aed1cae",
+    "contract_file_sha256": "18389f0d7b9c05cc0f645a6fc5da36ec71e1f68a84b926b299e1891bc91238b6",
+    "olean_sha256": "7b8fff882bf0c520033e4c1980eee2c809d1a3de1979d9803a8fc1d1d9bb024d"
+  },
+  "project_library": {
+    "entry_point": "MathResearch.AlbertSpectralGeometry",
+    "fingerprint": "7c5615080ca86b60f1cab70de957cef066457d93b57d7df783b9c7e0d97ceef9",
+    "sources": [
+      {
+        "module": "MathResearch.MinimalAInfinity",
+        "path": "MathResearch/MinimalAInfinity.lean",
+        "sha256": "6738387e2de2b93bee480406edc2774b18caad29f7897e4948473a4c8a68b7e0",
+        "imports": [
+          "Mathlib.Algebra.Lie.Basic"
+        ],
+        "olean_sha256": "f9a7fbb2845648998f84a5c59074ba44032589b0eea70f206af4ab141e21931f"
+      },
+      {
+        "module": "MathResearch.AlbertObstruction",
+        "path": "MathResearch/AlbertObstruction.lean",
+        "sha256": "49a1dfa01e3ef9ee5dce14136efb9aeb79626c43219cbcc235086099c328115e",
+        "imports": [
+          "Mathlib.Algebra.Quaternion",
+          "Mathlib.Data.Matrix.Notation",
+          "Mathlib.Tactic.NormNum",
+          "Mathlib.Tactic.FinCases",
+          "MathResearch.MinimalAInfinity"
+        ],
+        "olean_sha256": "0fae8d6580b823b9c6f5263072c67b00f637acc25f3dec965cfb3c8ee4d9a9d0"
+      },
+      {
+        "module": "MathResearch.AlbertMatrix",
+        "path": "MathResearch/AlbertMatrix.lean",
+        "sha256": "c9052a5fffbb948025641b65bbc1342a9a970cad9b8d23736a17b36f322f6c5a",
+        "imports": [
+          "MathResearch.AlbertObstruction",
+          "Mathlib.Tactic.Abel"
+        ],
+        "olean_sha256": "48530f6f7cb4fbafb0e19f1d5d182346edefb3e9beb43eba79b617e50f5c8424"
+      },
+      {
+        "module": "MathResearch.AlbertSpectralGeometry",
+        "path": "MathResearch/AlbertSpectralGeometry.lean",
+        "sha256": "6c148e0bb302fe94202945e90d66cb90f78a070743dd3fdfd3621ff69f10d019",
+        "imports": [
+          "MathResearch.AlbertMatrix",
+          "Mathlib.Tactic.Ring",
+          "Mathlib.Tactic.Linarith"
+        ],
+        "olean_sha256": "66249179002582d0920162e248bda73b08abeacafd8a28fa16825324903939f3"
+      }
+    ],
+    "fresh_local_build": true,
+    "external_mathlib_cache_reused": true,
+    "sources_unchanged": true
+  },
+  "printed_axioms": {
+    "exit_code": 0,
+    "stdout": "'Bridge.energy_correspondence' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+    "source_sha256": "b5c4b554db9f4b53df7f0c8e502b2c47c40c4c08d1a1df5ccc5d8038070569a8",
+    "library_fingerprint": "7c5615080ca86b60f1cab70de957cef066457d93b57d7df783b9c7e0d97ceef9",
+    "candidate_and_report_unchanged": true
+  },
+  "scope": "Exact published associator/laplacian energy identity; four reachable local modules freshly compiled, not the complete original 11-file suite."
+}

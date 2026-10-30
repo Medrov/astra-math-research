@@ -1,0 +1,157 @@
+{
+  "export_kind": "historical_evidence",
+  "checked_at": "2026-10-30T23:09:42.817585+00:00",
+  "note": "Export of the actual completed study. Clone users must run Lean again; no runtime certificate is installed by this file.",
+  "paper": {
+    "versioned_id": "2610.38474v1",
+    "title": "On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications",
+    "authors": [
+      "Frolov, A. S.",
+      "Dorofeev, I. S."
+    ],
+    "source_urls": {
+      "abstract": "https://arxiv.org/abs/2610.38474v1",
+      "html": "https://arxiv.org/html/2610.38474v1",
+      "pdf": "https://arxiv.org/pdf/2610.38474v1"
+    },
+    "snapshot_sha256": {
+      "abstract_html": "1fdbed9243e4f5dab706d2f00c4bbba094a082be7017047afb8f200cfecfc1ac",
+      "article_html": "0c6b56ae0236f3a5263164b8953fc4af7ab97785372bb243631f49d7a8f80625",
+      "chunks": "6959f75ab09ebf1a953547f1aaff67f3c2e8c12ab9c3afe7303c28f5b1c8f1e9"
+    },
+    "math_extraction": {
+      "latex_preserved": 1980,
+      "total": 1980,
+      "without_latex": 0
+    }
+  },
+  "extraction": {
+    "objects": 11,
+    "transitions": 6,
+    "transition_ids": [
+      "graph_subtraction",
+      "finite_inverse_lift",
+      "coordinate_transfer",
+      "compact_coordinate_lift",
+      "harmonic_modification",
+      "harmonic_corrected_transfer"
+    ],
+    "all_source_cards_unverified": true
+  },
+  "selected_sections": [
+    "S9.SS1",
+    "S9.SS3",
+    "S9.SS7",
+    "S9.SS8"
+  ],
+  "model": "gpt-6-astra",
+  "model_calls": 7,
+  "provenance": "New Astra extraction/formalization/proof with access to a prepared definitions-only research specification, not blind rediscovery. The prepared author proof is a separate zero-model pilot.",
+  "lean_version": "4.19.0",
+  "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+  "source_file": "examples/arxiv_graph_subtraction/Proof.lean",
+  "source_sha256": "2bd003649cef570a6f9c787d2af2a2a4bab3ccf06b987a3232b4a5dae405a7d0",
+  "verification": {
+    "success": true,
+    "compilation_success": true,
+    "target": "graph_subtraction_polynomial_identities",
+    "expected_statement": "∀ {K : Type*} [CommRing K] (b w : Polynomial K),\n  gsCompose (gsRestore b w) (gsSubtract b w) =\n      (fun i : Fin 3 => (MvPolynomial.X i : MvPolynomial (Fin 3) K)) ∧\n  gsCompose (gsSubtract b w) (gsRestore b w) =\n      (fun i : Fin 3 => (MvPolynomial.X i : MvPolynomial (Fin 3) K)) ∧\n  gsAlongGraph (gsSubtract b w) b w = ![Polynomial.X, 0, 0]",
+    "actual_statement": "∀ {K : Type u_1} [inst : CommRing K] (b w : Polynomial K),\n  (gsCompose (gsRestore b w) (gsSubtract b w) = fun i => MvPolynomial.X i) ∧\n    (gsCompose (gsSubtract b w) (gsRestore b w) = fun i => MvPolynomial.X i) ∧\n      gsAlongGraph (gsSubtract b w) b w = ![Polynomial.X, 0, 0]",
+    "target_preserved": true,
+    "obligations_passed": true,
+    "obligations": [
+      {
+        "id": "graph_subtraction",
+        "target": "graph_subtraction_polynomial_identities",
+        "statement_sha256": "7e2e5f42be051b5c7de0f6e16f6dcbd60569fda557d5364d7d9357d8c553ad59",
+        "ok": true,
+        "expected_outcome": "proved"
+      }
+    ],
+    "axioms": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "audit": {
+      "status": "passed",
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "unexpected_axioms": [],
+      "unsafe_declarations": [],
+      "ignored_implementation_helpers": [],
+      "audited_roots": [
+        "graph_subtraction_polynomial_identities",
+        "gsAlongGraph",
+        "gsAlongGraph.eq_1",
+        "gsCompose",
+        "gsCompose.eq_1",
+        "gsGraph",
+        "gsGraph.eq_1",
+        "gsRestore",
+        "gsRestore.eq_1",
+        "gsSubtract",
+        "gsSubtract._proof_1",
+        "gsSubtract.eq_1",
+        "gsUnivariate",
+        "gsUnivariate.eq_1",
+        "gs_eval_univariate",
+        "gs_eval_univariate_raw"
+      ],
+      "scope": "logical_local_declarations_and_target_axiom_closure"
+    },
+    "contract_sha256": "7e2e5f42be051b5c7de0f6e16f6dcbd60569fda557d5364d7d9357d8c553ad59",
+    "contract_file_sha256": "53dba89ef069a7694d35c5f13e9febc283bbf1d0224f98051ab2233a7a9db90f",
+    "olean_sha256": "2e5a98c838f0060fd515ed9b6c0e73022bf1acd9cdcf1cf87f03ef2ff20cfc98"
+  },
+  "semantic_review": {
+    "status": "aligned",
+    "reason": "Определения gsSubtract и gsRestore точно задают S и S⁻¹. Подстановка gsCompose выражает композицию в нужном порядке. Цель содержит обе обратные композиции как равенства полиномов и равенство S(b(t),t,w(t))=(t,0,0) для любого коммутативного кольца K с единицей и любых b,w∈K[t], без дополнительных предположений или локализации.",
+    "limitations": [
+      "В последнем сообщении нет результата успешной компиляции целевой теоремы; установлено соответствие формулировки контракту.",
+      "Не охватываются существование системы (x,H,W), вся Lemma 9.1 и остальные переходы статьи.",
+      "Новизна и исследовательская полезность этим сравнением не устанавливаются."
+    ],
+    "method": "model_review_not_formal_certificate"
+  },
+  "replan_counts": {
+    "critic": 0,
+    "lean": 1
+  },
+  "printed_axioms": {
+    "exit_code": 0,
+    "theorems": [
+      "gs_eval_univariate",
+      "gs_eval_univariate_raw",
+      "graph_subtraction_polynomial_identities"
+    ],
+    "stdout": "'gs_eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]\n'gs_eval_univariate_raw' depends on axioms: [propext, Classical.choice, Quot.sound]\n'graph_subtraction_polynomial_identities' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+    "parsed_axioms": {
+      "gs_eval_univariate": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "gs_eval_univariate_raw": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "graph_subtraction_polynomial_identities": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  },
+  "limitations": [
+    "Only §§9.1,9.3,9.7,9.8 supplied to extraction; no claim of whole-paper analysis.",
+    "Verified mathematical scope: final permutation and subtraction of an already polynomial graph, both inverse identities, and graph-to-axis.",
+    "Preceding coordinate system, complete trefoil/figure-eight rectifiers, exact-divisibility steps and motivic part are not Lean-verified.",
+    "Source import is explicit by arXiv link/ID, HTML only; not global arXiv discovery or PDF/OCR ingestion.",
+    "Original MathResearch 11-file suite not rerun for this app-only change."
+  ]
+}

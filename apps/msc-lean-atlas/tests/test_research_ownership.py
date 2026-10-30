@@ -41,16 +41,16 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(observer.get(self.rid)['status'],'running')
     def test_dead_owner_recovered_but_unknown_legacy_owner_left_alone(self):
         self.service.update(self.rid,status='running',owner_pid=424242)
-        with patch('research_service.os.kill',side_effect=ProcessLookupError):
+        with patch('research_service.process_exists',side_effect=ProcessLookupError):
             observer=self.new_service()
         self.assertEqual(observer.get(self.rid)['status'],'interrupted')
         self.service.update(self.rid,status='running',owner_pid=None)
         observer=self.new_service()
         self.assertEqual(observer.get(self.rid)['status'],'running')
     def test_permission_denied_is_not_evidence_owner_died(self):
-        with patch('research_service.os.kill',side_effect=PermissionError):
+        with patch('research_service.process_exists',side_effect=PermissionError):
             self.assertTrue(rs.owner_alive(424242))
-        with patch('research_service.os.kill',side_effect=OSError):
+        with patch('research_service.process_exists',side_effect=OSError):
             self.assertTrue(rs.owner_alive(424242))
     def test_start_does_not_dispatch_foreign_live_owner(self):
         self.service.update(self.rid,status='running',owner_pid=424242)
