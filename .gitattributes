@@ -1,0 +1,4 @@
+# Lean certificates bind source bytes; retain upstream LF endings on Windows.
+*.lean text eol=lf
+# This exported proof preserves the exact text bound by its saved SHA-256.
+apps/msc-lean-atlas/examples/arxiv_graph_subtraction/Proof.lean whitespace=-blank-at-eof

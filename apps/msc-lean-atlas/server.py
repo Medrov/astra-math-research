@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import threading
 import traceback
@@ -54,7 +54,7 @@ def normalized_inputs(payload):
         name=item.get('name');content=item.get('content')
         if not isinstance(name,str) or not name.endswith('.lean') or len(name)>240: raise ValueError('Нужно имя файла с расширением .lean.')
         p=Path(name)
-        if p.is_absolute() or any(part in ('..','.') for part in p.parts) or '\\' in name or '\x00' in name: raise ValueError('Имя файла должно быть безопасным относительным путём.')
+        if p.is_absolute() or PureWindowsPath(name).anchor or any(part in ('..','.') for part in p.parts) or '\\' in name or '\x00' in name: raise ValueError('Имя файла должно быть безопасным относительным путём.')
         if not isinstance(content,str) or not content.strip() or len(content.encode())>2*1024*1024: raise ValueError('Файл пуст или превышает 2 МБ.')
         out.append(dict(name=name,content=content))
     if out[0]['name']==out[1]['name']: raise ValueError('Имена двух модулей должны различаться.')
@@ -151,8 +151,19 @@ class Handler(BaseHTTPRequestHandler):
             if not self.local_host(): return self.json_response({'error':'Этот сервис доступен только через localhost.'},403)
             path=urlsplit(self.path).path
             if path=='/api/research/status': return self.json_response(research().status())
-            if path=='/api/research/cases': return self.json_response({'cases':research().cases()})
+            if path=='/api/research/cases': return self.json_response({'cases':research().public_cases()})
             if path=='/api/research/runs': return self.json_response({'runs':research().list_runs()})
+            if path=='/api/arxiv/papers': return self.json_response({'papers':research().arxiv.list_papers()})
+            if path.startswith('/api/arxiv/papers/'):
+                paper=research().arxiv.get_paper(unquote(path[len('/api/arxiv/papers/'):]))
+                return self.json_response({k:v for k,v in paper.items() if k!='chunks'})
+            if path=='/api/objects/graphs': return self.json_response({'graphs':research().registry.list_graphs()})
+            if path.startswith('/api/objects/graphs/'):
+                parts=path.split('/')
+                if len(parts)==5:
+                    revision=parse_qs(urlsplit(self.path).query).get('revision',[None])[0]
+                    return self.json_response(research().graph(parts[4],int(revision) if revision is not None else None))
+                return self.json_response({'error':'Не найдено'},404)
             if path=='/api/research/search':
                 import research_retrieval
                 query=parse_qs(urlsplit(self.path).query).get('q',[''])[0]
@@ -166,7 +177,7 @@ class Handler(BaseHTTPRequestHandler):
                     self.send_header('Content-Length',str(len(body)))
                     self.send_header('X-Content-Type-Options','nosniff')
                     self.end_headers();self.wfile.write(body);return
-                if len(parts)==5: return self.json_response(research().get(parts[4]))
+                if len(parts)==5: return self.json_response(research().detail(parts[4]))
                 return self.json_response({'error':'Не найдено'},404)
             if path=='/api/graph': return self.json_response(dataset())
             if path=='/api/examples': return self.json_response(lean_service.load_examples())
@@ -174,7 +185,8 @@ class Handler(BaseHTTPRequestHandler):
                 data=dataset();context=lean_service.default_context()
                 return self.json_response(dict(ready=True,context=context,data=data['meta'],
                     capabilities={'full_msc':True,'local_search':True,'lean_verification':True,'generative_model':True,
-                                  'codex_research':True,'lemma_dag':True,'universal_bridge_discovery':False}))
+                                  'codex_research':True,'lemma_dag':True,'object_graph':True,'transition_contracts':True,
+                                  'universal_bridge_discovery':False}))
             if path.startswith('/api/jobs/'):
                 key=safe_id(path.rsplit('/',1)[1])
                 with LOCK: job=dict(JOBS[key]) if key in JOBS else None
@@ -211,6 +223,14 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(payload,dict): raise ValueError('Тело запроса должно быть JSON-объектом.')
             path=urlsplit(self.path).path
             if path=='/api/research/runs': return self.json_response(research().create(payload),202)
+            if path=='/api/arxiv/import':
+                paper=research().import_arxiv(payload.get('reference'))
+                return self.json_response({k:v for k,v in paper.items() if k!='chunks'})
+            if path.startswith('/api/objects/graphs/'):
+                parts=path.split('/')
+                if len(parts)==6 and parts[5]=='revisions':
+                    return self.json_response(research().revise_graph(parts[4],payload),201)
+                return self.json_response({'error':'Не найдено'},404)
             if path.startswith('/api/research/runs/'):
                 parts=path.split('/')
                 if len(parts)==6 and parts[5]=='cancel': return self.json_response(research().cancel(parts[4]))

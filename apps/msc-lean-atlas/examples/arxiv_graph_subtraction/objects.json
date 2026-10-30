@@ -1,0 +1,412 @@
+{
+  "title": "Шесть локальных переходов из предоставленных фрагментов §§9.1, 9.3, 9.7 и 9.8",
+  "question": "Какие объекты и конструктивные переходы выделены в §§9.1, 9.3, 9.7 и 9.8 статьи?",
+  "msc_codes": [
+    "14R10",
+    "14R20"
+  ],
+  "objects": [
+    {
+      "id": "graph",
+      "title": "Уже полученный полиномиальный граф",
+      "kind": "параметризованная кривая",
+      "definition": "g(t)=(b(t),t,w(t)) в A³_K.",
+      "parameters": [
+        "K",
+        "b,w∈K[t]"
+      ],
+      "assumptions": [
+        "K — произвольное коммутативное кольцо с единицей."
+      ],
+      "msc_codes": [
+        "14R10"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "axis",
+      "title": "Координатная ось",
+      "kind": "параметризованная кривая",
+      "definition": "ℓ(t)=(t,0,0) в A³_K.",
+      "parameters": [
+        "K"
+      ],
+      "assumptions": [
+        "K — коммутативное кольцо с единицей."
+      ],
+      "msc_codes": [
+        "14R10"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "finite_data",
+      "title": "Взаимно обратные подстановки по модулю m",
+      "kind": "полиномиальные данные",
+      "definition": "P(x,v)∈k[x,v], G(x,T)∈k[x,T] с P(x,G(x,T))≡T mod m и G(x,P(x,v))≡v mod m.",
+      "parameters": [
+        "k",
+        "0≠m∈k[x]",
+        "P",
+        "G"
+      ],
+      "assumptions": [
+        "k — область целостности.",
+        "Обе указанные конгруэнции выполняются."
+      ],
+      "msc_codes": [
+        "14R10",
+        "14R20"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "finite_map",
+      "title": "Поднятие конечного обратного с дополнительной переменной",
+      "kind": "координатная конструкция",
+      "definition": "F=P(x,v)+m(x)w; J=(v−G(x,F))/m(x); L(x,v,w)=(x,F,J). Частное J понимается как точное полиномиальное частное, существование которого утверждается в §9.3.",
+      "parameters": [
+        "k",
+        "m",
+        "P",
+        "G"
+      ],
+      "assumptions": [
+        "Все условия объекта finite_data."
+      ],
+      "msc_codes": [
+        "14R10",
+        "14R20"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "transfer_data",
+      "title": "Координаты и центр аффинной модификации",
+      "kind": "данные переноса",
+      "definition": "A=(x,H,W), A⁻¹=(x,R,S₀); βₘ(x,y,z)=(x,p(x,y)+m(x)z,y). В B=k[x]/(m) полином c(y)=H(x,p(x,y),y) имеет обратную подстановку ψ(T). Полином φ(x,T) представляет W(x,p(x,ψ(T)),ψ(T)) по модулю m.",
+      "parameters": [
+        "k",
+        "0≠m∈k[x]",
+        "p∈k[x,y]",
+        "H,W,R,S₀∈k[x,y,z]",
+        "ψ∈B[T]",
+        "φ∈k[x,T]"
+      ],
+      "assumptions": [
+        "k — область целостности.",
+        "A и A⁻¹ — взаимно обратные полиномиальные отображения.",
+        "c задаёт автоморфизм B[y].",
+        "φ выбран с указанным классом по модулю m."
+      ],
+      "msc_codes": [
+        "14R10",
+        "14R20"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "transfer_map",
+      "title": "Скорректированный перенос координат",
+      "kind": "координатная конструкция",
+      "definition": "H′=H(x,p+mz,y), Q′=(W(x,p+mz,y)−φ(x,H′))/m; A′=(x,H′,Q′). Частное трактуется как точное полиномиальное частное согласно утверждению §9.3.",
+      "parameters": [
+        "Данные объекта transfer_data"
+      ],
+      "assumptions": [
+        "Все условия объекта transfer_data."
+      ],
+      "msc_codes": [
+        "14R10",
+        "14R20"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "compact_data",
+      "title": "Компактные полиномы h и f над ℛ",
+      "kind": "конечные полиномиальные данные",
+      "definition": "ℛ=ℤ[a]/(a²−a+1). h(x,u)=(1−a)xu²+(−1+ax²−ax⁴)u−2x⁵+(6−2a)x³−2(1−a)x. f(x,T)=−T+x((1−a)T²+2a−2)+x²(2aT³−5aT)+x³(−5T⁴+15T²−2a)+x⁴(14(1−a)T⁵+50(a−1)T³+(29−24a)T).",
+      "parameters": [
+        "a — класс переменной в ℛ",
+        "x,u,T — независимые переменные"
+      ],
+      "assumptions": [
+        "Коэффициенты рассматриваются в указанном факторкольце.",
+        "В источнике ℛ рассматривается как область целостности; a и a−1 — единицы."
+      ],
+      "msc_codes": [
+        "14R10"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "compact_map",
+      "title": "Координатная система A₀ из §9.7",
+      "kind": "координатная конструкция",
+      "definition": "При h,f из compact_data положим u=z+axy, H=h(x,u)+(a−1)x⁵y, W=a(u−f(x,H))/x⁵ и A₀=(x,H,W). Формулы обратного: U=f(x,T)+(1−a)x⁵V, R(x,T,V)=a(h(x,U)−T)/x⁵, S₀(x,T,V)=U−axR(x,T,V). Точные частные и обратимость заявлены в §9.7.",
+      "parameters": [
+        "ℛ",
+        "h",
+        "f"
+      ],
+      "assumptions": [
+        "Используются именно формулы compact_data.",
+        "Конгруэнции (9.12) служат основанием заявленной точности делений."
+      ],
+      "msc_codes": [
+        "14R10",
+        "14R20"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "harmonic_curve",
+      "title": "Гармоническая параметризация",
+      "kind": "параметризованная кривая",
+      "definition": "γ_h(t)=(C₃(t),C₅(t),C₇(t)), где C₃=t³−3t, C₅=t⁵−5t³+5t, C₇=t⁷−7t⁵+14t³−7t; коэффициенты берутся в ℛ.",
+      "parameters": [
+        "ℛ",
+        "t"
+      ],
+      "assumptions": [
+        "Вторая координата содержит +5t, как в предоставленном §9.8."
+      ],
+      "msc_codes": [
+        "14R10"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "normalized_curve",
+      "title": "Нормализованная параметризация трефойла",
+      "kind": "параметризованная кривая",
+      "definition": "γ_n(t)=(C₃(t),C₄(t),C₅(t)) над ℛ, где C₃=t³−3t, C₄=t⁴−4t²+2, C₅=t⁵−5t³+5t.",
+      "parameters": [
+        "ℛ",
+        "t"
+      ],
+      "assumptions": [
+        "Используются указанные нормализованные полиномы."
+      ],
+      "msc_codes": [
+        "14R10"
+      ],
+      "lean_refs": []
+    },
+    {
+      "id": "harmonic_map",
+      "title": "Скорректированная координатная система для гармонической кривой",
+      "kind": "координатная конструкция",
+      "definition": "Для H,W,R,S₀ из compact_map положим φ(T)=42(a−1)T⁶+175(1−a)T⁴+(147a−161)T²+8, H_h=H(x,xz−y²+2,y), Q_h=(W(x,xz−y²+2,y)−φ(H_h))/x и A_h=(x,H_h,Q_h).",
+      "parameters": [
+        "ℛ",
+        "H",
+        "W",
+        "R",
+        "S₀"
+      ],
+      "assumptions": [
+        "Используются компактные формулы §9.7.",
+        "Точность частного и глобальная обратимость являются утверждениями предоставленного §9.8."
+      ],
+      "msc_codes": [
+        "14R10",
+        "14R20"
+      ],
+      "lean_refs": []
+    }
+  ],
+  "transitions": [
+    {
+      "id": "graph_subtraction",
+      "title": "Первый кандидат: перестановка и вычитание графа",
+      "source_ids": [
+        "graph"
+      ],
+      "target_ids": [
+        "axis"
+      ],
+      "relation_type": "construction",
+      "construction": "S(x,y,z)=(y,x−b(y),z−w(y)); на входе (T,X,Z) положим S⁻¹(T,X,Z)=(X+b(T),T,Z+w(T)).",
+      "assumptions": [
+        "Для любого коммутативного кольца K с единицей и любых b,w∈K[t].",
+        "Исходная параметризация уже имеет вид (b(t),t,w(t))."
+      ],
+      "claim": "Из заключительного шага §9.1 выделяются конечные полиномиальные тождества S⁻¹∘S=id, S∘S⁻¹=id и S(b(t),t,w(t))=(t,0,0). Они описывают глобальный полиномиальный автоморфизм над K. Это первый кандидат для последующей Lean-проверки; здесь дано только извлечение, без проверки, и не охватывается вся Lemma 9.1 или существование предшествующей системы (x,H,W).",
+      "obligations": [],
+      "agent_task": null,
+      "case_id": null,
+      "formulation_status": "literature_only",
+      "source_refs": [
+        "evidence-1"
+      ]
+    },
+    {
+      "id": "finite_inverse_lift",
+      "title": "Из обратимости по модулю m в автоморфизм трёхмерного пространства",
+      "source_ids": [
+        "finite_data"
+      ],
+      "target_ids": [
+        "finite_map"
+      ],
+      "relation_type": "construction",
+      "construction": "Построить F=P(x,v)+mw и J=(v−G(x,F))/m. Обратные формулы на (x,T,Z): v=G(x,T)+mZ, w=(T−P(x,G(x,T)+mZ))/m.",
+      "assumptions": [
+        "Для любой области целостности k, любого 0≠m∈k[x] и любых P,G с обеими конгруэнциями объекта finite_data."
+      ],
+      "claim": "В Lemma 9.4 автор утверждает точность обоих делений и глобальную полиномиальную обратимость L. Обратимость P только по модулю m сама по себе не означает обратимости подстановки P над k[x]; дополнительная переменная входит в конструкцию существенно. Здесь утверждение источника не проверяется.",
+      "obligations": [],
+      "agent_task": null,
+      "case_id": null,
+      "formulation_status": "literature_only",
+      "source_refs": [
+        "evidence-2"
+      ]
+    },
+    {
+      "id": "coordinate_transfer",
+      "title": "Перенос координат через модификацию с коррекцией",
+      "source_ids": [
+        "transfer_data"
+      ],
+      "target_ids": [
+        "transfer_map"
+      ],
+      "relation_type": "property_transfer",
+      "construction": "Составить A с βₘ и заменить третью координату V на (V−φ(x,T))/m. На (x,T,Q) обратные поперечные координаты: y=S₀(x,T,mQ+φ(x,T)), z=(R(x,T,mQ+φ(x,T))−p(x,S₀(x,T,mQ+φ(x,T))))/m.",
+      "assumptions": [
+        "Для всех данных transfer_data, включая обе обратные полиномиальные карты A,A⁻¹ и обратимость c над k[x]/(m)."
+      ],
+      "claim": "Theorem 9.6 утверждает, что скорректированная композиция и приведённая обратная карта полиномиальны и взаимно обратны над k. Сама βₘ имеет обратную формулу (x,Y,Z)↦(x,Z,(Y−p(x,Z))/m) после обращения m; глобальная полиномиальная обратимость βₘ здесь не утверждается. Извлечение сохраняет различие между этой модификацией и заявленным автоморфизмом A′.",
+      "obligations": [],
+      "agent_task": null,
+      "case_id": null,
+      "formulation_status": "literature_only",
+      "source_refs": [
+        "evidence-2"
+      ]
+    },
+    {
+      "id": "compact_coordinate_lift",
+      "title": "Конечные конгруэнции h,f и компактная координатная система",
+      "source_ids": [
+        "compact_data",
+        "finite_data"
+      ],
+      "target_ids": [
+        "compact_map"
+      ],
+      "relation_type": "construction",
+      "construction": "В конструкции finite_inverse_lift взять k=ℛ, P=h, G=f, m=(a−1)x⁵ и выполнить замену (y,z)↦(u,y), u=z+axy. Полученная третья координата J равна −W, поэтому дополнительно изменить её знак. Обратные формулы заданы через U,R,S₀ в compact_map.",
+      "assumptions": [
+        "ℛ=ℤ[a]/(a²−a+1).",
+        "Используются ровно h и f из (9.10)–(9.11).",
+        "Для применения Lemma 9.4 требуются обе заявленные в (9.12) конгруэнции h(x,f(x,T))≡T mod x⁵ и f(x,h(x,u))≡u mod x⁵."
+      ],
+      "claim": "§9.7 предъявляет две конечные алгебраические конгруэнции и на их основе заявляет точность делений и глобальную полиномиальную обратимость A₀, включая слой x=0, без обращения целых чисел. Конгруэнции и полная координатная конструкция здесь не проверяются. Переход не удостоверяет полноту выпрямителя трефойла из Theorem 9.10, его ограничения на кривую или вычисления степеней.",
+      "obligations": [],
+      "agent_task": null,
+      "case_id": null,
+      "formulation_status": "literature_only",
+      "source_refs": [
+        "evidence-2",
+        "evidence-3"
+      ]
+    },
+    {
+      "id": "harmonic_modification",
+      "title": "Гармоническая кривая и рационально обратимая модификация",
+      "source_ids": [
+        "harmonic_curve"
+      ],
+      "target_ids": [
+        "normalized_curve"
+      ],
+      "relation_type": "construction",
+      "construction": "Применить β(x,y,z)=(x,xz−y²+2,y). На области x≠0 обратная формула имеет вид β⁻¹(x,Y,Z)=(x,Z,(Y+Z²−2)/x).",
+      "assumptions": [
+        "Параметризации заданы указанными C₃,C₄,C₅,C₇ над ℛ.",
+        "Для обратной рациональной формулы x обращается; для прямого отображения кривой это не требуется."
+      ],
+      "claim": "Формула (9.18) даёт конечное тождество C₃C₇−C₅²+2=C₄ и соответствующее равенство β∘γ_h=γ_n. В §9.8 β представлена как рационально обратимая модификация; переход не приписывает ей глобальную полиномиальную обратимость и не заменяет её выпрямителем. Извлечение относится к варианту C₅ с +5t.",
+      "obligations": [],
+      "agent_task": null,
+      "case_id": null,
+      "formulation_status": "literature_only",
+      "source_refs": [
+        "evidence-3",
+        "evidence-4"
+      ]
+    },
+    {
+      "id": "harmonic_corrected_transfer",
+      "title": "Коррекция модификации гармонической кривой",
+      "source_ids": [
+        "compact_map",
+        "harmonic_curve",
+        "transfer_data"
+      ],
+      "target_ids": [
+        "harmonic_map"
+      ],
+      "relation_type": "property_transfer",
+      "construction": "Специализировать coordinate_transfer при k=ℛ, m=x, p=2−y², c(y)=−y, ψ(T)=−T и φ(T)=W(0,2−T²,−T). Обратная карта A_h на (x,T,Q): y=S₀(x,T,xQ+φ(T)), z=(R(x,T,xQ+φ(T))+S₀(x,T,xQ+φ(T))²−2)/x.",
+      "assumptions": [
+        "A₀ и его обратная карта берутся из заявленной конструкции §9.7.",
+        "Используются заявленные равенства H(0,Y,Z)=−Z и значение φ из (9.19).",
+        "Параметризация γ_h имеет вторую координату t⁵−5t³+5t."
+      ],
+      "claim": "§9.8 утверждает точность делений в обе стороны, глобальную полиномиальную обратимость A_h и ограничения H_h(γ_h(t))=t, Q_h(γ_h(t))=(1−a)(42t³−49t). Таким образом, по утверждению автора, образ кривой является графом для последующего graph_subtraction с b=C₃ и w=(1−a)(42t³−49t). Это извлечение зависимых утверждений, без проверки всей конструкции или Theorem 9.11. Открытый вопрос этим переходом не формулируется; извлечение ограничено предоставленными фрагментами.",
+      "obligations": [],
+      "agent_task": null,
+      "case_id": null,
+      "formulation_status": "literature_only",
+      "source_refs": [
+        "evidence-1",
+        "evidence-2",
+        "evidence-3",
+        "evidence-4"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "evidence-1",
+      "title": "On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications — 9.1. Parameter lifts and graph subtraction",
+      "url": "https://arxiv.org/html/2610.38474v1#S9.SS1",
+      "locator": "9.1. Parameter lifts and graph subtraction",
+      "versioned_id": "2610.38474v1",
+      "snapshot_sha256": "0c6b56ae0236f3a5263164b8953fc4af7ab97785372bb243631f49d7a8f80625",
+      "section_id": "S9.SS1"
+    },
+    {
+      "id": "evidence-2",
+      "title": "On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications — 9.3. Finite inverses and transfer through a modification",
+      "url": "https://arxiv.org/html/2610.38474v1#S9.SS3",
+      "locator": "9.3. Finite inverses and transfer through a modification",
+      "versioned_id": "2610.38474v1",
+      "snapshot_sha256": "0c6b56ae0236f3a5263164b8953fc4af7ab97785372bb243631f49d7a8f80625",
+      "section_id": "S9.SS3"
+    },
+    {
+      "id": "evidence-3",
+      "title": "On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications — 9.7. Rectification of the Shastri trefoil",
+      "url": "https://arxiv.org/html/2610.38474v1#S9.SS7",
+      "locator": "9.7. Rectification of the Shastri trefoil",
+      "versioned_id": "2610.38474v1",
+      "snapshot_sha256": "0c6b56ae0236f3a5263164b8953fc4af7ab97785372bb243631f49d7a8f80625",
+      "section_id": "S9.SS7"
+    },
+    {
+      "id": "evidence-4",
+      "title": "On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications — 9.8. Rectification of the harmonic figure-eight",
+      "url": "https://arxiv.org/html/2610.38474v1#S9.SS8",
+      "locator": "9.8. Rectification of the harmonic figure-eight",
+      "versioned_id": "2610.38474v1",
+      "snapshot_sha256": "0c6b56ae0236f3a5263164b8953fc4af7ab97785372bb243631f49d7a8f80625",
+      "section_id": "S9.SS8"
+    }
+  ]
+}

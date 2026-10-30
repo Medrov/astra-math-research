@@ -24,7 +24,7 @@ build = root / ".lake/build/lib/lean"
 build.mkdir(parents=True, exist_ok=True)
 mathlib = args.mathlib.resolve()
 paths = [build, root, mathlib / ".lake/build/lib/lean"]
-for package in json.loads((mathlib / "lake-manifest.json").read_text())["packages"]:
+for package in json.loads((mathlib / "lake-manifest.json").read_text(encoding="utf-8"))["packages"]:
     lib = mathlib.parent / package["name"] / ".lake/build/lib/lean"
     if lib.is_dir():
         paths.append(lib)
@@ -56,7 +56,7 @@ files = args.files or [
 discovered_files = []
 for folder, directories, names in os.walk(root):
     directories[:] = [name for name in directories if name not in {'.lake', '.git', '.tooling', 'node_modules'}]
-    discovered_files.extend(str((Path(folder) / name).relative_to(root))
+    discovered_files.extend((Path(folder) / name).relative_to(root).as_posix()
                             for name in names if name.endswith('.lean'))
 discovered_files.sort()
 full_project_coverage = set(files) == set(discovered_files)
@@ -69,7 +69,7 @@ for relative in files:
     source = root / relative
     if not source.is_file():
         raise SystemExit(f"Missing proof source: {source}")
-    text = source.read_text()
+    text = source.read_text(encoding="utf-8")
     source_hash_before = hashlib.sha256(source.read_bytes()).hexdigest()
     # Comments may describe forbidden constructs. Scan executable lines as well.
     code = re.sub(r"/-.*?-/", "", text, flags=re.S)
@@ -89,14 +89,14 @@ for relative in files:
     print(f"Checking {relative} ...", flush=True)
     started = time.monotonic()
     log_path = logs / (Path(relative).stem + ".log")
-    with log_path.open("w") as log_stream:
+    with log_path.open("w", encoding="utf-8") as log_stream:
         run = subprocess.run(command, env=env, cwd=root,
                              stdout=log_stream, stderr=subprocess.STDOUT, text=True)
     elapsed = time.monotonic() - started
     source_hash_after = hashlib.sha256(source.read_bytes()).hexdigest()
     if source_hash_before != source_hash_after:
         raise SystemExit(f"Source changed during compilation: {relative}")
-    output = log_path.read_text()
+    output = log_path.read_text(encoding="utf-8")
     reported_axioms = {
         name.strip()
         for group in re.findall(r"depends on axioms: \[([^\]]*)\]", output)
@@ -145,5 +145,5 @@ report = {
     "theorem_count": sum(r["theorem_count"] for r in results),
     "success": len(results) == len(files) and all(r["exit_code"] == 0 and not r["forbidden_axiom_seen"] for r in results),
 }
-(logs / "verification.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+(logs / "verification.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 raise SystemExit(0 if report["success"] else 1)

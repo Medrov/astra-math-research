@@ -1,136 +1,44 @@
 {
   "status": "complete",
-  "checked_at": "2026-10-29T18:57:25.697606+00:00",
-  "scope": "Local research prototype with complete official MSC inventory, pair analysis and actual Lean bridge checks; not universal discovery.",
-  "dataset_counts": {
-    "nodes": 6603,
-    "edges": 9872,
-    "roots": 63,
-    "groups": 534,
-    "leaves": 6006,
-    "hyphen_codes": 503,
-    "hierarchy_edges": 6540,
-    "cross_reference_edges": 3332,
-    "edge_types": {
-      "avoid_classification": 5,
-      "broader": 6540,
-      "classification_alternative": 2,
-      "classify_elsewhere": 446,
-      "co_classify": 36,
-      "related_topic": 1,
-      "see_also": 2842
-    },
-    "reference_rules": 8,
-    "unresolved_references": 1,
-    "source_rows": 6603,
-    "tex_labels": 6603
-  },
-  "unit_tests": {
-    "passed": 38,
-    "failed": 0,
-    "report": "verification/unit-tests.log"
-  },
-  "end_to_end": {
-    "success": true,
-    "report": "verification/end-to-end.json"
-  },
-  "real_browser": {
-    "report": "verification/browser-real.json"
-  },
-  "url": "http://127.0.0.1:8765/",
-  "verified_example_url": "http://127.0.0.1:8765/?run=5f5e45f3fd2c436d9d8e9e81c99006f0#lean",
-  "known_limits": [
-    "MSC is complete for the saved official files; the semantic bridge catalogue contains 15 curated relationships.",
-    "Local heuristic retrieval and a limited definitional-equality attempt; no connected generative model.",
-    "Lean checks exact formal statements; mathematical value and novelty need separate review.",
-    "External library caches reused."
+  "checked_at": "2026-10-30T23:51:10.832307+00:00",
+  "current_workspace": "msc_objects_proofs_and_arxiv",
+  "scope": "Local MSC research tool: arXiv source extraction, immutable object/transition graphs, bounded Astra workers and Lean checks.",
+  "public_examples": [
+    "arxiv_2610_38474_graph_subtraction",
+    "published_associator_laplacian"
   ],
-  "ui_redesign": {
-    "checked_at": "2026-10-29T20:09:29.760429+00:00",
-    "theme": "light monochrome",
-    "worked_example": "examples/astra_energy/story.json",
-    "browser_checks": {
-      "passed": 12,
-      "failed": 0,
-      "report": "verification/redesign-functional.json",
-      "mocked": false
-    },
-    "worked_example_tests": {
-      "passed": 5,
-      "failed": 0,
-      "file": "tests/test_worked_story.py"
-    },
-    "lean_proof": "Unchanged sources; existing genuine saved certificate reused. Lean compilation not repeated for UI redesign.",
-    "screenshots": "verification/redesign/"
+  "controller": "LangGraph + SQLite",
+  "model": "gpt-6-astra via Codex App Server",
+  "lean": {
+    "version": "4.19.0",
+    "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "published_identity_report": "checks/published-associator.json",
+    "arxiv_study_report": "checks/arxiv-study.json"
   },
-  "graph_library": {
-    "renderer": "Cytoscape.js 3.34.4",
-    "layout": "fCoSE 2.2.0",
-    "official_nodes": 6603,
-    "official_edges": 9872,
-    "virtual_overview_nodes": 1,
-    "virtual_overview_edges": 63,
-    "model_tests": {
-      "passed": 10,
+  "validation": {
+    "python": {
+      "passed": 207,
       "failed": 0,
-      "file": "tests/test_graph_model.cjs"
+      "skipped": 0
     },
-    "browser_tests": {
-      "passed": 12,
-      "failed": 0,
-      "report": "verification/graph-library-functional.json"
+    "javascript": {
+      "passed": 28,
+      "failed": 0
     },
-    "layout_precomputation_ms": {
-      "overview": 345,
-      "full": 3912
+    "typography": {
+      "passed": 11,
+      "failed": 0
     },
-    "layout_dataset_sha256": "3004d971143222e1770a567bb6308f4f723573c75b8f6cb7c916bb8c97a1d940",
-    "runtime_network": "localhost only; bundled libraries, no CDN",
-    "object_contract": "OBJECTS.md",
-    "screenshots": "verification/graph-library/"
+    "catalog": {
+      "passed": 9,
+      "failed": 0
+    }
   },
-  "graph_explorer": {
-    "checked_at": "2026-10-29T21:50:28.232473+00:00",
-    "inspiration": "Obsidian Graph view interaction patterns",
-    "color_groups": 9,
-    "local_depth": [
-      1,
-      2,
-      3
-    ],
-    "local_traversal": "real undirected adjacency for neighborhood; original directed typed edges preserved; virtual center excluded",
-    "navigation_history": true,
-    "local_bookmarks": true,
-    "immersive_view": true,
-    "model_tests": 17,
-    "browser_tests": 15,
-    "report": "verification/obsidian-functional.json",
-    "lean_proof": "Existing certificate and proof sources unchanged"
-  },
-  "current_workspace": "map_and_research",
-  "research_stage": {
-    "status": "complete",
-    "checked_at": "2026-10-29T23:45:31.433458+00:00",
-    "model": "gpt-6-astra",
-    "controller": "LangGraph + SQLite",
-    "lemma_layout": "Cytoscape + Dagre",
-    "lean": "4.19.0",
-    "library_declarations": 179213,
-    "library_files": 6315,
-    "curated_documents": 18,
-    "python_tests": 105,
-    "graph_tests": 17,
-    "browser_scenarios": 11,
-    "api_scenarios": 8,
-    "evaluation_report": "checks/research-evaluation.json",
-    "generalization_run": "c4f1887b579047e38040758d72c048be",
-    "generalization_outcome": "proved",
-    "url": "http://127.0.0.1:8765/#research"
-  },
-  "publication": {
-    "date": "2026-10-30",
-    "source": "SHAIM working copy",
-    "runtime_data_included": false,
-    "notes": "PUBLICATION.md"
-  }
+  "report": "checks/release-summary.json",
+  "url": "http://127.0.0.1:8765/#research",
+  "known_limits": [
+    "Original MathResearch sources are unchanged; complete historical 11-module verification was not rerun.",
+    "arXiv proof covers only final graph subtraction in §9.1, not full rectifiability results.",
+    "Saved evidence is historical; a fresh clone does not acquire a new Lean certificate until it runs the checks."
+  ]
 }

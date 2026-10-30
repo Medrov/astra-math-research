@@ -1,6 +1,7 @@
 """Versioned local mathematical source retrieval. Scores are search hints, not proofs."""
 from pathlib import Path
 from bisect import bisect_right
+from contextlib import closing
 import hashlib
 import json
 import re
@@ -179,13 +180,13 @@ def build_index(index_path=None, roots=None, progress=None):
     started = time.monotonic()
     selected = roots if roots is not None else _default_roots()
     connection = sqlite3.connect(path, timeout=60)
-    connection.execute('PRAGMA journal_mode=WAL')
-    _schema(connection)
-    metadata_row = connection.execute("SELECT value FROM metadata WHERE key='manifest'").fetchone()
-    old = json.loads(metadata_row[0]) if metadata_row else {}
-    existing = dict(connection.execute('SELECT path,sha256 FROM files'))
-    seen, checksums, changed, skipped, sources = set(), [], 0, 0, []
     try:
+        connection.execute('PRAGMA journal_mode=WAL')
+        _schema(connection)
+        metadata_row = connection.execute("SELECT value FROM metadata WHERE key='manifest'").fetchone()
+        old = json.loads(metadata_row[0]) if metadata_row else {}
+        existing = dict(connection.execute('SELECT path,sha256 FROM files'))
+        seen, checksums, changed, skipped, sources = set(), [], 0, 0, []
         connection.execute('BEGIN IMMEDIATE')
         if old.get('index_version') != INDEX_VERSION:
             connection.execute('DELETE FROM declaration_search')
@@ -255,7 +256,7 @@ def library_manifest(index_path=None):
     if not path.is_file():
         return dict(status='not_built', declarations=0, files=0)
     try:
-        with sqlite3.connect('file:' + str(path) + '?mode=ro', uri=True, timeout=2) as connection:
+        with closing(sqlite3.connect('file:' + str(path) + '?mode=ro', uri=True, timeout=2)) as connection:
             row = connection.execute("SELECT value FROM metadata WHERE key='manifest'").fetchone()
             return json.loads(row[0]) if row else dict(status='not_built', declarations=0, files=0)
     except sqlite3.Error as error:
@@ -267,7 +268,7 @@ def search_library(query, limit=8, index_path=None):
     path = Path(index_path or INDEX_PATH)
     if not terms or not path.is_file():
         return []
-    with sqlite3.connect('file:' + str(path) + '?mode=ro', uri=True, timeout=2) as connection:
+    with closing(sqlite3.connect('file:' + str(path) + '?mode=ro', uri=True, timeout=2)) as connection:
         # Exact token conjunction is preferred for symbol searches; OR fallback
         # handles broad natural-language queries without pretending equivalence.
         primary = [t for t in terms if t not in ALIASES and not t.startswith('выпукл')]

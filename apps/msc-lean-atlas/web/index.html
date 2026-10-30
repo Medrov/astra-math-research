@@ -11,6 +11,7 @@
   <script defer src="/graph-model.js"></script>
   <script defer src="/graph-presentation.js"></script>
   <script defer src="/graph-view.js"></script>
+  <script defer src="/object-graph.js"></script>
   <script defer src="/research.js"></script>
   <script defer src="/app.js"></script>
 </head>
@@ -94,7 +95,7 @@
 
     <section id="research-panel" class="app-panel" aria-labelledby="research-title" hidden>
       <div class="page-heading research-page-heading">
-        <div><p class="eyebrow">Исследовательская лаборатория</p><h1 id="research-title">От гипотезы к доказательству</h1><p class="lead">Источники, общая структура и граф лемм — в одном исследовании.</p></div>
+        <div><p class="eyebrow">Исследовательская лаборатория</p><h1 id="research-title">От объектов к доказательству</h1><p class="lead">Выберите объекты, сформулируйте переход и проверьте его основания.</p></div>
         <button type="button" id="research-new" class="button secondary">＋ Новое исследование</button>
       </div>
       <div id="research-error" class="notice error" role="alert" hidden></div>
@@ -102,13 +103,34 @@
         <aside class="research-sidebar">
           <form id="research-form" class="research-setup">
             <div class="research-section-heading"><h2>Постановка</h2><span class="research-small-label">Новый запуск</span></div>
+            <div class="research-purpose-switch" role="group" aria-label="Цель исследования"><button type="button" data-purpose="prove" aria-pressed="true">Проверить связь</button><button type="button" data-purpose="discover" aria-pressed="false">Предложить связи</button></div>
+            <p id="research-purpose-description" class="research-hint">Выберите готовый пример или задайте конкретный переход.</p>
+            <div id="research-case-fields">
             <label class="field-label" for="research-case">Пример или свой вопрос</label>
             <select id="research-case" required><option value="">Загрузка примеров…</option></select>
             <p id="research-case-description" class="research-hint"></p>
+            </div>
             <div id="research-custom-fields" hidden>
               <label class="field-label" for="research-question">Что исследуем?</label>
-              <textarea id="research-question" rows="5" maxlength="6000" placeholder="Укажите объект, известные условия и какую связь хотите найти."></textarea>
+              <textarea id="research-question" rows="5" maxlength="12000" placeholder="Укажите объект, известные условия и какую связь хотите найти."></textarea>
             </div>
+            <details id="research-arxiv-panel" class="research-source-panel" open>
+              <summary id="research-arxiv-summary">Источник arXiv</summary>
+              <label class="field-label" for="research-arxiv-reference">Ссылка или идентификатор статьи</label>
+              <input id="research-arxiv-reference" type="text" value="https://arxiv.org/abs/2610.38474" placeholder="https://arxiv.org/abs/…" autocomplete="off">
+              <button id="research-arxiv-import" type="button" class="button small secondary">Импортировать статью</button>
+              <p id="research-arxiv-status" class="research-hint" role="status" aria-live="polite">Импорт сохраняет источник локально и не вызывает модель.</p>
+              <label class="field-label" for="research-paper">Сохранённая статья</label>
+              <select id="research-paper"><option value="">Без статьи</option></select>
+              <div id="research-paper-detail" class="research-paper-detail" hidden></div>
+              <div id="research-paper-scope" hidden>
+                <label class="field-label" for="research-paper-section">Область извлечения</label>
+                <select id="research-paper-section"><option value="">Вся статья</option></select>
+                <p id="research-paper-section-hint" class="research-hint"></p>
+                <button id="research-paper-extract" type="button" class="button small secondary" disabled>Выделить объекты и переходы</button>
+                <p class="research-hint">Подготовит вопрос для Astra. Исследование начнётся отдельной кнопкой ниже; утверждения статьи ещё не являются доказательствами Lean.</p>
+              </div>
+            </details>
             <label class="field-label" for="research-msc">Области MSC</label>
             <input id="research-msc" placeholder="Например: 90C25, 65K10" autocomplete="off">
             <p class="research-hint">Метки задают область поиска. Связь между объектами проверяется отдельно.</p>
@@ -122,6 +144,9 @@
             <button id="research-start" class="button primary" type="submit" disabled>Запустить проверку <span aria-hidden="true">↗</span></button>
             <p id="research-connection" class="research-connection" role="status">Проверяем доступность инструментов…</p>
           </form>
+          <div class="research-history-heading"><h2>Графы объектов</h2><button id="objects-refresh" type="button" class="text-button" aria-label="Обновить графы объектов">↻</button></div>
+          <label class="sr-only" for="objects-library">Открыть сохранённый граф объектов</label><select id="objects-library"><option value="">Выбрать сохранённый граф…</option></select>
+          <p id="objects-library-status" class="research-hint"></p>
           <div class="research-history-heading"><h2>Последние исследования</h2><button id="research-refresh" type="button" class="text-button" aria-label="Обновить исследования">↻</button></div>
           <div id="research-history" class="research-history"><p class="research-hint">Пока нет сохранённых запусков.</p></div>
         </aside>
@@ -132,7 +157,16 @@
           </div>
           <div id="research-progress" class="research-progress" role="status" aria-live="polite"><span class="research-state-dot"></span><span id="research-progress-text">Запуск ещё не создан</span><span id="research-budget-status"></span></div>
           <div id="research-claim" class="research-claim" hidden></div>
-          <div class="research-graph-section">
+          <nav class="research-view-switch" aria-label="Представление исследования"><a href="#map">01 · Области MSC</a><button type="button" data-research-view="objects" aria-pressed="true">02 · Объекты и переходы</button><button type="button" data-research-view="proof" aria-pressed="false">03 · Доказательство</button></nav>
+          <section id="research-objects-view" class="research-objects-view" aria-labelledby="objects-title">
+            <div class="research-section-heading"><div><h3 id="objects-title">Объекты и переходы</h3><p id="objects-version" class="research-hint"></p></div><div class="research-graph-buttons"><button id="objects-edit" type="button" class="button small secondary" disabled>Уточнить постановку</button><button id="objects-fit" type="button" class="button small secondary" aria-label="Вместить граф объектов">Вместить</button></div></div>
+            <div class="objects-workspace"><div class="objects-stage"><div id="objects-graph" tabindex="0" role="img" aria-label="Граф математических объектов и переходов. Все элементы доступны в списке под графом."></div><div id="objects-empty" class="research-graph-empty"><span class="research-empty-symbol" aria-hidden="true">⇄</span><strong>Что связывает эти объекты?</strong><p>Выберите пример или предложите вопрос. У каждого перехода будут свои условия и обязательства доказательства.</p></div><div class="research-graph-legend"><span><i class="definition"></i>Объект</span><span><i class="transition"></i>Переход</span><span><i class="hypothesis"></i>Гипотеза</span><span><i class="verified"></i>Доказано</span></div></div><aside id="objects-inspector" class="objects-inspector" aria-live="polite"></aside></div>
+            <div id="objects-item-list" class="objects-item-list" aria-label="Объекты и переходы"></div>
+            <p class="research-graph-caption">Нажмите на объект или переход, чтобы приблизить его и прочитать условия. «Вместить» вернёт обзор. Статус перехода относится только к его точным условиям и обязательствам; предложенная связь остаётся гипотезой до проверки.</p>
+            <div id="objects-editor" class="objects-editor" hidden><div class="research-section-heading"><h3>Новая версия постановки</h3><button id="objects-edit-cancel" type="button" class="button small secondary">Отмена</button></div><p class="research-hint">Сохранение создаст новую версию. Прежние проверки останутся в истории. Изменение описания не меняет Lean-цель автоматически: проверьте её ниже или начните новое исследование для формализации.</p><form id="objects-edit-form"><div id="objects-edit-fields"></div><div class="objects-editor-actions"><button id="objects-edit-save" type="submit" class="button primary">Сохранить новую версию</button><button id="objects-custom-research" type="button" class="button secondary">Новый вопрос для Astra</button></div></form></div>
+          </section>
+          <div id="research-proof-view" class="research-graph-section" hidden>
+            <div id="research-proof-context" class="research-proof-context" hidden></div>
             <div class="research-section-heading"><h3>Граф обязательств доказательства</h3><div class="research-graph-buttons"><button id="research-graph-fit" class="button small secondary" type="button" aria-label="Вместить граф лемм">Вместить</button><button id="research-graph-layout" class="button small secondary" type="button" aria-label="Перестроить граф лемм">Раскладка</button></div></div>
             <div class="research-graph-workspace">
               <div class="research-graph-stage"><div id="research-graph" tabindex="0" role="img" aria-label="Интерактивный граф лемм. Для выбора с клавиатуры используйте список под графом."></div><div id="research-graph-empty" class="research-graph-empty"><div class="research-empty-symbol" aria-hidden="true">∴</div><strong>У каждого результата есть основания</strong><p>Здесь появятся определения, леммы и целевая теорема. Выберите узел, чтобы увидеть его условия и проверку.</p></div><div class="research-graph-legend"><span><i class="definition"></i>Определение</span><span><i class="lemma"></i>Лемма</span><span><i class="target"></i>Цель</span><span><i class="verified"></i>Проверено</span></div></div>

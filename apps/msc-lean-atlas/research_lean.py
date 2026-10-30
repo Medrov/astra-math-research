@@ -14,12 +14,12 @@ import os
 from pathlib import Path
 import re
 import shutil
-import signal
 import subprocess
 import time
 import uuid
 
 import lean_service
+from platform_support import terminate_process_tree
 
 ROOT = Path(__file__).resolve().parent
 FIXTURES = ROOT / "research_fixtures"
@@ -37,6 +37,9 @@ ENERGY_STATEMENT = """∀ (w01 w12 w02 x0 x1 x2 : ℝ),
 NONNEGATIVE_STATEMENT = """∀ (w01 w12 w02 x0 x1 x2 : ℝ), 0 ≤ w01 → 0 ≤ w12 → 0 ≤ w02 →
   0 ≤ TriangleEnergy.laplacianForm w01 w12 w02 x0 x1 x2"""
 COUNTEREXAMPLE_STATEMENT = "¬ (∀ a b : ℝ, 2 * a * b < a ^ 2 + b ^ 2)"
+NEGATIVE_ENERGY_STATEMENT = """¬ (∀ (w01 w12 w02 x0 x1 x2 : ℝ),
+  0 ≤ TriangleEnergy.laplacianForm w01 w12 w02 x0 x1 x2)"""
+NEGATIVE_WEIGHT_STATEMENT = "TriangleEnergy.laplacianForm (-1) 0 0 1 0 0 = -1"
 
 
 def _now():
@@ -65,6 +68,8 @@ def fixtures():
     gradient_prelude = gradient[:gradient.index("theorem descent")] + "\nuniverse u\n"
     energy = _source("GraphEnergy.lean")
     energy_prelude = energy[:energy.index("theorem graph_energy_eq")] + "\nend TriangleEnergy\n"
+    negative_energy = _source("GraphEnergyNegative.lean")
+    negative_prelude = negative_energy[:negative_energy.index("theorem graph_energy_eq")] + "\nend TriangleEnergy\n"
     definitions = [
         dict(id="seminar_gradient", title="Градиентный метод: граф лемм", msc_codes=["90C25", "90C30"],
              description="Квадратичные оценки → две независимые леммы → один шаг → оценка итераций.",
@@ -102,6 +107,22 @@ def fixtures():
              agent_task=dict(imports=["Mathlib.Data.Real.Basic", "Mathlib.Tactic.Ring", "Mathlib.Tactic.Positivity"], prelude=energy_prelude,
                              target="TriangleEnergy.laplacian_nonnegative", statement=NONNEGATIVE_STATEMENT,
                              context="Известная связь графовой энергии и квадратичной формы. Восстановите доказательство для явной модели треугольника. Это контроль восстановления связи, не заявление о новом открытии.")),
+        dict(id="graph_energy_negative", title="Отрицательный вес: граница переноса", msc_codes=["05C50", "15A63"],
+             description="Тождество энергии и формы сохраняется, но отрицательный вес опровергает безусловную неотрицательность.",
+             claim="Квадратичная форма лапласиана неотрицательна для любых вещественных весов.",
+             target="TriangleEnergyNegative.unconditional_nonnegativity_refuted",
+             expected_statement=NEGATIVE_ENERGY_STATEMENT, file="GraphEnergyNegative.lean",
+             expected_outcome="refuted", source="Отрицательный контроль явной координатной модели треугольника",
+             evidence=[dict(kind="local_formal_fixture", path=str(FIXTURES / "GraphEnergyNegative.lean"))],
+             preview_nodes=["TriangleEnergy.graphEnergy", "TriangleEnergy.laplacianForm",
+                            "TriangleEnergy.graph_energy_eq", "TriangleEnergyNegative.negative_weight_witness",
+                            "TriangleEnergyNegative.unconditional_nonnegativity_refuted"],
+             preview_edges=[["TriangleEnergy.graph_energy_eq", "TriangleEnergyNegative.negative_weight_witness"],
+                            ["TriangleEnergyNegative.negative_weight_witness", "TriangleEnergyNegative.unconditional_nonnegativity_refuted"]],
+             agent_task=dict(imports=["Mathlib.Data.Real.Basic", "Mathlib.Tactic.Ring", "Mathlib.Tactic.NormNum"],
+                             prelude=negative_prelude, target="TriangleEnergyNegative.unconditional_nonnegativity_refuted",
+                             statement=NEGATIVE_ENERGY_STATEMENT,
+                             context="Сохраните безусловное тождество энергии и формы. Проверьте веса (-1,0,0) и координаты (1,0,0); докажите отрицание безусловной неотрицательности.")),
     ]
     for item in definitions:
         item["source_sha256"] = _sha(_source(item["file"]))
@@ -126,6 +147,23 @@ def fixtures():
         dict(id="laplacian_nonnegative", target="TriangleEnergy.laplacian_nonnegative", dependencies=["graph_energy_eq"],
              statement=NONNEGATIVE_STATEMENT),
     ]
+    definitions[3]["agent_task"]["lemmas"] = [
+        dict(id="graph_energy_eq", target="TriangleEnergy.graph_energy_eq", dependencies=[], statement=ENERGY_STATEMENT),
+        dict(id="negative_weight_witness", target="TriangleEnergyNegative.negative_weight_witness",
+             dependencies=["graph_energy_eq"], statement=NEGATIVE_WEIGHT_STATEMENT),
+        dict(id="unconditional_nonnegativity_refuted", target="TriangleEnergyNegative.unconditional_nonnegativity_refuted",
+             dependencies=["negative_weight_witness"], statement=NEGATIVE_ENERGY_STATEMENT),
+    ]
+    for index in (2, 3):
+        item = definitions[index]
+        item["required_obligations"] = [dict(id=lemma["id"], target=lemma["target"], statement=lemma["statement"],
+                                             expected_outcome="refuted" if lemma["target"] == item["target"] and index == 3 else "proved")
+                                        for lemma in item["agent_task"]["lemmas"]]
+        item["agent_task"]["required_obligations"] = item["required_obligations"]
+    from research_arxiv_example import fixture as arxiv_fixture
+    definitions.append(arxiv_fixture())
+    from research_published_example import fixture as published_fixture
+    definitions.append(published_fixture())
     return definitions
 
 
@@ -137,9 +175,13 @@ def _validate_source(source):
     forbidden = sorted(set(re.findall(r"\b(?:sorry|admit|axiom|unsafe|partial|native_decide|run_tac|run_elab|elab|elab_rules|macro|macro_rules|syntax|initialize|builtin_initialize|set_option|implemented_by|extern|IO|System|Lean)\b", masked)))
     if forbidden or "#" in masked or "@[_" in masked:
         raise ValueError("Недопустимые конструкции кандидата: " + ", ".join(forbidden or ["команда #"]))
+    from research_project_library import allowed_imports
+    for header in re.findall(r'(?m)^\s*import\s+([^\n]+)', masked):
+        if any(not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.]*', word) for word in header.split()):
+            raise ValueError('В импортах кандидата разрешены только явные ASCII-имена закреплённых модулей.')
     for module in lean_service._imports(source):
-        if not module.startswith("Mathlib.") and module not in {"Mathlib", "Init", "Std"}:
-            raise ValueError("Для кандидата разрешены только закреплённые Mathlib/Init/Std импорты: " + module)
+        if not module.startswith("Mathlib.") and module not in {"Mathlib", "Init", "Std"} and module not in allowed_imports():
+            raise ValueError("Импорт отсутствует в закреплённой библиотеке кандидата: " + module)
 
 
 def _run(context, env, work, filename, diagnostics, cancelled=None, output=True):
@@ -158,12 +200,7 @@ def _run(context, env, work, filename, diagnostics, cancelled=None, output=True)
             interrupted = _cancelled(cancelled)
             timed_out = time.monotonic() - started > context["timeout_seconds"]
             if interrupted or timed_out:
-                os.killpg(proc.pid, signal.SIGTERM)
-                try:
-                    proc.wait(timeout=3)
-                except subprocess.TimeoutExpired:
-                    os.killpg(proc.pid, signal.SIGKILL)
-                    proc.wait()
+                terminate_process_tree(proc)
                 break
             time.sleep(0.1)
     entry = dict(file=filename, command=args, exit_code=proc.returncode,
@@ -222,18 +259,57 @@ def _audit_declarations(declarations, source, target):
                 scope='logical_local_declarations_and_target_axiom_closure')
 
 
-def verify_candidate(source, target, work_dir, expected_statement=None, *, cancelled=None, progress=None):
+def _validate_type_contract(statement):
+    if not isinstance(statement, str) or not statement.strip() or len(statement) > 30000:
+        raise ValueError("Некорректный контракт типа цели.")
+    # Contracts come from the controller, separately from the prover's source.
+    if any(token in statement for token in ("\nimport ", "\ntheorem ", "\nend", "#", ":=")):
+        raise ValueError("Контракт должен быть одним Lean-типом, без команд.")
+    _validate_source(statement)
+
+
+def _validate_obligations(value):
+    if value is None:
+        return []
+    if not isinstance(value, list) or len(value) > 32:
+        raise ValueError("Обязательства должны быть списком не более 32 контрактов.")
+    seen, result = set(), []
+    for item in value:
+        if not isinstance(item, dict):
+            raise ValueError("Обязательство должно содержать id, target, statement, expected_outcome.")
+        identifier, target, statement = item.get("id"), item.get("target"), item.get("statement")
+        if not isinstance(identifier, str) or not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", identifier) or identifier in seen:
+            raise ValueError("Идентификаторы обязательств должны быть непустыми и уникальными.")
+        if not isinstance(target, str) or not NAME.fullmatch(target):
+            raise ValueError("Нужно полное имя теоремы каждого обязательства.")
+        if item.get("expected_outcome") not in {"proved", "refuted"}:
+            raise ValueError("Результат обязательства должен быть proved или refuted.")
+        _validate_type_contract(statement)
+        seen.add(identifier)
+        result.append(dict(id=identifier, target=target, statement=statement,
+                           expected_outcome=item["expected_outcome"]))
+    if sum(len(item["statement"]) for item in result) > 250000:
+        raise ValueError("Суммарный контракт обязательств слишком велик.")
+    return result
+
+
+def verify_candidate(source, target, work_dir, expected_statement=None, *, required_obligations=None,
+                     cancelled=None, progress=None):
     """Check a source, theorem target, axiom closure and an independent type contract.
 
     expected_statement is the complete Lean TYPE, e.g. ``∀ n : Nat, n = n``.
     `u`, `v`, `w` universes are available in the contract module. A missing
     contract permits formal checking but reports target_preserved=False.
+    Optional required_obligations pin additional local theorem types. All types
+    are checked together in one Contract.lean compilation and accepted atomically;
+    expected_outcome labels the meaning of a checked type, never changes its proof.
     """
     work = Path(work_dir).resolve() / ("lean-" + uuid.uuid4().hex[:12])
     work.mkdir(parents=True)
     result = dict(status="failed", outcome="unknown", success=False, target=target,
                   source_sha256=_sha(source) if isinstance(source, str) else None,
                   expected_statement=expected_statement, target_preserved=False,
+                  obligations=[], obligations_passed=False,
                   workspace=str(work), started_at=_now(), diagnostics=[], declarations=[], axioms=[],
                   audit=dict(status="pending", allowed_axioms=sorted(lean_service.ALLOWED_AXIOMS)),
                   semantic_review=dict(status="not_established", note="Lean проверяет тип; смысл и неизменность определений проверяются отдельно."))
@@ -242,15 +318,30 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, cance
         if not isinstance(target, str) or not NAME.fullmatch(target):
             raise ValueError("Нужно полное имя одной теоремы.")
         if expected_statement is not None:
-            if not isinstance(expected_statement, str) or not expected_statement.strip() or len(expected_statement) > 30000:
-                raise ValueError("Некорректный контракт типа цели.")
-            # A type contract is supplied by the controller, never by the prover.
-            if any(token in expected_statement for token in ("\nimport ", "\ntheorem ", "\nend", "#", ":=")):
-                raise ValueError("Контракт должен быть одним Lean-типом, без команд.")
-            _validate_source(expected_statement)
+            _validate_type_contract(expected_statement)
+        obligations = _validate_obligations(required_obligations)
+        result["obligations"] = [dict(id=item["id"], target=item["target"],
+                                      statement_sha256=_sha(item["statement"]), ok=False,
+                                      expected_outcome=item["expected_outcome"])
+                                 for item in obligations]
         (work / "Candidate.lean").write_text(source)
         context, env = lean_service._prepare({}, work)
         result["context"] = context
+        # Candidates never inherit compiled project modules from the checkout.
+        # The sole supported project entry point is built below from pinned sources.
+        if context.get('project_root'):
+            project_root = Path(context['project_root']).resolve()
+            excluded = {project_root, (project_root / '.lake/build/lib/lean').resolve()}
+            paths = [p for p in context['lean_search_paths'] if Path(p).resolve() not in excluded]
+            context['lean_search_paths'] = paths
+            env['LEAN_PATH'] = os.pathsep.join(paths)
+        import research_project_library
+        if set(lean_service._imports(source)) & research_project_library.allowed_imports():
+            pin = research_project_library.pinned_fingerprint(source, required=True)
+            result['project_library'] = research_project_library.prepare_library(
+                context, env, work,
+                lambda filename: _run(context, env, work, filename, result['diagnostics'], cancelled),
+                cancelled, expected_fingerprint=pin)
         if progress:
             progress("Lean компилирует исходник и проверяет целевое утверждение.")
         _run(context, env, work, "Candidate.lean", result["diagnostics"], cancelled)
@@ -260,6 +351,11 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, cance
         decl = next((d for d in exported["declarations"] if d["name"] == target), None)
         if not decl or decl["kind"] != "theorem":
             raise ValueError("Цель должна быть теоремой, объявленной в проверяемом исходнике.")
+        declarations_by_name = {d["name"]: d for d in exported["declarations"]}
+        for item in obligations:
+            obligation_decl = declarations_by_name.get(item["target"])
+            if not obligation_decl or obligation_decl["kind"] != "theorem":
+                raise ValueError("Обязательство должно быть локальной теоремой: " + item["target"])
         result["actual_statement"] = decl["type"]
         # Audit all logical local roots and the goal, excluding only generated
         # runtime specialization roots (their appearance in a closure still fails).
@@ -269,12 +365,20 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, cance
         result["audit"] = audit
         if unexpected or unsafe:
             raise ValueError("Аудит Lean отклонил аксиомы или unsafe-декларации: " + ", ".join(unexpected + unsafe))
-        if expected_statement is not None:
-            contract = "import Candidate\nuniverse u v w\nset_option autoImplicit false\nexample : (" + expected_statement + ") := @" + target + "\n"
+        contracts = [(target, expected_statement)] if expected_statement is not None else []
+        contracts.extend((item["target"], item["statement"]) for item in obligations)
+        if contracts:
+            contract = "import Candidate\nuniverse u v w\nset_option autoImplicit false\n" + "".join(
+                "example : (" + statement + ") := @" + name + "\n" for name, statement in contracts)
             (work / "Contract.lean").write_text(contract)
             _run(context, env, work, "Contract.lean", result["diagnostics"], cancelled)
+            result["contract_file_sha256"] = _sha(contract)
+        if expected_statement is not None:
             result["target_preserved"] = True
             result["contract_sha256"] = _sha(expected_statement)
+        for item in result["obligations"]:
+            item["ok"] = True
+        result["obligations_passed"] = True
         result.update(status="complete", outcome="proved", success=True,
                       olean_sha256=_sha((work / "Candidate.olean").read_bytes()))
     except InterruptedError as error:
@@ -285,6 +389,10 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, cance
         result.update(status="rejected", error=str(error))
     except (RuntimeError, OSError, subprocess.SubprocessError, KeyError) as error:
         result.update(status="failed", error=str(error))
+    if not result["success"]:
+        result["obligations_passed"] = False
+        for item in result["obligations"]:
+            item["ok"] = False
     result["finished_at"] = _now()
     _save(work / "verification.json", result)
     return result
@@ -306,15 +414,37 @@ def _graph(declarations):
     return nodes, edges
 
 
-def run_pilot(case_id, work_dir, progress=None, cancelled=None):
+def run_pilot(case_id, work_dir, progress=None, cancelled=None, *, transition_task=None):
     fixture = next((f for f in fixtures() if f["id"] == case_id), None)
     if not fixture:
         raise ValueError("Неизвестный пилот: " + str(case_id))
-    result = verify_candidate(_source(fixture["file"]), fixture["target"], work_dir,
-                              fixture["expected_statement"], cancelled=cancelled, progress=progress)
+    target, statement = fixture["target"], fixture["expected_statement"]
+    obligations, expected_outcome = fixture.get("required_obligations"), fixture["expected_outcome"]
+    selected_target = None
+    if transition_task is not None:
+        if not isinstance(transition_task, dict):
+            raise ValueError("Нужен зафиксированный контракт выбранного перехода.")
+        canonical = fixture["agent_task"]
+        if transition_task.get("imports") != canonical["imports"] or transition_task.get("prelude") != canonical["prelude"]:
+            raise ValueError("Определения и импорты перехода отличаются от подготовленного примера.")
+        target, statement = transition_task.get("target"), transition_task.get("statement")
+        obligations = _validate_obligations(transition_task.get("required_obligations"))
+        primary = [item for item in obligations if item["target"] == target and item["statement"] == statement]
+        if len(primary) != 1:
+            raise ValueError("Основная цель перехода должна совпадать с одним обязательством.")
+        expected_outcome = primary[0]["expected_outcome"]
+        selected_target = dict(target=target, statement=statement, statement_sha256=_sha(statement),
+                               expected_outcome=expected_outcome, obligation_ids=[item["id"] for item in obligations])
+    # Selected transitions change only the independent contract. The checked
+    # source is always the canonical fixture, never supplied through the request.
+    result = verify_candidate(_source(fixture["file"]), target, work_dir,
+                              statement, required_obligations=obligations,
+                              cancelled=cancelled, progress=progress)
     nodes, edges = _graph(result.get("declarations", [])) if result["success"] else ([], [])
-    outcome = fixture["expected_outcome"] if result["success"] else "unknown"
-    if case_id == "seminar_gradient":
+    outcome = expected_outcome if result["success"] else "unknown"
+    if fixture.get("semantic_review"):
+        semantic = fixture["semantic_review"]
+    elif case_id == "seminar_gradient":
         semantic = dict(status="reviewed_fixture", scope="Оценка значений функции относительно произвольной опорной точки.",
                         findings=["xstar : E не объявлен минимизатором. Результат нельзя автоматически переименовать в сходимость к минимуму.",
                                   "UpperQuad/LowerQuad — предпосылки данной теоремы, не автоматически установленные свойства произвольной функции."],
@@ -322,10 +452,22 @@ def run_pilot(case_id, work_dir, progress=None, cancelled=None):
     elif case_id == "strict_inequality":
         semantic = dict(status="reviewed_fixture", findings=["Свидетель a=b=0 нарушает строгий знак. Доказано отрицание универсального утверждения."],
                         counterexample=dict(a=0, b=0, left=0, right=0), novelty="negative_control")
+    elif case_id == "graph_energy_negative":
+        semantic = dict(status="reviewed_fixture", findings=[
+                            "Тождество графовой энергии и квадратичной формы не требует знаковых условий.",
+                            "Вес w01=-1 при остальных нулевых весах и x=(1,0,0) даёт значение -1.",
+                            "Опровергнута только неотрицательность без предпосылок; теорема при неотрицательных весах не опровергнута."],
+                        counterexample=dict(weights=[-1, 0, 0], coordinates=[1, 0, 0], form_value=-1),
+                        novelty="negative_control")
     else:
         semantic = dict(status="reviewed_fixture", findings=["Явная модель треугольника с тремя весами. Не утверждается теорема обо всех графах.",
                                   "Тождество не требует положительности весов; перенос неотрицательности требует w01,w12,w02 ≥ 0."],
                         novelty="known_identity_recovery", useful_transfer="Неотрицательность графовой энергии переносится на квадратичную форму.")
+    if selected_target and target == "TriangleEnergy.graph_energy_eq":
+        semantic = dict(status="reviewed_fixture", scope="Безусловное тождество энергии и квадратичной формы явного треугольника.",
+                        findings=["Все три веса могут быть любыми вещественными числами, в том числе отрицательными.",
+                                  "Выбранный переход удостоверяет равенство представлений; неотрицательность не входит в его контракт."],
+                        assumptions=[], novelty="known_identity_recovery")
     pilot = dict(status="complete" if result["success"] else result["status"], outcome=outcome,
                  case_id=case_id, fixture=fixture, nodes=nodes, edges=edges, verification=result,
                  checks=[dict(id="lean_compilation", passed=bool(result.get("compilation_success"))),
@@ -336,5 +478,9 @@ def run_pilot(case_id, work_dir, progress=None, cancelled=None):
                  artifacts=[dict(kind="lean_source", path=str(Path(result["workspace"]) / "Candidate.lean")),
                             dict(kind="verification", path=str(Path(result["workspace"]) / "verification.json"))],
                  started_at=result["started_at"], finished_at=result["finished_at"])
+    if obligations:
+        pilot["checks"].append(dict(id="required_obligations", passed=result["obligations_passed"]))
+    if selected_target:
+        pilot["selected_target"] = selected_target
     _save(Path(result["workspace"]) / "pilot.json", pilot)
     return pilot

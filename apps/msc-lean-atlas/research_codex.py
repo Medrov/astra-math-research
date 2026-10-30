@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from datetime import datetime, timezone
-import fcntl
 import hashlib
 import json
 import os
@@ -19,6 +18,8 @@ import threading
 import time
 from typing import Callable, Optional
 import uuid
+
+from platform_support import lock_file, unlock_file
 
 DEFAULT_MODEL = 'gpt-6-astra'
 BUNDLED_CLI = '/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex'
@@ -74,7 +75,7 @@ class AppServer:
             command += ['--disable', name]
         command += ['-c', 'web_search="disabled"']
         self.process = popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                             stderr=subprocess.DEVNULL, text=True, bufsize=1)
+                             stderr=subprocess.DEVNULL, text=True, encoding='utf-8', bufsize=1)
         self.reader = threading.Thread(target=self._read, daemon=True)
         self.reader.start()
         try:
@@ -221,13 +222,13 @@ def status(timeout_s=15):
 def _attempt_lock(folder):
     with (folder/'codex.lock').open('a') as lock:
         try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            lock_file(lock, blocking=False)
         except BlockingIOError:
             raise ProtocolError('This attempt already has an active Codex worker')
         try:
             yield
         finally:
-            fcntl.flock(lock, fcntl.LOCK_UN)
+            unlock_file(lock)
 
 
 def _result(state):

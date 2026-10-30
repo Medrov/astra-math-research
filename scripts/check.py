@@ -72,7 +72,7 @@ def discover_sources():
         # unchanged 11-module mathematical package.
         if Path(folder) == ROOT and "apps" in directories:
             directories.remove("apps")
-        found.extend(str((Path(folder) / name).relative_to(ROOT))
+        found.extend((Path(folder) / name).relative_to(ROOT).as_posix()
                      for name in names if name.endswith(".lean"))
     return sorted(found)
 
@@ -93,7 +93,7 @@ def prepared_mathlib(path):
         raise RuntimeError(f"Wrong mathlib revision: {revision}; expected {EXPECTED_MATHLIB}")
     if not (path / ".lake/build/lib/lean").is_dir():
         raise RuntimeError("mathlib build cache not found. Run lake exe cache get first.")
-    manifest = json.loads((path / "lake-manifest.json").read_text())
+    manifest = json.loads((path / "lake-manifest.json").read_text(encoding="utf-8"))
     for package in manifest["packages"]:
         dependency = path.parent / package["name"]
         # Cache downloads need not build an unused inherited package (for
@@ -175,7 +175,7 @@ def main(argv=None):
             )
             staged_report = stage / "verification/verification.json"
             if staged_report.is_file():
-                child = json.loads(staged_report.read_text())
+                child = json.loads(staged_report.read_text(encoding="utf-8"))
                 child.update({key: report[key] for key in
                               ("run_id", "started_at_utc", "wrapper_sha256")})
                 report = child
