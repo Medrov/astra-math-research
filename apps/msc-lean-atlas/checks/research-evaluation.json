@@ -1,0 +1,130 @@
+{
+  "started_at": "2026-10-29T23:18:34.308893+00:00",
+  "protocol": "known-link-and-negative-control-v1",
+  "model": "gpt-6-astra",
+  "budget_per_run": {
+    "max_calls": 8,
+    "timeout_seconds": 600
+  },
+  "same_formal_contract": true,
+  "prepared_proofs_in_prompt": false,
+  "strict_token_cap": false,
+  "note": "Equal maximum calls and wall time; actual token usage differs. Small engineering pilot; not an efficacy benchmark.",
+  "runs": [
+    {
+      "id": "e6d1e6c1682f4f6384e3871c7f6c75e5",
+      "case_id": "graph_energy",
+      "mode": "single",
+      "contract_sha256": "71162fc2168c2e33112896c2a5122cba1c4e680851e02c586bb650866ad649f6",
+      "status": "complete",
+      "phase": "complete",
+      "outcome": "proved",
+      "usage": {
+        "calls": 2,
+        "total_tokens": 42380,
+        "elapsed_seconds": 45.122
+      },
+      "formal_outcome": "proved",
+      "semantic_review": {
+        "status": "aligned",
+        "reason": "Определения, импорты и целевое утверждение совпадают с исходным контрактом. Первая лемма устанавливает равенство энергии и формы лапласиана для всех вещественных весов и координат; вторая выводит неотрицательность при трёх заданных условиях на веса. Дополнительных предположений нет.",
+        "limitations": [
+          "Результат компиляции Lean не предоставлен; оценено соответствие формулировок и доказательств контракту.",
+          "Результат относится к заданной координатной модели треугольника; новизна и полезность этим не устанавливаются."
+        ],
+        "method": "model_review_not_formal_certificate"
+      },
+      "error": null,
+      "nodes": 4,
+      "edges": 5,
+      "source_sha256": "2d75264ada4cbbe2515d196e55bde94e9b46c23661ee09ead74fbd952ff99df3"
+    },
+    {
+      "id": "9304ce8c40f7435bbce3b51fe07f3bc1",
+      "case_id": "graph_energy",
+      "mode": "multi",
+      "contract_sha256": "71162fc2168c2e33112896c2a5122cba1c4e680851e02c586bb650866ad649f6",
+      "status": "complete",
+      "phase": "complete",
+      "outcome": "proved",
+      "usage": {
+        "calls": 5,
+        "total_tokens": 80083,
+        "elapsed_seconds": 55.292
+      },
+      "formal_outcome": "proved",
+      "semantic_review": {
+        "status": "aligned",
+        "reason": "Формальный план точно сохраняет определения, обе цели и зависимость между ними: тождество энергии и формы для всех вещественных w01, w12, w02, x0, x1, x2; неотрицательность формы при условиях 0 ≤ w01, 0 ≤ w12 и 0 ≤ w02. Это соответствует восстановлению известной связи, заявленному в исходном контракте.",
+        "limitations": [
+          "Предоставлен план с пустыми доказательствами, а не подтверждённый результат проверки Lean; установлено соответствие формулировок, не завершённость доказательства.",
+          "Даже успешная проверка Lean не устанавливает новизну или полезность результата."
+        ],
+        "method": "model_review_not_formal_certificate"
+      },
+      "error": null,
+      "nodes": 4,
+      "edges": 5,
+      "source_sha256": "ac0223c3ea6648657e0e37cd6fe057c1a0d1a77ec3e89faa089cbfccb1606291"
+    },
+    {
+      "id": "8c59385ccb274fc5953e454ecc75270e",
+      "case_id": "strict_inequality",
+      "mode": "single",
+      "contract_sha256": "ee148f703eb19fc49817af26afa5ca2400d9b2de746facd40cb2fe4ec05b8a0a",
+      "status": "complete",
+      "phase": "complete",
+      "outcome": "refuted",
+      "usage": {
+        "calls": 2,
+        "total_tokens": 37948,
+        "elapsed_seconds": 29.861
+      },
+      "formal_outcome": "refuted",
+      "semantic_review": {
+        "status": "aligned",
+        "reason": "Формальная цель точно совпадает с контрактом: требуется отрицание универсального строгого неравенства для всех a,b ∈ ℝ. Доказательство использует допустимый контрпример a = b = 0, приводящий к невозможному 0 < 0. Импорты, прелюдия и имя цели сохранены; дополнительные предположения отсутствуют.",
+        "limitations": [
+          "Результат проверки Lean не предоставлен.",
+          "Соответствие контракту не устанавливает новизну или полезность результата."
+        ],
+        "method": "model_review_not_formal_certificate"
+      },
+      "error": null,
+      "nodes": 1,
+      "edges": 0,
+      "source_sha256": "4aa15658af2cbb2ca26faf037515605077122bd8034d9db86958d7f6cd96aecd"
+    },
+    {
+      "id": "2140e89fb5e84ad19cd259e99b0a9bb9",
+      "case_id": "strict_inequality",
+      "mode": "multi",
+      "contract_sha256": "ee148f703eb19fc49817af26afa5ca2400d9b2de746facd40cb2fe4ec05b8a0a",
+      "status": "complete",
+      "phase": "complete",
+      "outcome": "refuted",
+      "usage": {
+        "calls": 4,
+        "total_tokens": 61901,
+        "elapsed_seconds": 43.119
+      },
+      "formal_outcome": "refuted",
+      "semantic_review": {
+        "status": "aligned",
+        "reason": "Формальная цель точно совпадает с отрицанием, предусмотренным исходным контрактом: ¬ (∀ a b : ℝ, 2 * a * b < a ^ 2 + b ^ 2). Дополнительных предположений нет. Контрпример a = b = 0 корректен: требуемое строгое неравенство превращается в ложное 0 < 0.",
+        "limitations": [
+          "Представлен план с пустым полем proof, а не доказательство и результат проверки Lean; факт формальной проверки не установлен.",
+          "Совпадение цели с контрактом не устанавливает новизну или полезность результата."
+        ],
+        "method": "model_review_not_formal_certificate"
+      },
+      "error": null,
+      "nodes": 1,
+      "edges": 0,
+      "source_sha256": "2303b6a249d5ac95c0fb6fd9ba23119608b2f2aef43b5b62e2153abad154b772"
+    }
+  ],
+  "finished_at": "2026-10-29T23:20:12.991625+00:00",
+  "paired_contracts_equal": true,
+  "publication_note": "Historical development check, not rerun by publication. Local paths and Codex session identifiers removed."
+}

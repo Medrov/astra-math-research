@@ -1,0 +1,63 @@
+/* Actual localhost browser gestures and source-backed graph inventory; no mocks or POSTs. */
+const {chromium}=require(process.env.ATLAS_PLAYWRIGHT_MODULE || 'playwright');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+
+(async()=>{
+  const base=process.env.ATLAS_BASE_URL||'http://127.0.0.1:8765';
+  const run='5f5e45f3fd2c436d9d8e9e81c99006f0';
+  const report={checked_at:new Date().toISOString(),base_url:base,mocked:false,compilation_started:false,checks:[],browser_errors:[],failed_requests:[],external_requests:[],mutating_requests:[]};
+  const browser=await chromium.launch({headless:true});
+  const context=await browser.newContext({viewport:{width:1500,height:1100},colorScheme:'dark'});
+  const page=await context.newPage();page.setDefaultTimeout(10000);
+  page.on('pageerror',error=>report.browser_errors.push(error.message));
+  page.on('request',request=>{if(!request.url().startsWith(base)&&/^https?:/.test(request.url()))report.external_requests.push(request.url());if(request.method()!=='GET')report.mutating_requests.push(request.method()+' '+request.url());});
+  page.on('response',response=>{if(response.status()>=400&&response.url().startsWith(base))report.failed_requests.push(response.status()+' '+response.url());});
+  async function check(name,fn){try{const evidence=await fn();report.checks.push({name,passed:true,evidence});console.log('PASS '+name);}catch(error){report.checks.push({name,passed:false,error:error.message});console.log('FAIL '+name+': '+error.message.slice(0,500));}}
+  async function ready(mode){await page.waitForFunction(mode=>{const c=document.getElementById('graph-canvas'),g=c?.mscGraph;return g&&c.getAttribute('aria-busy')==='false'&&g.snapshot().ready&&(!mode||g.snapshot().mode===mode)&&!c.dataset.error;},mode,{timeout:30000});}
+  async function snapshot(){return page.evaluate(()=>document.getElementById('graph-canvas').mscGraph.snapshot());}
+  async function resetMap(){await page.goto(base+'/#map');await page.reload();await ready('overview');}
+  async function search(code){await page.locator('#msc-search').fill(code);await page.locator(`#catalog-list button[data-msc="${code}"]`).click();await ready();}
+  async function nodePoint(id){await page.locator('#graph-canvas').scrollIntoViewIfNeeded();return page.evaluate(id=>{const c=document.getElementById('graph-canvas'),p=c.mscGraph.cy.getElementById(id).renderedPosition(),r=c.getBoundingClientRect();return {x:r.x+p.x,y:r.y+p.y,local:p};},id);}
+  async function visibleNode(){return page.evaluate(()=>{const c=document.getElementById('graph-canvas'),cy=c.mscGraph.cy;return cy.nodes().filter(n=>{const p=n.renderedPosition();return n.id()!=='__msc__'&&p.x>40&&p.x<cy.width()-40&&p.y>40&&p.y<cy.height()-40;}).sort((a,b)=>{const p=a.renderedPosition(),q=b.renderedPosition();return Math.hypot(p.x-cy.width()/2,p.y-cy.height()/2)-Math.hypot(q.x-cy.width()/2,q.y-cy.height()/2);})[0].id();});}
+  await check('Real Cytoscape overview contains 597 official categories plus one virtual center',async()=>{
+    await resetMap();const state=await snapshot();assert.equal(state.library,'3.34.4');assert.equal(state.layout,'fCoSE');assert.equal(state.realNodeCount,597);assert.equal(state.nodeCount,598);assert.equal(state.edgeCount,597);assert.equal(state.sourceNodeCount,6603);assert.ok(await page.locator('#graph-canvas canvas').count());return state;
+  });
+  await check('Search opens whole 05 branch and 05C50 with siblings without twelve-node limit',async()=>{
+    await search('05');const branch=await snapshot();const expected=await page.evaluate(()=>document.getElementById('graph-canvas').mscGraph.model.descendants('05').length);assert.equal(branch.realNodeCount,expected);assert.ok(branch.realNodeCount>12);assert.equal(branch.selected,'05');await search('05C50');const leaf=await snapshot();assert.equal(leaf.selected,'05C50');assert.equal(leaf.nodeCount,44);assert.ok((await page.locator('#category-panel').innerText()).includes('Graphs and linear algebra'));return {branch,leaf};
+  });
+  await check('Zoom controls and real mouse pan change the viewport',async()=>{
+    const before=await snapshot();await page.locator('#graph-zoom-in').click();const zoomed=await snapshot();assert.ok(zoomed.zoom>before.zoom);await page.locator('#graph-zoom-out').click();await page.locator('#graph-canvas').scrollIntoViewIfNeeded();const rect=await page.locator('#graph-canvas').boundingBox();const start=await snapshot();await page.mouse.move(rect.x+18,rect.y+60);await page.mouse.down();await page.mouse.move(rect.x+58,rect.y+90,{steps:8});await page.mouse.up();const panned=await snapshot();assert.ok(Math.abs(panned.pan.x-start.pan.x)>10||Math.abs(panned.pan.y-start.pan.y)>10);await page.locator('#graph-fit').click();return {initial_zoom:before.zoom,zoomed:zoomed.zoom,pan_before:start.pan,pan_after:panned.pan};
+  });
+  await check('Node hover and single click select a category without rebuilding layout',async()=>{
+    const id=await visibleNode(),point=await nodePoint(id),before=await page.evaluate(()=>{const g=document.getElementById('graph-canvas').mscGraph;return {key:g.currentKey,positions:g.positions(),count:g.cy.nodes().length};});await page.mouse.move(point.x,point.y);await page.locator('#graph-tooltip').waitFor();assert.ok((await page.locator('#graph-tooltip').innerText()).includes(id));await page.mouse.click(point.x,point.y);const after=await page.evaluate(()=>{const g=document.getElementById('graph-canvas').mscGraph;return {key:g.currentKey,positions:g.positions(),count:g.cy.nodes().length,selected:g.selected};});assert.equal(after.selected,id);assert.equal(after.key,before.key);assert.equal(after.count,before.count);assert.deepEqual(after.positions,before.positions);return {selected:id,node_count:after.count};
+  });
+  await check('Real node drag moves the node and resize preserves model positions',async()=>{
+    const id=await visibleNode(),point=await nodePoint(id);const before=await page.evaluate(id=>({...document.getElementById('graph-canvas').mscGraph.cy.getElementById(id).position()}),id);await page.mouse.move(point.x,point.y);await page.mouse.down();await page.mouse.move(point.x+50,point.y+26,{steps:10});await page.mouse.up();const dragged=await page.evaluate(id=>({...document.getElementById('graph-canvas').mscGraph.cy.getElementById(id).position()}),id);assert.ok(Math.hypot(before.x-dragged.x,before.y-dragged.y)>5);await page.setViewportSize({width:1250,height:1000});await page.waitForTimeout(150);const resized=await page.evaluate(id=>({...document.getElementById('graph-canvas').mscGraph.cy.getElementById(id).position()}),id);assert.deepEqual(resized,dragged);await page.setViewportSize({width:1500,height:1100});return {node:id,before,dragged,resized};
+  });
+  await check('Expand button and real double click open the selected branch',async()=>{
+    await page.locator('#show-roots').click();await ready('overview');const point=await nodePoint('05');await page.mouse.click(point.x,point.y);assert.equal((await snapshot()).selected,'05');await page.locator('#graph-expand').click();await ready('focus');assert.equal((await snapshot()).selected,'05');await page.locator('#show-roots').click();await ready('overview');const p=await nodePoint('05');await page.mouse.dblclick(p.x,p.y,{delay:80});await ready('focus');assert.equal((await snapshot()).selected,'05');return await snapshot();
+  });
+  await check('Full classifier includes every node and typed official edge when references enabled',async()=>{
+    await page.locator('#graph-mode').selectOption('full');await ready('full');const without=await snapshot();assert.equal(without.nodeCount,6604);assert.equal(without.realNodeCount,6603);assert.equal(without.edgeCount,6603);const start=Date.now();await page.locator('#graph-references').check();await ready('full');const withRefs=await snapshot();assert.equal(withRefs.nodeCount,6604);assert.equal(withRefs.edgeCount,9935);assert.equal(withRefs.referenceCount,3332);const types=await page.evaluate(()=>{const cy=document.getElementById('graph-canvas').mscGraph.cy;return cy.edges('[type = "avoid_classification"]').map(e=>({id:e.id(),type:e.data('type'),source:e.data('source'),target:e.data('target'),reference_text:e.data('reference_text')}));});assert.equal(types.length,5);await page.locator('#graph-references').uncheck();await ready('full');assert.equal((await snapshot()).edgeCount,6603);return {without,withRefs,toggle_ms:Date.now()-start,exclusions_preserved:types};
+  });
+  await check('Reference edge tooltip exposes its actual classification qualifier',async()=>{
+    await page.locator('#graph-mode').selectOption('overview');await ready('overview');await search('05C50');await page.locator('#graph-references').check();await ready('focus');await page.locator('#graph-canvas').scrollIntoViewIfNeeded();await page.waitForTimeout(200);
+    const candidates=await page.evaluate(()=>{const c=document.getElementById('graph-canvas'),cy=c.mscGraph.cy,r=c.getBoundingClientRect();return cy.edges().filter(e=>!['broader','overview'].includes(e.data('type'))&&e.data('reference_text')).map(e=>{const p=e.renderedMidpoint();return {x:r.x+p.x,y:r.y+p.y,local:p,id:e.id(),text:e.data('reference_text'),type:e.data('type')};}).filter(e=>e.local.x>50&&e.local.x<cy.width()-50&&e.local.y>50&&e.local.y<cy.height()-50&&e.y>0&&e.y<innerHeight).slice(0,25);});
+    assert.ok(candidates.length,'No visible qualified reference edge found');let found=null;
+    for(const data of candidates){await page.mouse.move(data.x,data.y);await page.waitForTimeout(100);if(await page.locator('#graph-tooltip').isVisible()){const tooltip=await page.locator('#graph-tooltip').innerText();if(tooltip.includes(data.text)){found={edge:data.id,type:data.type,tooltip};break;}}}
+    assert.ok(found,'No actual pointer hover exposed an expected reference qualifier among '+candidates.length+' visible candidates');return found;
+  });
+  await check('Labels toggle changes Cytoscape labels',async()=>{
+    await page.locator('#graph-labels').uncheck();assert.equal(await page.evaluate(()=>document.getElementById('graph-canvas').mscGraph.cy.getElementById('05C50').style('label')),'');await page.locator('#graph-labels').check();assert.equal(await page.evaluate(()=>document.getElementById('graph-canvas').mscGraph.cy.getElementById('05C50').style('label')),'05C50');return {labels_off_then_on:true};
+  });
+  await check('Real saved Lean certificate still restores and survives map navigation',async()=>{
+    await page.locator('#featured-example-open').click();await page.locator('#comparison-story[data-proof-status="verified"]').waitFor();assert.equal(new URL(page.url()).searchParams.get('run'),run);assert.ok((await page.locator('#file-content-0').inputValue()).includes('AlgebraObject'));await page.locator('[data-tab="map"]').click();await ready();await page.locator('[data-tab="lean"]').click();assert.equal(await page.locator('#verification-result .success').count(),1);return {run,verified:true};
+  });
+  await check('Mobile and dark OS keep usable light canvas without horizontal overflow',async()=>{
+    const evidence=[];await page.locator('[data-tab="map"]').click();for(const width of [390,320]){await page.setViewportSize({width,height:950});await page.waitForTimeout(150);evidence.push(await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,canvas_height:document.getElementById('graph-canvas').clientHeight,background:getComputedStyle(document.body).backgroundColor})));assert.ok(evidence.at(-1).scroll<=width);assert.ok(evidence.at(-1).canvas_height>=400);assert.equal(evidence.at(-1).background,'rgb(255, 255, 255)');}return evidence;
+  });
+  await check('Local assets only, no browser errors, failed requests or mutations',async()=>{assert.deepEqual(report.browser_errors,[]);assert.deepEqual(report.external_requests,[]);assert.deepEqual(report.mutating_requests,[]);assert.deepEqual(report.failed_requests,[]);return {external_requests:0,mutations:0,browser_errors:0,failed_requests:0};});
+  report.passed=report.checks.filter(c=>c.passed).length;report.failed=report.checks.length-report.passed;report.success=report.failed===0;
+  fs.mkdirSync(path.join(__dirname,'verification'),{recursive:true});fs.writeFileSync(path.join(__dirname,'verification/graph-library-functional.json'),JSON.stringify(report,null,2)+'\n');
+  console.log(JSON.stringify({passed:report.passed,failed:report.failed,report:'verification/graph-library-functional.json'}));await browser.close();if(report.failed)process.exitCode=1;
+})().catch(error=>{console.error(error);process.exitCode=1;});

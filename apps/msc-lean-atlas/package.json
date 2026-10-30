@@ -1,0 +1,19 @@
+{
+  "name": "msc-lean-atlas",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Local MSC atlas with Cytoscape.js and fCoSE graph rendering",
+  "scripts": {
+    "build:graph": "node tools/build_graph_assets.cjs",
+    "test:graph": "node tests/test_graph_model.cjs",
+    "build:graph-bundle": "node tools/build_graph_assets.cjs --bundle-only"
+  },
+  "dependencies": {
+    "cytoscape": "3.34.4",
+    "cytoscape-dagre": "4.0.1",
+    "cytoscape-fcose": "2.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

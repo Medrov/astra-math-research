@@ -1,0 +1,149 @@
+{
+  "status": "verified",
+  "success": true,
+  "source_sha256": "ef178c8f85b6e990be47f676c0f293ea798c21c7757fcccf9cb3679dabcd243f",
+  "diagnostics": [
+    {
+      "file": "AlgebraObject.lean",
+      "command": [
+        "$ATLAS_LEAN",
+        "-o",
+        "AlgebraObject.olean",
+        "AlgebraObject.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 50.501,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "file": "GraphObject.lean",
+      "command": [
+        "$ATLAS_LEAN",
+        "-o",
+        "GraphObject.olean",
+        "GraphObject.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 55.494,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "file": "Bridge.lean",
+      "command": [
+        "$ATLAS_LEAN",
+        "-o",
+        "Bridge.olean",
+        "Bridge.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 50.033,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "file": "AtlasInspect.lean",
+      "command": [
+        "$ATLAS_LEAN",
+        "-o",
+        "AtlasInspect.olean",
+        "AtlasInspect.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 7.897,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "file": "AtlasDump.lean",
+      "command": [
+        "$ATLAS_LEAN",
+        "AtlasDump.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 55.717,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "targets": [
+    "Bridge.energy_correspondence"
+  ],
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "context": {
+    "lean": "$ATLAS_LEAN",
+    "mathlib": "$ATLAS_MATHLIB",
+    "project_root": "$ATLAS_PROJECT_ROOT",
+    "timeout_seconds": 120,
+    "lean_version": "Lean (version 4.19.0, arm64-apple-darwin23.6.0, commit 6caaee842e94, Release)",
+    "project_revision": "4898f7013d626fef293d17bddfd860791e6daed0",
+    "mathlib_manifest_sha256": "5c6421b650bc87a2427a892a39e5522dc44543ca4ac1bd6e9f08d536c044a752",
+    "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "dependency_note": "Входные файлы и Bridge компилируются заново; внешние библиотеки используют подготовленные .olean-кэши.",
+    "lean_search_paths": [
+      "$ATLAS_ROOT/runs/5f5e45f3fd2c436d9d8e9e81c99006f0/verifications/5a79219050f84d26baa237c770b40447/verify-ca9ce0f5a026",
+      "$ATLAS_PROJECT_ROOT/.lake/build/lib/lean",
+      "$ATLAS_PROJECT_ROOT",
+      "$ATLAS_MATHLIB/.lake/build/lib/lean",
+      "$LEAN_PACKAGES/plausible/.lake/build/lib/lean",
+      "$LEAN_PACKAGES/LeanSearchClient/.lake/build/lib/lean",
+      "$LEAN_PACKAGES/importGraph/.lake/build/lib/lean",
+      "$LEAN_PACKAGES/proofwidgets/.lake/build/lib/lean",
+      "$LEAN_PACKAGES/aesop/.lake/build/lib/lean",
+      "$LEAN_PACKAGES/Qq/.lake/build/lib/lean",
+      "$LEAN_PACKAGES/batteries/.lake/build/lib/lean"
+    ]
+  },
+  "workspace": "$ATLAS_ROOT/runs/5f5e45f3fd2c436d9d8e9e81c99006f0/verifications/5a79219050f84d26baa237c770b40447/verify-ca9ce0f5a026",
+  "started_at": "2026-10-29T18:50:00.171319+00:00",
+  "checked_at": "2026-10-29T18:53:40.097866+00:00",
+  "interpretation": "Проверяется формальная теорема и участие обоих входов. Содержательность и новизна связи требуют отдельной оценки.",
+  "input_sha256": {
+    "AlgebraObject.lean": "2d2ecfad4e21d78c02575a15ff43d082737e4a1e854869157ca0957b38064e8b",
+    "GraphObject.lean": "45b31215ad48e0152eef9f972f9caa3cf4abdbcb20e001ed8e513b8b9b05ed51"
+  },
+  "target_results": [
+    {
+      "name": "Bridge.energy_correspondence",
+      "type": "∀ (d f : Fin 3 → ℚ), AlgebraObject.energy d f = GraphObject.energy d f",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "input_coverage": {
+        "AlgebraObject.lean": [
+          "AlgebraObject.energy"
+        ],
+        "GraphObject.lean": [
+          "GraphObject.energy"
+        ]
+      },
+      "type_dependencies": [
+        "Fin",
+        "OfNat.ofNat",
+        "Nat",
+        "instOfNatNat",
+        "Rat",
+        "Eq",
+        "AlgebraObject.energy",
+        "GraphObject.energy"
+      ],
+      "selected_target_coverage": {
+        "AlgebraObject.energy": true,
+        "GraphObject.energy": true
+      },
+      "both_inputs_participate": true
+    }
+  ],
+  "lean_compilation_success": true,
+  "olean_sha256": "5b1f38ab951711dfd005d2095975eaa329cb3e872fdc70e77bbd3b06d3cee4bb",
+  "analysis_id": "5f5e45f3fd2c436d9d8e9e81c99006f0",
+  "verification_id": "5a79219050f84d26baa237c770b40447",
+  "publication_note": "Historical report export; local machine paths redacted. Mathematical statements, source hashes and outcomes preserved."
+}

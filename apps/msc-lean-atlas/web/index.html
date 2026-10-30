@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>MSC · Атлас математики</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/research.css">
+  <script defer src="/vendor/graph-libs.min.js"></script>
+  <script defer src="/graph-model.js"></script>
+  <script defer src="/graph-presentation.js"></script>
+  <script defer src="/graph-view.js"></script>
+  <script defer src="/research.js"></script>
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="#map" aria-label="На карту MSC">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M9 9L23 16L9 24V9Z" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="3" fill="currentColor"/><circle cx="23" cy="16" r="3" fill="currentColor"/><circle cx="9" cy="24" r="3" fill="currentColor"/></svg></span>
+      <span>MSC<small>Атлас математики</small></span>
+    </a>
+    <div class="sidebar-section-label">Рабочее пространство</div>
+    <nav class="top-nav" aria-label="Разделы приложения">
+      <button type="button" class="nav-tab active" data-tab="map" aria-selected="true"><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M5 5L15 7L9 15L5 5Z" stroke="currentColor" stroke-width="1.25"/><circle cx="5" cy="5" r="2" fill="currentColor"/><circle cx="15" cy="7" r="2" fill="currentColor"/><circle cx="9" cy="15" r="2" fill="currentColor"/></svg><span>Карта математики</span></button>
+      <button type="button" class="nav-tab" data-tab="research" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><rect x="6" y="2" width="8" height="5" rx="1" stroke="currentColor" stroke-width="1.25"/><path d="M10 7V10M4 13V10H16V13" stroke="currentColor" stroke-width="1.25"/><rect x="1" y="13" width="6" height="5" rx="1" stroke="currentColor" stroke-width="1.25"/><rect x="13" y="13" width="6" height="5" rx="1" stroke="currentColor" stroke-width="1.25"/></svg><span>Исследования</span></button>
+    </nav>
+    <div class="sidebar-bottom"><p>Исследуйте области.<br>Выбирайте направления.</p><span class="connection-status" id="connection-status"><i></i>Подключение…</span></div>
+  </header>
+
+  <main>
+    <div id="global-error" class="notice error" role="alert" hidden></div>
+    <section id="map-panel" class="app-panel" aria-labelledby="map-title">
+      <div class="page-heading">
+        <div><p class="eyebrow">Атлас · MSC2020</p><h1 id="map-title">Математика как карта</h1><p class="lead">Исследуйте области, находите пересечения, выбирайте, что изучить дальше.</p></div>
+        <div class="dataset-stats" id="dataset-stats" aria-live="polite"><span>Загрузка классификатора…</span></div>
+      </div>
+      <div class="atlas-layout">
+        <aside class="catalog-panel">
+          <label class="field-label" for="msc-search">Каталог областей</label>
+          <div class="search-field"><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M12.5 12.5L17 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><input id="msc-search" aria-label="Название или код MSC" type="search" placeholder="Название или код MSC" autocomplete="off"></div>
+          <div class="catalog-title"><strong id="catalog-heading">Основные разделы</strong><span id="catalog-count"></span></div>
+          <div class="catalog-list" id="catalog-list" aria-label="Рубрики классификатора"></div>
+          <div class="pagination" id="catalog-pagination"></div>
+          <button type="button" class="text-button" id="show-roots">Все основные разделы</button>
+        </aside>
+
+        <div class="graph-panel">
+          <div class="graph-toolbar"><div class="graph-history" role="group" aria-label="История просмотра"><button id="graph-history-back" type="button" disabled aria-label="Назад по карте" title="Назад по карте">←</button><button id="graph-history-forward" type="button" disabled aria-label="Вперёд по карте" title="Вперёд по карте">→</button></div><nav id="breadcrumbs" class="breadcrumbs" aria-label="Путь в классификаторе"></nav><span class="badge subtle">Навигация, не доказательство</span></div>
+          <div class="graph-heading"><div><h2 id="graph-title">Загрузка…</h2><p id="graph-subtitle"></p></div><button type="button" class="button small secondary" id="graph-up" disabled>↑ Выше</button></div>
+          <div class="graph-view-options">
+            <label class="graph-mode-label" for="graph-mode"><span>Вид карты</span><select id="graph-mode" aria-label="Вид карты"><option value="overview">Обзор областей</option><option value="focus">Выбранная ветвь</option><option value="local">Локальные связи</option><option value="full">Весь классификатор</option></select></label>
+            <label id="graph-depth-control" class="graph-depth-control" for="graph-depth" hidden><span>Глубина</span><select id="graph-depth" aria-label="Глубина локального графа"><option value="1">1 шаг</option><option value="2">2 шага</option><option value="3">3 шага</option></select></label>
+            <div class="graph-toggles"><label><input id="graph-references" type="checkbox"><span>Отсылки MSC</span></label><label><input id="graph-labels" type="checkbox" checked><span>Подписи</span></label></div>
+            <details id="graph-settings" class="graph-settings">
+              <summary aria-label="Настройки графа"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="5" r="2" fill="white" stroke="currentColor" stroke-width="1.2"/><circle cx="13" cy="10" r="2" fill="white" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="15" r="2" fill="white" stroke="currentColor" stroke-width="1.2"/></svg><span>Настройки</span></summary>
+              <div class="graph-settings-panel">
+                <div class="graph-settings-heading"><strong>Отображение и фильтры</strong><button id="graph-reset-filters" class="text-button" type="button">Сбросить фильтры</button></div>
+                <label for="graph-color-mode">Цвет узлов<select id="graph-color-mode"><option value="groups">По областям математики</option><option value="mono">Монохромный</option></select></label>
+                <label for="graph-label-style">Подписи узлов<select id="graph-label-style"><option value="code">Код MSC</option><option value="name">Код и название</option></select></label>
+                <label for="graph-root-filter">Основной раздел MSC<select id="graph-root-filter"><option value="all">Все разделы</option></select></label>
+                <label class="graph-setting-check"><input id="graph-hover-focus" type="checkbox" checked><span>Подсвечивать соседей при наведении</span></label>
+                <p>Цветовые группы помогают ориентироваться. Они не заменяют официальную иерархию MSC и не означают доказанную связь.</p>
+              </div>
+            </details>
+          </div>
+          <div id="graph-color-groups" class="graph-color-groups" role="group" aria-label="Фильтр по цветовым группам областей"></div>
+          <div class="graph-stage">
+            <div class="graph-canvas" id="graph-canvas" role="img" aria-label="Интерактивный граф классификатора MSC. Для выбора рубрики с клавиатуры используйте каталог областей." tabindex="0"></div>
+            <div class="graph-floating-tools" role="group" aria-label="Управление картой">
+              <button id="graph-fullscreen" type="button" title="Развернуть рабочее пространство" aria-label="Развернуть карту" aria-pressed="false"><svg class="expand-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 3H3V7M13 3H17V7M3 13V17H7M17 13V17H13M3 3L7 7M17 3L13 7M3 17L7 13M17 17L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="collapse-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 6L14 14M14 6L6 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+              <span class="graph-tool-separator" aria-hidden="true"></span>
+              <button id="graph-zoom-in" type="button" title="Приблизить" aria-label="Приблизить">+</button>
+              <button id="graph-zoom-out" type="button" title="Отдалить" aria-label="Отдалить">−</button>
+              <span class="graph-tool-separator" aria-hidden="true"></span>
+              <button id="graph-fit" type="button" title="Показать всю текущую карту" aria-label="Вместить карту"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 3H3V7M13 3H17V7M3 13V17H7M17 13V17H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button id="graph-relayout" type="button" title="Перестроить расположение узлов" aria-label="Перестроить расположение"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M15.8 6.5A6.5 6.5 0 1 0 16.5 12M16 3V7H12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div id="graph-tooltip" class="graph-tooltip" role="tooltip" hidden></div>
+            <div id="graph-loading" class="graph-loading" role="status" aria-live="polite" hidden>Расставляем узлы…</div>
+            <div class="graph-stage-legend" aria-label="Уровни рубрик"><span><i class="legend-node root"></i>Область</span><span><i class="legend-node group"></i>Подраздел</span><span><i class="legend-node leaf"></i>Рубрика</span></div>
+          </div>
+          <aside id="graph-node-inspector" class="graph-node-inspector" aria-live="polite" hidden></aside>
+          <div class="graph-selection-row"><p id="graph-selection-status" aria-live="polite">Выберите узел, чтобы увидеть рубрику и её связи.</p><div class="graph-selection-actions"><button id="research-selected" class="button small secondary" type="button" disabled>Исследовать →</button><button id="graph-bookmark-toggle" class="button small graph-bookmark-button" type="button" disabled aria-label="Сохранить выбранную рубрику" aria-pressed="false" title="Сохранить рубрику">☆</button><button id="graph-local" class="button small secondary" type="button" disabled>Локальные связи</button><button id="graph-expand" class="button small secondary" type="button" disabled>Открыть ветвь <span aria-hidden="true">↗</span></button></div></div>
+          <nav id="graph-bookmarks" class="graph-bookmarks" aria-label="Сохранённые рубрики"></nav>
+          <div class="graph-footer"><span id="graph-coverage"></span><span class="graph-library-label">Cytoscape.js</span></div>
+          <details class="graph-help"><summary>Как работать с картой</summary><p>Колесо мыши или жест двумя пальцами меняет масштаб. Перетаскивайте фон, чтобы перемещать карту, и узлы, чтобы менять их положение. Один клик выбирает рубрику; двойной клик открывает ветвь. «Локальные связи» показывает соседей выбранного узла на расстоянии от одного до трёх шагов. Стрелки над картой возвращают к предыдущим видам; звезда сохраняет рубрику. При наведении на ребро показано его значение.</p><div class="graph-legend"><span><i class="legend-line hierarchy"></i>входит в раздел</span><span><i class="legend-line reference"></i>отсылка MSC</span><span><i class="legend-line redirect"></i>условная классификация</span></div><p>В обзоре показаны основные области и подразделы. Режим «Весь классификатор» содержит все 6603 рубрики. Линии классификатора помогают ориентироваться между темами; математические соответствия проверяются отдельно.</p></details>
+        </div>
+
+        <aside class="category-panel" id="category-panel" aria-live="polite"><div class="empty-state">Выберите рубрику, чтобы увидеть её описание и отсылки.</div></aside>
+      </div>
+      <footer class="source-footer"><div id="source-attribution"></div><button class="text-button" id="download-graph" type="button" disabled>Скачать полный граф JSON ↓</button></footer>
+    </section>
+
+    <section id="research-panel" class="app-panel" aria-labelledby="research-title" hidden>
+      <div class="page-heading research-page-heading">
+        <div><p class="eyebrow">Исследовательская лаборатория</p><h1 id="research-title">От гипотезы к доказательству</h1><p class="lead">Источники, общая структура и граф лемм — в одном исследовании.</p></div>
+        <button type="button" id="research-new" class="button secondary">＋ Новое исследование</button>
+      </div>
+      <div id="research-error" class="notice error" role="alert" hidden></div>
+      <div class="research-layout">
+        <aside class="research-sidebar">
+          <form id="research-form" class="research-setup">
+            <div class="research-section-heading"><h2>Постановка</h2><span class="research-small-label">Новый запуск</span></div>
+            <label class="field-label" for="research-case">Пример или свой вопрос</label>
+            <select id="research-case" required><option value="">Загрузка примеров…</option></select>
+            <p id="research-case-description" class="research-hint"></p>
+            <div id="research-custom-fields" hidden>
+              <label class="field-label" for="research-question">Что исследуем?</label>
+              <textarea id="research-question" rows="5" maxlength="6000" placeholder="Укажите объект, известные условия и какую связь хотите найти."></textarea>
+            </div>
+            <label class="field-label" for="research-msc">Области MSC</label>
+            <input id="research-msc" placeholder="Например: 90C25, 65K10" autocomplete="off">
+            <p class="research-hint">Метки задают область поиска. Связь между объектами проверяется отдельно.</p>
+            <label class="field-label" for="research-mode">Режим работы</label>
+            <select id="research-mode"><option value="pilot">Проверить пилот · локально</option><option value="single">Один исследователь · Astra</option><option value="multi">Команда ролей · Astra</option></select>
+            <p id="research-mode-description" class="research-hint">Воспроизведение подготовленного примера в Lean.</p>
+            <div id="research-budget-fields" class="research-budget" hidden>
+              <label for="research-max-calls"><span>Вызовов модели</span><input id="research-max-calls" type="number" min="1" max="24" value="8" required></label>
+              <label for="research-timeout"><span>Лимит, секунды</span><input id="research-timeout" type="number" min="30" max="1800" step="30" value="600" required></label>
+            </div>
+            <button id="research-start" class="button primary" type="submit" disabled>Запустить проверку <span aria-hidden="true">↗</span></button>
+            <p id="research-connection" class="research-connection" role="status">Проверяем доступность инструментов…</p>
+          </form>
+          <div class="research-history-heading"><h2>Последние исследования</h2><button id="research-refresh" type="button" class="text-button" aria-label="Обновить исследования">↻</button></div>
+          <div id="research-history" class="research-history"><p class="research-hint">Пока нет сохранённых запусков.</p></div>
+        </aside>
+        <div class="research-main">
+          <div class="research-run-heading"><div><p id="research-run-eyebrow" class="eyebrow">Проверяемый исследовательский процесс</p><h2 id="research-run-title">Выберите отправную точку</h2></div><div class="research-run-actions"><button id="research-cancel" type="button" class="button small secondary" hidden>Остановить</button><button id="research-resume" type="button" class="button small secondary" hidden>Продолжить</button><button id="research-export" type="button" class="button small secondary" disabled>Экспорт ↓</button></div></div>
+          <div class="research-pipeline" aria-label="Этапы исследования" id="research-pipeline">
+            <div data-phase="sources"><span>01</span>Источники</div><div data-phase="hypothesis"><span>02</span>Гипотеза</div><div data-phase="critique"><span>03</span>Критика</div><div data-phase="proof"><span>04</span>Граф лемм</div><div data-phase="verify"><span>05</span>Проверка</div>
+          </div>
+          <div id="research-progress" class="research-progress" role="status" aria-live="polite"><span class="research-state-dot"></span><span id="research-progress-text">Запуск ещё не создан</span><span id="research-budget-status"></span></div>
+          <div id="research-claim" class="research-claim" hidden></div>
+          <div class="research-graph-section">
+            <div class="research-section-heading"><h3>Граф обязательств доказательства</h3><div class="research-graph-buttons"><button id="research-graph-fit" class="button small secondary" type="button" aria-label="Вместить граф лемм">Вместить</button><button id="research-graph-layout" class="button small secondary" type="button" aria-label="Перестроить граф лемм">Раскладка</button></div></div>
+            <div class="research-graph-workspace">
+              <div class="research-graph-stage"><div id="research-graph" tabindex="0" role="img" aria-label="Интерактивный граф лемм. Для выбора с клавиатуры используйте список под графом."></div><div id="research-graph-empty" class="research-graph-empty"><div class="research-empty-symbol" aria-hidden="true">∴</div><strong>У каждого результата есть основания</strong><p>Здесь появятся определения, леммы и целевая теорема. Выберите узел, чтобы увидеть его условия и проверку.</p></div><div class="research-graph-legend"><span><i class="definition"></i>Определение</span><span><i class="lemma"></i>Лемма</span><span><i class="target"></i>Цель</span><span><i class="verified"></i>Проверено</span></div></div>
+              <aside id="research-node-inspector" class="research-node-inspector" aria-live="polite"><p class="research-small-label">Детали узла</p><h3>Математический контекст</h3><p class="research-hint">Условия, зависимости и результат проверки выбранной леммы.</p></aside>
+            </div>
+            <div id="research-node-list" class="research-node-list" aria-label="Узлы графа лемм"></div>
+            <p class="research-graph-caption">Стрелка ведёт от основания к зависящему от него утверждению. Подтверждение относится к точной формулировке.</p>
+          </div>
+          <div class="research-detail-tabs" role="tablist" aria-label="Материалы исследования"><button id="research-tab-result" type="button" role="tab" aria-selected="true" aria-controls="research-detail-result" data-detail="result">Результат</button><button id="research-tab-attempts" type="button" role="tab" aria-selected="false" aria-controls="research-detail-attempts" data-detail="attempts">Ход работы</button><button id="research-tab-sources" type="button" role="tab" aria-selected="false" aria-controls="research-detail-sources" data-detail="sources">Источники и поиск</button></div>
+          <div id="research-detail-result" class="research-detail-panel" role="tabpanel" aria-labelledby="research-tab-result"><div id="research-result"><p class="research-hint">Результат появится после запуска. Гипотезы, формальные проверки и оценка смысла сохраняются отдельно.</p></div></div>
+          <div id="research-detail-attempts" class="research-detail-panel" role="tabpanel" aria-labelledby="research-tab-attempts" hidden><div id="research-attempts"><p class="research-hint">Здесь сохраняются попытки и сообщения исполнителей.</p></div></div>
+          <div id="research-detail-sources" class="research-detail-panel" role="tabpanel" aria-labelledby="research-tab-sources" hidden><form id="research-search-form" class="research-source-search"><label class="sr-only" for="research-search">Поиск по математическому корпусу</label><input id="research-search" type="search" placeholder="Определение, лемма или математическая структура"><button type="submit" class="button secondary">Найти</button></form><div id="research-search-results"></div><div id="research-sources"></div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <footer class="app-footer"><span>Атлас математики</span><span>Исследовательское пространство · MSC2020</span></footer>
+</body>
+</html>

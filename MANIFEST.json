@@ -13,8 +13,13 @@
     },
     {
       "path": "AGENTS.md",
-      "sha256": "453d6f8a4d0724fdc86e2081f4ae47e8610fd36db2c5b0de20240413d0170906",
-      "size": 6340
+      "sha256": "c0877e1489f1b270326336cab513384df438feb516ba3bdd248db860ba56983c",
+      "size": 6845
+    },
+    {
+      "path": "MathResearch.lean",
+      "sha256": "2af36a3b909037097226eca510e78793f13f453431514ac277152545670ba989",
+      "size": 579
     },
     {
       "path": "MathResearch/AlbertMatrix.lean",
@@ -67,29 +72,534 @@
       "size": 1807
     },
     {
-      "path": "MathResearch.lean",
-      "sha256": "2af36a3b909037097226eca510e78793f13f453431514ac277152545670ba989",
-      "size": 579
-    },
-    {
       "path": "PUBLISH.md",
       "sha256": "0bf51c925478e87048b6bd309153e6a2201fe33ff7672635bccb90947ff525b0",
       "size": 2859
     },
     {
       "path": "README.md",
-      "sha256": "412ec29686f81530ad364b9ab7357a40cc1ef1d88cb6e12d43adb22340047155",
-      "size": 7849
+      "sha256": "89978fdc28192ad3a85c332a0691fdc0a03a6b048ce2d6e4620a5bca70c7762a",
+      "size": 8750
     },
     {
       "path": "REPRODUCE.md",
-      "sha256": "c643f1fe1bbc982cf8fadc9555665e67c81106170e31afdb98dea7a0e80dd779",
-      "size": 8075
+      "sha256": "5f61ee987db2fefac77a8a6cb2e861778f1308eb68a7f55d7ee819f36f731359",
+      "size": 8443
     },
     {
       "path": "WALKTHROUGH.md",
       "sha256": "98218cd47240325aebbbe76ef2d7c078ccb37e32b17bc29df21f207873db8e8d",
       "size": 17023
+    },
+    {
+      "path": "apps/msc-lean-atlas/.gitattributes",
+      "sha256": "4375aaa768ca6abf53a73872f047f6dae1d4790b16561ac533345109503304a4",
+      "size": 307
+    },
+    {
+      "path": "apps/msc-lean-atlas/.gitignore",
+      "sha256": "a3b72fe2152023a03bfcf0bde2a3ec04ca80382513c76d2a749f67770d029604",
+      "size": 121
+    },
+    {
+      "path": "apps/msc-lean-atlas/AGENTS.md",
+      "sha256": "dd45566e885b432c6611b7de23ff12c4ab057f0b25d2c85769d8e70e1f5d5ba5",
+      "size": 1506
+    },
+    {
+      "path": "apps/msc-lean-atlas/CODEX_ADAPTER.md",
+      "sha256": "c7adea85ffb4eb63a4e45b5eed15e192cb2fbb925907fe8d58107b8ad32fa0fd",
+      "size": 4745
+    },
+    {
+      "path": "apps/msc-lean-atlas/CONTRACT.md",
+      "sha256": "f3724fef4d0a8bdd8692fb6b153e406396dc4c7d6ea6f135c79dd8590cdfbbd1",
+      "size": 3098
+    },
+    {
+      "path": "apps/msc-lean-atlas/IMPLEMENTATION_REPORT.md",
+      "sha256": "65291b6d6da9850b6d239e9dbc8b33bb104ed3d10de97bdf7a3e37134eb461ef",
+      "size": 7998
+    },
+    {
+      "path": "apps/msc-lean-atlas/OBJECTS.md",
+      "sha256": "c2700b2fc1fee947813cabccd3e49044541799184b47867527bf505814c7d85a",
+      "size": 4731
+    },
+    {
+      "path": "apps/msc-lean-atlas/PLAN.md",
+      "sha256": "872fdcc8263640663423dd5235bd046a5c1529f341086a4456cabf780a1ba891",
+      "size": 1305
+    },
+    {
+      "path": "apps/msc-lean-atlas/PUBLICATION.md",
+      "sha256": "8027d2610bf07f6f33d22cf21a9d4a4b5dee6000f8263afb3883ab13e9c25b12",
+      "size": 5181
+    },
+    {
+      "path": "apps/msc-lean-atlas/README.md",
+      "sha256": "86d7cc7e5e20495b631266dfd75efc47870edce441394546f98e38c814db16c7",
+      "size": 23543
+    },
+    {
+      "path": "apps/msc-lean-atlas/RESEARCH_METHOD.md",
+      "sha256": "3baa42eb186352b5de226e1c57064529642337f7f8c5852ae7680cceeffa16e0",
+      "size": 15048
+    },
+    {
+      "path": "apps/msc-lean-atlas/RESEARCH_WORKSPACE.md",
+      "sha256": "602fd9ba03fd68871ad6c99c4323de005e0939fd36af2eba3e57c38cde8e9beb",
+      "size": 11012
+    },
+    {
+      "path": "apps/msc-lean-atlas/STATUS.json",
+      "sha256": "67c4b44d54eacc2ff68d7a4934d7b4a8807b4d5fff3eb7bb916e6241dfa72884",
+      "size": 4401
+    },
+    {
+      "path": "apps/msc-lean-atlas/analysis_engine.py",
+      "sha256": "5d62ef728fbd9e7d0843ad6d11cd839e3959e9c5ee7498ae2c4eb8c07d7c756e",
+      "size": 17600
+    },
+    {
+      "path": "apps/msc-lean-atlas/catalog/bridges.json",
+      "sha256": "e38f80faffc86af4b5e5da72f64e052e3ee82b4498402fd950d5d4d2f0c4fa44",
+      "size": 31257
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/astra-energy-analysis.json",
+      "sha256": "bf1cdbafd51986efed3013c4faf035cb2db348b577e2b49c73df344f04017d9a",
+      "size": 123918
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/astra-energy-verification.json",
+      "sha256": "43fc9cc9eb3e9ecabeb015ed71e3b9157eb9d175bd2f914f8d5a02eba237ac53",
+      "size": 4780
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/publication-api.json",
+      "sha256": "b82894a66b761f87fecc35eb63e76d26bd7cf16a8d98a4af2f1ed95e60274ed0",
+      "size": 6297
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/publication-lean.json",
+      "sha256": "aa5d7c146527b1641a0cd606973b88993d4841bbd20e1062632beb6dff46943a",
+      "size": 4126
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/publication-python-tests.log",
+      "sha256": "56a4f4b9b23220439ba8900f2ace807b8ca1e613061120402c0c42a6dac53e2e",
+      "size": 15046
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/research-api.json",
+      "sha256": "4e81bdb15956032acd836329184285974fc2e12e12dd6ac4637e081ca825de1f",
+      "size": 19715
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/research-evaluation.json",
+      "sha256": "ed293b3c902bfbb68aa7a2abe8dd0340a0d7406419bed19473c414ae3407d37f",
+      "size": 7274
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/research-evaluation.md",
+      "sha256": "f5ee1a996198c07f578641f6dee7db966605e8594c3fd2fb33ff5e3d88e0c725",
+      "size": 1488
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/research-generalization-final.json",
+      "sha256": "662bb2e4f51d45a52ee4a0bad2c73f73a4b4f9884697adf7f6e9991b688071db",
+      "size": 85555
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/research-graph-tests.log",
+      "sha256": "f8f0356613974854828d8b53fc8e894a5211cafaa83102eb6c7ca93696572c0e",
+      "size": 1678
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/research-python-tests.log",
+      "sha256": "3e08299a20403b2a4a977c0c9fa7e3bc9031c6ddbd230c1626cc97cd4d14bcfa",
+      "size": 15046
+    },
+    {
+      "path": "apps/msc-lean-atlas/checks/research-ui-report.json",
+      "sha256": "e3f014ac7d88c6bdb0dc75a548b4e654da5f2468d2f39af8c36446b28f2ab364",
+      "size": 2658
+    },
+    {
+      "path": "apps/msc-lean-atlas/cli.py",
+      "sha256": "3db31210c78cdb600055b3d00f27b08f236015490602064608e8a107d2ab8c07",
+      "size": 2255
+    },
+    {
+      "path": "apps/msc-lean-atlas/data/ATTRIBUTION.md",
+      "sha256": "80414ad0fa6110fded56ee3a416da569b1536ff795eba236da2814ca2b347727",
+      "size": 1594
+    },
+    {
+      "path": "apps/msc-lean-atlas/data/MSC_2020.csv",
+      "sha256": "f7c889354c202551fe01f89bad2ae95ccadec4c57ac1f6f9de38bbd658d3c78c",
+      "size": 797211
+    },
+    {
+      "path": "apps/msc-lean-atlas/data/MSC_2020.tex",
+      "sha256": "ff79ec3154920b4515408ddb45c57dc4f1578e2ab109851a25fa20dfa37f9d3b",
+      "size": 654402
+    },
+    {
+      "path": "apps/msc-lean-atlas/data/msc2020.json",
+      "sha256": "3004d971143222e1770a567bb6308f4f723573c75b8f6cb7c916bb8c97a1d940",
+      "size": 5028307
+    },
+    {
+      "path": "apps/msc-lean-atlas/data/source-metadata.json",
+      "sha256": "60f3213e68cf87b680854fe2a945a0713c634d9545d65fe992a73ae417843da2",
+      "size": 629
+    },
+    {
+      "path": "apps/msc-lean-atlas/evaluate_research.py",
+      "sha256": "922604857c3bef9936c41b26856ea5fb53f1b78832fa738f65092d6e5d016e41",
+      "size": 4587
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/README.md",
+      "sha256": "3412f3c3fd415f34ddde30060a82eb774d439ca099511a57d08ffea272eede1b",
+      "size": 4948
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/astra_energy/AlgebraObject.lean",
+      "sha256": "2d2ecfad4e21d78c02575a15ff43d082737e4a1e854869157ca0957b38064e8b",
+      "size": 334
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/astra_energy/Bridge.lean",
+      "sha256": "ef178c8f85b6e990be47f676c0f293ea798c21c7757fcccf9cb3679dabcd243f",
+      "size": 347
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/astra_energy/GraphObject.lean",
+      "sha256": "45b31215ad48e0152eef9f972f9caa3cf4abdbcb20e001ed8e513b8b9b05ed51",
+      "size": 407
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/astra_energy/example.json",
+      "sha256": "feeb1cb25d20aab70b65c8d69fcfa4e91e385488bd620652cd0ef6636e649e10",
+      "size": 794
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/astra_energy/story.json",
+      "sha256": "46390c451184298d9f57e777f7518624c5ed596f3a8f748b24e5def7c5b781b7",
+      "size": 11810
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/definition_equality/FirstMap.lean",
+      "sha256": "e33d007b41a385c945a260bab0038b5407aaad264c25a15aad211f1ad4d1c0bc",
+      "size": 73
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/definition_equality/SecondMap.lean",
+      "sha256": "205715f1c4e1a873ea14a404602dfe82056ca4208ea3a717a4607d440e1cacaa",
+      "size": 71
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/definition_equality/example.json",
+      "sha256": "cc286b8e8eb5190ab3f42c60c5bd6d3f45144e5d7a266b03b331b7acb70fe1ae",
+      "size": 710
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/energy_kernel/Proof.lean",
+      "sha256": "585442572f1a0580edea480255638c5c530181b95b9a7acc6703c15f2507168c",
+      "size": 1631
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/unrelated/Bridge.lean",
+      "sha256": "e1e43e0509a72b48326d92cc0ac2cf85ccc9924f3321a3cb6646185685f5999e",
+      "size": 182
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/unrelated/FirstObject.lean",
+      "sha256": "3577d9227d65cabe2ab426bff6dda0039ae6febb19ad9abc30409b0140b782dc",
+      "size": 136
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/unrelated/SecondObject.lean",
+      "sha256": "4fd332f6094582988385475e7ff9e6a71836e27e71c2a1f47f9520b541dce335",
+      "size": 119
+    },
+    {
+      "path": "apps/msc-lean-atlas/examples/unrelated/example.json",
+      "sha256": "b06f27218d2b3bf9f80f64ff9958ff83441bc97b98ee7ec069a08c66134e0aae",
+      "size": 601
+    },
+    {
+      "path": "apps/msc-lean-atlas/import_msc.py",
+      "sha256": "01bcb56479837c66caf7142b923ebc6fb9285e033aff9b8441264f61f93db744",
+      "size": 19770
+    },
+    {
+      "path": "apps/msc-lean-atlas/lean_service.py",
+      "sha256": "7acc56f47d825e33f61f3b011d10391305b16c40c34fbef605505d68963111c1",
+      "size": 20122
+    },
+    {
+      "path": "apps/msc-lean-atlas/package-lock.json",
+      "sha256": "c7cc3a49baff4585dfd98cadce5b44e2f70628576da98c767519d29fd2c60860",
+      "size": 16398
+    },
+    {
+      "path": "apps/msc-lean-atlas/package.json",
+      "sha256": "8236a366f236f51eeda6b5e13c0adcc6aef0da1a811b38917e417e6cd4bac949",
+      "size": 524
+    },
+    {
+      "path": "apps/msc-lean-atlas/requirements-research.lock",
+      "sha256": "ef28ad8cbc86e279c9c833fb7b7d88ab1aa876f2f559afded8c62758e22ab292",
+      "size": 777
+    },
+    {
+      "path": "apps/msc-lean-atlas/requirements-research.txt",
+      "sha256": "8e6a3d78dcc6abeba8143ab054dff67a064fc8234107082b666b2f0e54fe3530",
+      "size": 53
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_codex.py",
+      "sha256": "2c8fff534a74e737f8e80e1c5b2fdf7558c4d946154335f5d589ff04486001ac",
+      "size": 22882
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_fixtures/GraphEnergy.lean",
+      "sha256": "82ca53ea67bfbdb7905df1672c726a5487e460ba7a6db22aaf788b392e23af9b",
+      "size": 1070
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_fixtures/README.md",
+      "sha256": "a4eb2b491e4af7e29d8601e3782d2f606d71b0c9eb59def6fc2f6bd18e4dce20",
+      "size": 5065
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_fixtures/SeminarGradient.lean",
+      "sha256": "af5695202a89d09e720873648e9fca29ae88c56418217857f1ec824eb283d549",
+      "size": 3206
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_fixtures/SeminarOriginal.lean",
+      "sha256": "905f5ff4f2b448da622a1bc99199808870da383c1fd1a34c2e706fa2e8c16ec6",
+      "size": 3071
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_fixtures/StrictCounterexample.lean",
+      "sha256": "85e478c68d846886a1f819fbc30f7fd6e7347ec7afe39307be7dcb9c74629a93",
+      "size": 274
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_lean.py",
+      "sha256": "f26803e7912f7b083676ae625057cc4285f0b52f9ebafefecdafb0ff3271d671",
+      "size": 24048
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_retrieval.py",
+      "sha256": "9e23bb6eda97f28bd733523c51200d9a8bb45f28b917a2ade53da54d96bf40cb",
+      "size": 17386
+    },
+    {
+      "path": "apps/msc-lean-atlas/research_service.py",
+      "sha256": "34f8fb70e1f39bd1164c75c14d569c827bbc3abb4b3e538ed78daf35d047cdfb",
+      "size": 48655
+    },
+    {
+      "path": "apps/msc-lean-atlas/server.py",
+      "sha256": "3f23217a94ebf5d25c7aa71afe4b39b27f87444e957ce2953dab6f5d40355fa3",
+      "size": 15376
+    },
+    {
+      "path": "apps/msc-lean-atlas/start.sh",
+      "sha256": "ca6a41a3c7d616b5202022cbf46314954f5c87c24db04b21da1e0dc87da84ae6",
+      "size": 320
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_analysis_engine.py",
+      "sha256": "5f0d6142126488b6c242d1f04100e82b4953922b904f4ea9a01b1b50d251b01e",
+      "size": 8449
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_generated_attempt.py",
+      "sha256": "043f2c0e242cf9ab5d3485df04821a1b9a5a2f08332484ea596b7ab796b314ce",
+      "size": 1602
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_graph_model.cjs",
+      "sha256": "46035e4e1695a7f544698d075975ef9c1b41114b5eca3d3d0a6344859aa10ec5",
+      "size": 16020
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_lean_service.py",
+      "sha256": "4ccb49eb7675176df201a408f565339575411f4dacdc77f1ad5f1eaf7b91b305",
+      "size": 6923
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_msc.py",
+      "sha256": "1646089aec5307f857385e578d9cee6e5303c0e564385fa204bd6749ec61aa91",
+      "size": 5136
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_research_codex.py",
+      "sha256": "c13d39c0aa6e2b333efe7f7f79954d59cea8b7225f25c93ee361f3ee208f5b40",
+      "size": 9457
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_research_lean.py",
+      "sha256": "3478b2271d7c561172ede72addbbc641afebee1f520b11f11520c05e3f8f4c5e",
+      "size": 6200
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_research_ownership.py",
+      "sha256": "f77fc19a9e5a218e0942206e384d7670336561e654b3467b2ec93f792c00ad6d",
+      "size": 7106
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_research_persistence.py",
+      "sha256": "aff7e054d8aad00a4d404934eaff01c03c51ec2b6c7bb5769ff6e26e60981e0a",
+      "size": 2511
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_research_replan.py",
+      "sha256": "c065eaa85527c1669e167357e548c00c9c9e1150b594ade80ed6eeafa25f1ccb",
+      "size": 10021
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_research_retrieval.py",
+      "sha256": "35c8866016d6e98d015183f1e75743c74ef8885127e79beb92bcbd3500d78f41",
+      "size": 4879
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_research_service_review.py",
+      "sha256": "e602d0d8ca075902a1a882544d95b2c393424853916d9b683f34583c3e3fe321",
+      "size": 4407
+    },
+    {
+      "path": "apps/msc-lean-atlas/tests/test_worked_story.py",
+      "sha256": "23707fa754d0d5e2f8f21aba380f119f4db906eaf4e14876a3bd17320158f040",
+      "size": 7739
+    },
+    {
+      "path": "apps/msc-lean-atlas/tools/AtlasInspect.lean",
+      "sha256": "972484c652809b490dd743418f72e1f2c541f4de229f1c40135fae46a4c5ed42",
+      "size": 3701
+    },
+    {
+      "path": "apps/msc-lean-atlas/tools/DAGRE_LICENSE.txt",
+      "sha256": "21af2de6f50fcb435414e0dfa357b30dc0ec4ce0cb5f80e7a376c27a3617960a",
+      "size": 1142
+    },
+    {
+      "path": "apps/msc-lean-atlas/tools/build_graph_assets.cjs",
+      "sha256": "76a740030c8c56030020270042d0c0db677876a71d648a8a0765d14d087087ce",
+      "size": 4007
+    },
+    {
+      "path": "apps/msc-lean-atlas/tools/graph-libs-entry.js",
+      "sha256": "857c137470268fb4cf4c476f4df8340ed8d542a5139a9eab2712ae5477805cef",
+      "size": 187
+    },
+    {
+      "path": "apps/msc-lean-atlas/verify_browser.cjs",
+      "sha256": "c1471842f9a7801319533396a3745aa933b0d0d82f12c97f8d495b123795b54f",
+      "size": 3027
+    },
+    {
+      "path": "apps/msc-lean-atlas/verify_end_to_end.py",
+      "sha256": "65d0fe184df2abc43c4787da5a176d6d124e8107018d69f32af9a344b65d70e9",
+      "size": 4196
+    },
+    {
+      "path": "apps/msc-lean-atlas/verify_graph_library.cjs",
+      "sha256": "39de8ab3348f196fc07506b50f53ab6f5633e773f044000aa050e3113d567352",
+      "size": 12604
+    },
+    {
+      "path": "apps/msc-lean-atlas/verify_obsidian.cjs",
+      "sha256": "8f2a9478bbb016b565f3b5912eaf04d611f8c4590e6c75cde2ac5c5865130dba",
+      "size": 17736
+    },
+    {
+      "path": "apps/msc-lean-atlas/verify_redesign.cjs",
+      "sha256": "5778ea597b594d35041b51c19f619ab4b2bd5b42abf9ee9b9f7eabb5948cf2fc",
+      "size": 13223
+    },
+    {
+      "path": "apps/msc-lean-atlas/verify_research_api.py",
+      "sha256": "d746f74de2df835332dde6ca27af9b16f2a746f6d76a3524c0450d23cca54d0b",
+      "size": 8631
+    },
+    {
+      "path": "apps/msc-lean-atlas/verify_research_ui.cjs",
+      "sha256": "f8633a7598778d4d6641910ede7de39f8f5919eaee181ee2e9e80cba055c64e1",
+      "size": 10228
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/app.js",
+      "sha256": "3c8f75be9b7f4b6e7de4163f7980ffdc1d0b1d0703a7cf2dd3813158b5a8e489",
+      "size": 16328
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/graph-layout-worker.js",
+      "sha256": "dfaf2b4db0e04f6782b4b1f20d9e6a13c379a4b5dcc0f57c43c3113d7b6c76c2",
+      "size": 1165
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/graph-layouts.json",
+      "sha256": "c722ffe383177d4b3075dee9d478391a22b4fffcdf5d5d30d06d0e17e46a5b89",
+      "size": 231556
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/graph-model.js",
+      "sha256": "a13676e623603ffcb367ba61c571235fefb8f7d5f0e94f1cf7034616d70fb0b6",
+      "size": 8496
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/graph-presentation.js",
+      "sha256": "d60f67078904708421eeb7e107c0d311d63c9c172d78298a36961993927df7fa",
+      "size": 3380
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/graph-view.js",
+      "sha256": "034d8093cf48c2279951c4cf68d1866992c616eb22e5f851d6cd080c8f3550a3",
+      "size": 27972
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/index.html",
+      "sha256": "0c1caa7c234a878de295b506290c9a4201ce91dbf128827ded5c5f3aca71f420",
+      "size": 23847
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/research.css",
+      "sha256": "62377f584a098d98446281f3dbb92b9531718263892c8f1f5aab9fe487599034",
+      "size": 13786
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/research.js",
+      "sha256": "b80d17e8a85cae968f424770ec0582be98eb24ed0bc1925559a465570e94fe16",
+      "size": 37104
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/style.css",
+      "sha256": "50227d6a7977f45a690ffb36c98f469ce870ea6681681de42791af92096eb0ce",
+      "size": 35379
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/vendor/LICENSES.txt",
+      "sha256": "8b8b6f8e55615b37bcd085d85ffacdf534db1e389ad6d849c96bbf5eb19e98ef",
+      "size": 7175
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/vendor/graph-libs.min.js",
+      "sha256": "9bd84271ea27a4f039ea0eb02adccd4207769080e73d241155a4cfc624328613",
+      "size": 616266
+    },
+    {
+      "path": "apps/msc-lean-atlas/web/vendor/manifest.json",
+      "sha256": "e09fb08bef0bf67793f547a07c79420446d059a8da2992d8cfa9cba1084981d9",
+      "size": 317
     },
     {
       "path": "checks/last-run-summary.json",
@@ -283,8 +793,8 @@
     },
     {
       "path": "scripts/check.py",
-      "sha256": "0e7d299f8790522fb73d6edf41bc60424a6485bbee541ccac82e54f98170a86d",
-      "size": 10671
+      "sha256": "218b4f8d378da2aa3ce82d405a8e06aa8c26652811c984b6e266276e63ab6f58",
+      "size": 10897
     },
     {
       "path": "scripts/probe_experiment.py",

@@ -1,0 +1,6 @@
+# Preserve upstream bytes: source hashes are part of the MSC import checks.
+data/MSC_2020.csv -text -whitespace
+data/MSC_2020.tex -text -whitespace
+# Generated bundle and the saved, hash-bound proof are copied verbatim.
+web/vendor/graph-libs.min.js -whitespace
+examples/energy_kernel/Proof.lean -whitespace

@@ -1,0 +1,22 @@
+
+> msc-lean-atlas@0.2.0 test:graph
+> node tests/test_graph_model.cjs
+
+PASS Browser and CommonJS exports are constructors with the same interface
+PASS Overview contains exactly all 63 roots and 534 groups plus the virtual overview
+PASS Full graph preserves every category, terminal code and official edge without pagination
+PASS Original edges keep directions, qualifiers and exclusion types; only virtual overview edges are added
+PASS Focus on leaf 05C50 includes its 41 siblings/categories, group and ancestors without a twelve-node cap
+PASS Largest branch preserves all 323 descendants including special hyphen categories
+PASS Focused references include exactly one incoming/outgoing hop from the branch core
+PASS Reference expansion is not recursive and preserves exclusion edges in a minimal witness
+PASS Cytoscape metadata never creates compound parents and carries correct roots and sizes
+PASS Repeated views are deterministic, reject invalid requests and leave source data unchanged
+PASS Local depth is exact graph distance, with no sibling expansion at depth one
+PASS Local reference traversal is undirected while source directions and exclusions stay intact
+PASS Local graph cannot shortcut between roots through the synthetic overview center
+PASS Local mode validates its focus and depth and leaves the original dataset intact
+PASS Color groups cover each of the 63 official roots exactly once and contain no invented codes
+PASS Decoration adds presentation fields only, preserving inventory and every official edge
+PASS Color presentation works in a browser global without package runtime dependencies
+{"passed":17,"failed":0,"source_nodes":6603,"source_edges":9872}

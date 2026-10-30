@@ -1,0 +1,9 @@
+{
+  "id": "unrelated-proof",
+  "title": "Контроль: истинная теорема без связи входов",
+  "description": "Оба файла импортированы, но Bridge доказывает только 1 = 1. Система должна отвергнуть это как свидетельство связи пары, даже если Lean успешно завершится.",
+  "files": ["FirstObject.lean", "SecondObject.lean"],
+  "targets": ["FirstObject.value", "SecondObject.value"],
+  "bridge_file": "Bridge.lean",
+  "bridge_targets": ["Bridge.unrelated"]
+}

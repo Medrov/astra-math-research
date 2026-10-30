@@ -1,0 +1,18 @@
+{
+  "csv": {
+    "url": "https://msc2020.org/MSC_2020.csv",
+    "file": "MSC_2020.csv",
+    "sha256": "f7c889354c202551fe01f89bad2ae95ccadec4c57ac1f6f9de38bbd658d3c78c",
+    "bytes": 797211,
+    "retrieved_at": "2026-10-29T18:28:37.685205+00:00",
+    "timestamp_basis": "saved download file modification time"
+  },
+  "tex": {
+    "url": "https://msc2020.org/MSC_2020.tex",
+    "file": "MSC_2020.tex",
+    "sha256": "ff79ec3154920b4515408ddb45c57dc4f1578e2ab109851a25fa20dfa37f9d3b",
+    "bytes": 654402,
+    "retrieved_at": "2026-10-29T18:29:45.423291+00:00",
+    "timestamp_basis": "saved download file modification time"
+  }
+}

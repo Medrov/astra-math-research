@@ -1,0 +1,432 @@
+{
+  "version": "0.1",
+  "scope": "Curated known relationships; applicability to uploaded objects is unverified until checked",
+  "edges": [
+    {
+      "id": "G1",
+      "source": "graphs",
+      "target": "linear",
+      "label": "Лапласиан ↔ энергия",
+      "relation_type": "operator_representation",
+      "claim": "Обычный лапласиан L=D−A задаёт энергию xᵀLx=∑{i,j}∈E(xᵢ−xⱼ)². Для нормированного ℒ=D⁻¹ᐟ²LD⁻¹ᐟ² получается отношение Рэлея с весами степеней.",
+      "assumptions": [
+        "Конечный простой связный неориентированный граф, не менее двух вершин; вещественные значения x."
+      ],
+      "source_url": "https://fanchung.ucsd.edu/cbms.pdf",
+      "source_title": "Fan Chung — Lectures on Spectral Graph Theory",
+      "locator": "§1.2, определения лапласианов и формулы (1.1)–(1.2), печатные с. 2–4",
+      "verification": "published",
+      "caveat": "Спектр L и спектр ℒ различаются; исходный граф нельзя восстановить по одному спектру в общем случае.",
+      "research_question": "Какие энергии нашего алгебраического примера действительно имеют представление лапласианом?",
+      "source_topic": "Спектральная теория графов",
+      "target_topic": "Квадратичные формы и спектр",
+      "checked_at": "2026-10-29",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "05"
+      ],
+      "target_msc": [
+        "15"
+      ]
+    },
+    {
+      "id": "G2",
+      "source": "graphs",
+      "target": "submodular",
+      "label": "Вес разреза субмодулярен",
+      "relation_type": "special_case",
+      "claim": "F(S)=∑i∈S,j∉S wᵢⱼ удовлетворяет F(S)+F(T)≥F(S∪T)+F(S∩T).",
+      "assumptions": [
+        "Конечный неориентированный граф; симметричные неотрицательные веса."
+      ],
+      "source_url": "https://arxiv.org/pdf/1111.6453v2",
+      "source_title": "Francis Bach — Learning with Submodular Functions: A Convex Optimization Perspective",
+      "locator": "§6.2, Direct proof of submodularity, печатные с. 53–54",
+      "verification": "published",
+      "caveat": "Отрицательные веса могут нарушить субмодулярность.",
+      "research_question": "Какие конструкции проекта можно выразить функциями множеств такого типа?",
+      "source_topic": "Разрезы графов",
+      "target_topic": "Субмодулярная оптимизация",
+      "checked_at": "2026-10-29",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "05"
+      ],
+      "target_msc": [
+        "90"
+      ]
+    },
+    {
+      "id": "G3",
+      "source": "submodular",
+      "target": "convexopt",
+      "label": "Расширение Ловаса",
+      "relation_type": "exact_reduction",
+      "claim": "F субмодулярна тогда и только тогда, когда её расширение Ловаса f выпукло; min F=min[0,1]ⁿ f.",
+      "assumptions": [
+        "Конечное множество V; F:2ⱽ→ℝ, F(∅)=0; для выпуклой минимизации F субмодулярна."
+      ],
+      "source_url": "https://arxiv.org/pdf/1111.6453v2",
+      "source_title": "Francis Bach — Learning with Submodular Functions: A Convex Optimization Perspective",
+      "locator": "§3.3, Propositions 3.6–3.7, печатные с. 23–24",
+      "verification": "published",
+      "caveat": "Дополнительные ограничения задачи требуют отдельной проверки точности редукции.",
+      "research_question": "Какие дискретные задачи проекта допускают эту точную редукцию?",
+      "source_topic": "Субмодулярная оптимизация",
+      "target_topic": "Выпуклая оптимизация",
+      "checked_at": "2026-10-29",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "90"
+      ],
+      "target_msc": [
+        "90"
+      ]
+    },
+    {
+      "id": "G4",
+      "source": "graphs",
+      "target": "variation",
+      "label": "Разрез ↔ полная вариация",
+      "relation_type": "functional_extension",
+      "claim": "Расширение Ловаса функции разреза равно ∑i<j wᵢⱼ|xᵢ−xⱼ| — взвешенной полной вариации на графе.",
+      "assumptions": [
+        "Конечный неориентированный граф; симметричные неотрицательные веса."
+      ],
+      "source_url": "https://arxiv.org/pdf/1111.6453v2",
+      "source_title": "Francis Bach — Learning with Submodular Functions: A Convex Optimization Perspective",
+      "locator": "§6.2, Lovász extension; Total variation and piecewise constant signals, печатная с. 54",
+      "verification": "published",
+      "caveat": "Это сумма модулей; квадратичная энергия лапласиана — другой функционал.",
+      "research_question": "Что меняется при переходе от квадратов разностей к модулям в наших энергиях?",
+      "source_topic": "Разрезы графов",
+      "target_topic": "Полная вариация на графах",
+      "checked_at": "2026-10-29",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "05"
+      ],
+      "target_msc": [
+        "49"
+      ]
+    },
+    {
+      "id": "G5",
+      "source": "graphs",
+      "target": "markov",
+      "label": "Лапласиан ↔ случайное блуждание",
+      "relation_type": "stochastic_representation",
+      "claim": "Для взвешенного графа P=D⁻¹W=D⁻¹ᐟ²(I−ℒ)D¹ᐟ² задаёт обратимое блуждание; стационарная мера пропорциональна степеням, собственные значения P равны 1−λᵢ(ℒ).",
+      "assumptions": [
+        "Конечный связный неориентированный граф с неотрицательными симметричными весами и положительными степенями."
+      ],
+      "source_url": "https://fanchung.ucsd.edu/cbms.pdf",
+      "source_title": "Fan Chung — Lectures on Spectral Graph Theory",
+      "locator": "§1.5, матрица переходов и её связь с ℒ, печатные с. 14–15",
+      "verification": "published",
+      "caveat": "Для сходимости к стационарной мере дополнительно нужна апериодичность; двудольное блуждание может осциллировать.",
+      "research_question": "Допускают ли найденные операторы вероятностную интерпретацию после нормировки?",
+      "source_topic": "Спектральная теория графов",
+      "target_topic": "Обратимые цепи Маркова",
+      "checked_at": "2026-10-29",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "05"
+      ],
+      "target_msc": [
+        "60"
+      ]
+    },
+    {
+      "id": "O1",
+      "source": "order",
+      "target": "groups",
+      "label": "Порождение подгруппы · связь Галуа",
+      "relation_type": "realization_of_common_structure",
+      "claim": "Для группы G операция S ↦ ⟨S⟩ и переход от подгруппы к её множеству элементов образуют вложение Галуа: ⟨S⟩ ≤ H тогда и только тогда, когда S ⊆ H. Подгруппы образуют полную решётку; их супремум получается порождением подгруппы из объединения.",
+      "assumptions": [
+        "G — группа; рассматриваются все её подгруппы с порядком включения."
+      ],
+      "source_url": "https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Subgroup/Lattice.html#Subgroup.gi",
+      "source_title": "mathlib: Lattice structure of subgroups",
+      "locator": "Subgroup.gi; Subgroup.sup_eq_closure; Subgroup.iSup_eq_closure; Main definitions",
+      "verification": "formal_library",
+      "caveat": "Связь Галуа здесь относится к частично упорядоченным множествам; это не утверждение о классическом соответствии полей и групп. Проверена документация библиотеки; Lean локально для этого ребра не запускался.",
+      "research_question": "Какие теоремы о порождении и пересечениях выводятся из общей связи Галуа, а какие требуют собственно групповых операций?",
+      "checked_at": "2026-10-29",
+      "source_topic": "Теория порядка и решёток",
+      "target_topic": "Теория групп: подгруппы",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "06"
+      ],
+      "target_msc": [
+        "20"
+      ]
+    },
+    {
+      "id": "O2",
+      "source": "order",
+      "target": "convexgeo",
+      "label": "Выпуклая оболочка · оператор замыкания",
+      "relation_type": "realization_of_common_structure",
+      "claim": "Выпуклая оболочка является оператором замыкания на множествах: она монотонна, содержит исходное множество и идемпотентна. Например, conv(conv(S) ∪ T) = conv(S ∪ T), что следует из общей структуры замыкания.",
+      "assumptions": [
+        "Для геометрической интерпретации достаточно вещественного векторного пространства; S и T — произвольные множества его точек.",
+        "Документация mathlib задаёт оператор в более общей ситуации модуля над частично упорядоченным полукольцом."
+      ],
+      "source_url": "https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Convex/Hull.html#convexHull",
+      "source_title": "mathlib: Convex hull",
+      "locator": "convexHull : ClosureOperator (Set E); convexHull_convexHull_union_left",
+      "verification": "formal_library",
+      "caveat": "Замыкание понимается в теории порядка. Выпуклая оболочка не обязана быть топологически замкнутой. Проверена документация; свежей компиляции Lean не было.",
+      "research_question": "Какие свойства оболочки общие с порождением подгрупп и линейным порождением, а какие используют выпуклые комбинации?",
+      "checked_at": "2026-10-29",
+      "source_topic": "Теория порядка и решёток",
+      "target_topic": "Выпуклая геометрия",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "06"
+      ],
+      "target_msc": [
+        "52"
+      ]
+    },
+    {
+      "id": "O3",
+      "source": "order",
+      "target": "topology",
+      "label": "Топологическое замыкание · фиксированные множества",
+      "relation_type": "realization_of_common_structure",
+      "claim": "Топологическое замыкание задаёт оператор замыкания на множестве подмножеств X; его неподвижные элементы — в точности замкнутые множества. Тем самым топологическая операция имеет точное представление в теории порядка.",
+      "assumptions": [
+        "X — произвольное топологическое пространство; аксиомы отделимости не требуются."
+      ],
+      "source_url": "https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Closure.html#Topology.closureOperator",
+      "source_title": "mathlib: Topology.Closure",
+      "locator": "Topology.closureOperator; Topology.isClosed_closureOperator; closure_empty; closure_union",
+      "verification": "formal_library",
+      "caveat": "Обратное отождествление произвольного оператора замыкания с топологическим неверно без дополнительных условий: топологическое замыкание сохраняет пустое множество и конечные объединения. Проверена документация; свежей компиляции Lean не было.",
+      "research_question": "Где общий аппарат операторов замыкания переносит результат, а где перенос блокируется требованием сохранения конечных объединений?",
+      "checked_at": "2026-10-29",
+      "source_topic": "Теория порядка и решёток",
+      "target_topic": "Общая топология: замыкание",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "06"
+      ],
+      "target_msc": [
+        "54"
+      ]
+    },
+    {
+      "id": "O4",
+      "source": "order",
+      "target": "linear",
+      "label": "Линейная оболочка · связь Галуа",
+      "relation_type": "realization_of_common_structure",
+      "claim": "Линейная оболочка и переход от подпространства к множеству его векторов образуют вложение Галуа: span(S) ≤ V тогда и только тогда, когда S ⊆ V. В частности, span(S ∪ T) = span(S) ⊔ span(T).",
+      "assumptions": [
+        "Векторное пространство над полем; S и T — множества векторов.",
+        "Формализация mathlib распространяется на подмодули модуля над полукольцом."
+      ],
+      "source_url": "https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Span/Defs.html#Submodule.gi",
+      "source_title": "mathlib: LinearAlgebra.Span.Defs",
+      "locator": "Submodule.gi; Submodule.span_le; Submodule.span_union",
+      "verification": "formal_library",
+      "caveat": "Ребро фиксирует соответствие операций порождения и порядка; оно не отождествляет всю линейную алгебру с теорией решёток. Проверена документация; свежей компиляции Lean не было.",
+      "research_question": "Какая часть общего аппарата порождения одинаково применяется к подпространствам и подгруппам, и где возникают дополнительные законы решётки подпространств?",
+      "checked_at": "2026-10-29",
+      "source_topic": "Теория порядка и решёток",
+      "target_topic": "Линейная алгебра: подпространства",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "06"
+      ],
+      "target_msc": [
+        "15"
+      ]
+    },
+    {
+      "id": "T1",
+      "source": "persistence",
+      "target": "quivers",
+      "label": "Zigzag ↔ колчан Aₙ",
+      "claim": "Гомология конечной zigzag-диаграммы пространств даёт представление ориентированного пути Aₙ. При конечномерности оно раскладывается в прямую сумму интервальных представлений; интервалы образуют barcode.",
+      "assumptions": [
+        "Одно фиксированное поле коэффициентов и одна степень гомологии.",
+        "Конечная последовательность; между соседними пространствами задано отображение в одном из двух направлений.",
+        "Полученные пространства гомологии конечномерны."
+      ],
+      "source_url": "https://arxiv.org/html/0812.0197",
+      "source_title": "Gunnar Carlsson, Vin de Silva — Zigzag Persistence",
+      "locator": "§1.2; §2.1; Theorem 2.5; Definition 2.6",
+      "verification": "published",
+      "checked_at": "2026-10-29",
+      "caveat": "Классифицируется диаграмма гомологий, а не исходные пространства. Интервальная классификация здесь относится к Aₙ; она не переносится автоматически на произвольные колчаны или многопараметрическую персистентность. Lean в рамках этой проверки не запускался.",
+      "research_question": "Какие задачи проекта можно выразить конечной диаграммой линейных отображений и какие инварианты сохраняются при таком переходе?",
+      "source_topic": "Персистентная гомология",
+      "target_topic": "Представления колчанов",
+      "relation_type": "representation",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "55"
+      ],
+      "target_msc": [
+        "16"
+      ]
+    },
+    {
+      "id": "T2",
+      "source": "persistence",
+      "target": "commutative",
+      "label": "Персистентность ↔ модули F[t]",
+      "claim": "Дискретный модуль персистентности над полем F кодируется N-градуированным F[t]-модулем: однородная компонента хранит состояние на шаге i, умножение на t задаёт переход i→i+1. Для указанного конечного типа это даёт эквивалентность с конечно порождёнными градуированными модулями.",
+      "assumptions": [
+        "Индексация натуральными числами; все переходы направлены вперёд.",
+        "Коэффициенты в фиксированном поле F.",
+        "Каждое состояние конечномерно; начиная с некоторого индекса все соседние переходы — изоморфизмы.",
+        "На алгебраической стороне — неотрицательная градуировка, deg(t)=1 и сохраняющие степень морфизмы."
+      ],
+      "source_url": "https://link.springer.com/article/10.1007/s41468-018-0015-3",
+      "source_title": "René Corbet, Michael Kerber — The representation theorem of persistence revisited and generalized (2018)",
+      "locator": "§3, конструкции α и β; Corollary 10 (частный случай R=F)",
+      "verification": "published",
+      "checked_at": "2026-10-29",
+      "caveat": "Источник исправляет слишком общую раннюю формулировку: над произвольным кольцом конечной порождённости недостаточно. Здесь использован только случай поля. Соответствие относится к модулям гомологий, не восстанавливает исходные пространства. Lean не запускался.",
+      "research_question": "Какие зависимости между этапами конструкции удобнее анализировать как образующие и соотношения градуированного модуля?",
+      "source_topic": "Персистентная гомология",
+      "target_topic": "Коммутативная алгебра",
+      "relation_type": "equivalence",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "55"
+      ],
+      "target_msc": [
+        "13"
+      ]
+    },
+    {
+      "id": "T3",
+      "source": "algeom",
+      "target": "commutative",
+      "label": "Аффинные схемы ↔ кольцаᵒᵖ",
+      "claim": "Категория аффинных схем эквивалентна противоположной категории коммутативных колец: кольцу R соответствует Spec(R), а схеме — кольцо глобальных сечений её структурного пучка. Направление морфизмов обращается.",
+      "assumptions": [
+        "Геометрическая сторона ограничена аффинными схемами, с их структурными пучками.",
+        "Кольца коммутативны, с единицей; гомоморфизмы сохраняют единицу.",
+        "Морфизмы схем рассматриваются как морфизмы локально окольцованных пространств."
+      ],
+      "source_url": "https://stacks.math.columbia.edu/tag/01I2",
+      "source_title": "The Stacks Project — The category of affine schemes",
+      "locator": "Lemma 26.6.5, tag 01I2; предыдущая Lemma 26.6.4",
+      "verification": "published",
+      "checked_at": "2026-10-29",
+      "caveat": "Это эквивалентность для аффинных схем. Для произвольной схемы одно кольцо глобальных сечений обычно недостаточно. Связь не подтверждает частный рассказ о задаче Милна из транскрипции. Lean не запускался.",
+      "research_question": "Какие конкретные геометрические конструкции из будущих материалов допускают аффинное описание и перевод в задачу о кольцах?",
+      "source_topic": "Алгебраическая геометрия",
+      "target_topic": "Коммутативная алгебра",
+      "relation_type": "duality",
+      "formal_run_this_turn": false,
+      "source_msc": [
+        "14"
+      ],
+      "target_msc": [
+        "13"
+      ]
+    },
+    {
+      "id": "P1",
+      "source": "nonassoc",
+      "target": "graphs",
+      "label": "Ассоциатор → энергия графа",
+      "relation_type": "exact_model_identity",
+      "claim": "В опубликованной 27-координатной рациональной модели диагональный ассоциатор задаёт веса wᵢⱼ=(dᵢ−dⱼ)²/4. Его спаривание с градиентом равно энергии взвешенного лапласиана на трёх вершинах.",
+      "assumptions": [
+        "Только заданная в репозитории модель над ℚ и диагональный параметр d: Fin 3 → ℚ.",
+        "Энергия использует специально заданный скалярный градиент; рассматривается полный оператор."
+      ],
+      "source_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/MathResearch/AlbertSpectralGeometry.lean#L191",
+      "source_title": "SHAIM / Astra: AlbertSpectralGeometry.lean",
+      "locator": "associatorDirichlet_squares; associatorDirichlet_graphLaplacian",
+      "caveat": "Это точное утверждение частной модели. Оно не доказывает всю теорию алгебр Альберта или восстановление модели по одному спектру.",
+      "research_question": "Проверить, какие свойства графовой энергии применимы к этой модели и какие дополнительные условия потребуются для вероятностной интерпретации.",
+      "verification": "project_lean",
+      "checked_at": "2026-10-29",
+      "formal_run_this_turn": false,
+      "repository_revision": "4898f7013d626fef293d17bddfd860791e6daed0",
+      "source_topic": "nonassoc",
+      "target_topic": "graphs",
+      "evidence_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/checks/last-run-summary.json",
+      "evidence_note": "Прочитан исходник и сохранённый успешный журнал 29.10.2026 01:52:59 МСК; в этой работе Lean заново не запускался.",
+      "source_msc": [
+        "17"
+      ],
+      "target_msc": [
+        "05"
+      ]
+    },
+    {
+      "id": "P2",
+      "source": "nonassoc",
+      "target": "incidence",
+      "label": "Нулевой ассоциатор → инцидентность",
+      "relation_type": "finite_correspondence",
+      "claim": "Для трёх различных мнимых базисных единиц заданной рациональной модели октонионов ассоциатор равен нулю ровно при нулевой XOR-сумме их двоичных меток — условии коллинеарности в плоскости Фано.",
+      "assumptions": [
+        "Фиксированные семь базисных единиц и таблица умножения из OctonionIncidence.lean.",
+        "Для геометрического прочтения берутся три различные единицы."
+      ],
+      "source_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/MathResearch/OctonionIncidence.lean#L34",
+      "source_title": "SHAIM / Astra: OctonionIncidence.lean",
+      "locator": "basis_associator_zero_iff; actualResponse_eq_incidence",
+      "caveat": "Сохраняется нулевая инцидентность; знаки произведений и ориентации из этого не восстанавливаются.",
+      "research_question": "Какие дополнительные наблюдения нужны, чтобы различать алгебраические структуры с одинаковой нулевой инцидентностью?",
+      "verification": "project_lean",
+      "checked_at": "2026-10-29",
+      "formal_run_this_turn": false,
+      "repository_revision": "4898f7013d626fef293d17bddfd860791e6daed0",
+      "source_topic": "nonassoc",
+      "target_topic": "incidence",
+      "evidence_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/checks/last-run-summary.json",
+      "evidence_note": "Прочитан исходник и сохранённый успешный журнал 29.10.2026 01:52:59 МСК; в этой работе Lean заново не запускался.",
+      "source_msc": [
+        "17"
+      ],
+      "target_msc": [
+        "05"
+      ]
+    },
+    {
+      "id": "P3",
+      "source": "incidence",
+      "target": "coding",
+      "label": "Инцидентность → код длины 18",
+      "relation_type": "finite_certificate",
+      "claim": "В каталоге 30 размеченных плоскостей Фано выбранные 18 инцидентных вопросов дают двоичные слова с попарным расстоянием не менее 3. Поэтому не более одного каталожного объекта совместимо с ответом, содержащим не более одной ошибки.",
+      "assumptions": [
+        "Именно каталог и фиксированный набор probes18 из опубликованного исходника.",
+        "Расстояние Хэмминга; предполагается не более одной ошибки ответа."
+      ],
+      "source_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/MathResearch/OctonionIncidence.lean#L573",
+      "source_title": "SHAIM / Astra: OctonionIncidence.lean",
+      "locator": "eighteen_distance; one_error_unique; eighteen_probes_reconstruct_with_one_error",
+      "caveat": "Не утверждается оптимальность 18 вопросов. Восстанавливается каталожная инцидентность, а не вся таблица умножения октонионов.",
+      "research_question": "Исследовать нижние границы для числа устойчивых вопросов; отделить найденный сертификат от доказательства оптимальности.",
+      "verification": "project_lean",
+      "checked_at": "2026-10-29",
+      "formal_run_this_turn": false,
+      "repository_revision": "4898f7013d626fef293d17bddfd860791e6daed0",
+      "source_topic": "incidence",
+      "target_topic": "coding",
+      "evidence_url": "https://github.com/Medrov/astra-math-research/blob/4898f7013d626fef293d17bddfd860791e6daed0/checks/last-run-summary.json",
+      "evidence_note": "Прочитан исходник и сохранённый успешный журнал 29.10.2026 01:52:59 МСК; в этой работе Lean заново не запускался.",
+      "source_msc": [
+        "05"
+      ],
+      "target_msc": [
+        "94"
+      ]
+    }
+  ]
+}

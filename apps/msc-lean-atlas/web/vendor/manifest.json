@@ -1,0 +1,12 @@
+{
+  "versions": {
+    "cytoscape": "3.34.4",
+    "cytoscape-fcose": "2.2.0",
+    "cose-base": "2.2.0",
+    "layout-base": "2.0.1",
+    "cytoscape-dagre": "4.0.1"
+  },
+  "bundle_sha256": "9bd84271ea27a4f039ea0eb02adccd4207769080e73d241155a4cfc624328613",
+  "layout_file": "../graph-layouts.json",
+  "license": "MIT"
+}

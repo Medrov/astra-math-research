@@ -1,0 +1,125 @@
+{
+  "checked_at": "2026-10-30T09:34:28.002584+00:00",
+  "results": [
+    {
+      "case": "seminar_gradient",
+      "success": true,
+      "outcome": "proved",
+      "source_sha256": "af5695202a89d09e720873648e9fca29ae88c56418217857f1ec824eb283d549",
+      "target": "gd_rate",
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [],
+        "audited_roots": [
+          "LowerQuad",
+          "UpperQuad",
+          "UpperQuad._proof_1",
+          "descent",
+          "gd_rate",
+          "one_step",
+          "pl_ineq"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      }
+    },
+    {
+      "case": "strict_inequality",
+      "success": true,
+      "outcome": "refuted",
+      "source_sha256": "85e478c68d846886a1f819fbc30f7fd6e7347ec7afe39307be7dcb9c74629a93",
+      "target": "StrictInequality.counterexample",
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [],
+        "audited_roots": [
+          "StrictInequality.counterexample"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      }
+    },
+    {
+      "case": "graph_energy",
+      "success": true,
+      "outcome": "proved",
+      "source_sha256": "82ca53ea67bfbdb7905df1672c726a5487e460ba7a6db22aaf788b392e23af9b",
+      "target": "TriangleEnergy.laplacian_nonnegative",
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [],
+        "audited_roots": [
+          "TriangleEnergy.graphEnergy",
+          "TriangleEnergy.graph_energy_eq",
+          "TriangleEnergy.laplacianForm",
+          "TriangleEnergy.laplacian_nonnegative"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      }
+    },
+    {
+      "case": "energy_kernel",
+      "success": true,
+      "source_sha256": "585442572f1a0580edea480255638c5c530181b95b9a7acc6703c15f2507168c",
+      "target": "edgeEnergy_eq_zero_iff",
+      "actual_statement": "∀ {V : Type u} {E : Type v} [inst : Fintype E] (s t : E → V) (w : E → ℝ) (f : V → ℝ),\n  (∀ (e : E), 0 < w e) → (edgeEnergy s t w f = 0 ↔ ∀ (e : E), f (s e) = f (t e))",
+      "target_preserved": true,
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [
+          {
+            "name": "Multiset.sum._at.edgeEnergy._spec_2",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finset.sum._at.edgeEnergy._spec_1",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          }
+        ],
+        "audited_roots": [
+          "edgeDifference",
+          "edgeDifference.eq_1",
+          "edgeEnergy",
+          "edgeEnergy.eq_1",
+          "edgeEnergy_eq_zero_iff",
+          "edgeEnergy_eq_zero_iff._proof_1",
+          "weighted_sum_sq_eq_zero_iff"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      }
+    }
+  ],
+  "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+  "lean_version": "Lean (version 4.19.0, arm64-apple-darwin23.6.0, commit 6caaee842e94, Release)",
+  "scope": "Fresh checks of the published application fixtures and energy-kernel proof; external olean caches reused."
+}
