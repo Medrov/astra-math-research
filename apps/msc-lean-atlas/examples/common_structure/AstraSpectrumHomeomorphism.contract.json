@@ -1,0 +1,37 @@
+{
+  "target": "SpectrumBridge.coordinate_and_spectrum_equivalence",
+  "statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  ∃ e : MvPolynomial (Fin 3) R ≃ₐ[R] MvPolynomial (Fin 3) R,\n    e.toAlgHom.toRingHom = SpectrumBridge.alphaF b w ∧\n    e.symm.toAlgHom.toRingHom = SpectrumBridge.alphaG b w ∧\n    ∃ h : PrimeSpectrum (MvPolynomial (Fin 3) R) ≃ₜ PrimeSpectrum (MvPolynomial (Fin 3) R),\n      (h : PrimeSpectrum (MvPolynomial (Fin 3) R) → PrimeSpectrum (MvPolynomial (Fin 3) R)) =\n        (fun p => PrimeSpectrum.comap (SpectrumBridge.alphaF b w) p) ∧\n      (h.symm : PrimeSpectrum (MvPolynomial (Fin 3) R) → PrimeSpectrum (MvPolynomial (Fin 3) R)) =\n        (fun p => PrimeSpectrum.comap (SpectrumBridge.alphaG b w) p) ∧\n      h '' SpectrumBridge.vanishing (SpectrumBridge.graphIdeal b w) =\n        SpectrumBridge.vanishing (SpectrumBridge.axisIdeal R)",
+  "imports": [
+    "StructureInput",
+    "Mathlib.Algebra.Algebra.Equiv",
+    "Mathlib.RingTheory.Spectrum.Prime.Topology",
+    "Mathlib.Topology.Homeomorph.Defs"
+  ],
+  "prelude": "-- atlas-structure-source-sha256: f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75\nnoncomputable def SpectrumBridge.alphaF {R : Type*} [CommRing R] (b w : Polynomial R) : MvPolynomial (Fin 3) R →+* MvPolynomial (Fin 3) R :=\n  MvPolynomial.eval₂Hom MvPolynomial.C (Arxiv261038474.graphSubtract b w)\n\nnoncomputable def SpectrumBridge.alphaG {R : Type*} [CommRing R] (b w : Polynomial R) : MvPolynomial (Fin 3) R →+* MvPolynomial (Fin 3) R :=\n  MvPolynomial.eval₂Hom MvPolynomial.C (Arxiv261038474.graphRestore b w)\n\nnoncomputable def SpectrumBridge.axisIdeal (R : Type*) [CommRing R] : Ideal (MvPolynomial (Fin 3) R) :=\n  Ideal.span ({MvPolynomial.X 1, MvPolynomial.X 2} : Set (MvPolynomial (Fin 3) R))\n\nnoncomputable def SpectrumBridge.graphIdeal {R : Type*} [CommRing R] (b w : Polynomial R) : Ideal (MvPolynomial (Fin 3) R) :=\n  Ideal.span ({MvPolynomial.X 0 - Arxiv261038474.univariate b 1,\n    MvPolynomial.X 2 - Arxiv261038474.univariate w 1} : Set (MvPolynomial (Fin 3) R))\n\ndef SpectrumBridge.vanishing {R : Type*} [CommRing R] (I : Ideal (MvPolynomial (Fin 3) R)) : Set (PrimeSpectrum (MvPolynomial (Fin 3) R)) :=\n  {p | I ≤ p.asIdeal}",
+  "required_obligations": [
+    {
+      "id": "substitution_inverses",
+      "title": "Обе композиции подстановочных гомоморфизмов",
+      "target": "SpectrumBridge.substitution_inverses",
+      "statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  (SpectrumBridge.alphaG b w).comp (SpectrumBridge.alphaF b w) = RingHom.id (MvPolynomial (Fin 3) R) ∧\n  (SpectrumBridge.alphaF b w).comp (SpectrumBridge.alphaG b w) = RingHom.id (MvPolynomial (Fin 3) R)",
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "ideal_transport",
+      "title": "Образ идеала координатной оси",
+      "target": "SpectrumBridge.ideal_transport",
+      "statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  Ideal.map (SpectrumBridge.alphaF b w) (SpectrumBridge.axisIdeal R) = SpectrumBridge.graphIdeal b w",
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "coordinate_and_spectrum_equivalence",
+      "title": "Автоморфизм алгебры и гомеоморфизм спектра с переносом графа на ось",
+      "target": "SpectrumBridge.coordinate_and_spectrum_equivalence",
+      "statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  ∃ e : MvPolynomial (Fin 3) R ≃ₐ[R] MvPolynomial (Fin 3) R,\n    e.toAlgHom.toRingHom = SpectrumBridge.alphaF b w ∧\n    e.symm.toAlgHom.toRingHom = SpectrumBridge.alphaG b w ∧\n    ∃ h : PrimeSpectrum (MvPolynomial (Fin 3) R) ≃ₜ PrimeSpectrum (MvPolynomial (Fin 3) R),\n      (h : PrimeSpectrum (MvPolynomial (Fin 3) R) → PrimeSpectrum (MvPolynomial (Fin 3) R)) =\n        (fun p => PrimeSpectrum.comap (SpectrumBridge.alphaF b w) p) ∧\n      (h.symm : PrimeSpectrum (MvPolynomial (Fin 3) R) → PrimeSpectrum (MvPolynomial (Fin 3) R)) =\n        (fun p => PrimeSpectrum.comap (SpectrumBridge.alphaG b w) p) ∧\n      h '' SpectrumBridge.vanishing (SpectrumBridge.graphIdeal b w) =\n        SpectrumBridge.vanishing (SpectrumBridge.axisIdeal R)",
+      "expected_outcome": "proved"
+    }
+  ],
+  "version": 1,
+  "research_contract_sha256": "db8c5ab528543cae5f7e127233e68de3283b90130f09566ff58a6439b06eca8a",
+  "input_target": "Arxiv261038474.subtract_restore"
+}

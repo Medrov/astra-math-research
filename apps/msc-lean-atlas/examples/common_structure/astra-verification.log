@@ -1,0 +1,39 @@
+lean.exe -o StructureInput.olean StructureInput.lean
+exit_code=0
+
+
+lean.exe -o Candidate.olean Candidate.lean
+exit_code=0
+Candidate.lean:73:30: warning: this tactic is never executed
+note: this linter can be disabled with `set_option linter.unreachableTactic false`
+Candidate.lean:73:30: warning: 'exact h.2' tactic does nothing
+note: this linter can be disabled with `set_option linter.unusedTactic false`
+
+
+lean.exe -o AtlasInspect.olean AtlasInspect.lean
+exit_code=0
+
+
+lean.exe AtlasDump.lean
+exit_code=0
+
+
+lean.exe StructureInputAxioms.lean
+exit_code=0
+'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+
+lean.exe CandidateAxioms.lean
+exit_code=0
+'Arxiv261038474.coordinate_automorphism_exists' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.substitutionAlgHom_toRingHom' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.substitutionAlgHom_comp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.graph_substitution_inverse_identities' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+
+lean.exe -o Contract.olean Contract.lean
+exit_code=0
+
