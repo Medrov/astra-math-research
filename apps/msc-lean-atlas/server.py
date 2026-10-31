@@ -22,6 +22,7 @@ EXECUTOR=ThreadPoolExecutor(max_workers=1,thread_name_prefix='lean-atlas')
 JOBS={}
 LOCK=threading.Lock()
 RESEARCH=None
+BATCHES=None
 
 def research():
     global RESEARCH
@@ -30,6 +31,16 @@ def research():
         with LOCK:
             if RESEARCH is None: RESEARCH=ResearchService()
     return RESEARCH
+
+
+def research_batches():
+    global BATCHES
+    service=research()
+    if BATCHES is None:
+        from research_batches import ResearchBatches
+        with LOCK:
+            if BATCHES is None: BATCHES=ResearchBatches(service)
+    return BATCHES
 
 def now(): return datetime.now(timezone.utc).isoformat()
 
@@ -152,7 +163,19 @@ class Handler(BaseHTTPRequestHandler):
             path=urlsplit(self.path).path
             if path=='/api/research/status': return self.json_response(research().status())
             if path=='/api/research/cases': return self.json_response({'cases':research().public_cases()})
+            if path=='/api/structure/sources': return self.json_response(research().structure_sources())
+            if path.startswith('/api/structure/sources/'):
+                source=research().structure_store().get(path.rsplit('/',1)[1])
+                return self.json_response({'source':dict(source,id=source['source_id'])})
             if path=='/api/research/runs': return self.json_response({'runs':research().list_runs()})
+            if path=='/api/research/batches':
+                query=parse_qs(urlsplit(self.path).query)
+                revision=query.get('graph_revision',[None])[0]
+                return self.json_response({'batches':research_batches().list(query.get('graph_id',[None])[0],int(revision) if revision is not None else None)})
+            if path.startswith('/api/research/batches/'):
+                parts=path.split('/')
+                if len(parts)==5: return self.json_response(research_batches().get(parts[4]))
+                return self.json_response({'error':'Не найдено'},404)
             if path=='/api/arxiv/papers': return self.json_response({'papers':research().arxiv.list_papers()})
             if path.startswith('/api/arxiv/papers/'):
                 paper=research().arxiv.get_paper(unquote(path[len('/api/arxiv/papers/'):]))
@@ -223,6 +246,15 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(payload,dict): raise ValueError('Тело запроса должно быть JSON-объектом.')
             path=urlsplit(self.path).path
             if path=='/api/research/runs': return self.json_response(research().create(payload),202)
+            if path=='/api/research/batches/preview': return self.json_response(research_batches().preview(payload))
+            if path=='/api/research/batches': return self.json_response(research_batches().create(payload),202)
+            if path.startswith('/api/research/batches/'):
+                parts=path.split('/')
+                if len(parts)==6 and parts[5]=='cancel': return self.json_response(research_batches().cancel(parts[4]))
+                return self.json_response({'error':'Не найдено'},404)
+            if path=='/api/structure/sources':
+                source=research().import_structure_source(payload)
+                return self.json_response({'source':dict(source,id=source['source_id'])},201)
             if path=='/api/arxiv/import':
                 paper=research().import_arxiv(payload.get('reference'))
                 return self.json_response({k:v for k,v in paper.items() if k!='chunks'})

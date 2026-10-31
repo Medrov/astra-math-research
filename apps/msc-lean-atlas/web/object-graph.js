@@ -9,6 +9,7 @@
     hypothesis: {label:'Гипотеза', color:'#a48445', background:'#fbf5e9'},
     incomplete: {label:'Неполно', color:'#7c778d', background:'#f2f0f6'},
     needs_recheck: {label:'Нужна новая проверка', color:'#7c778d', background:'#f2f0f6'},
+    formal_only: {label:'Lean-цель проверена · смысл не подтверждён', color:'#876a37', background:'#fbf5e9'},
     proved: {label:'Доказано', color:'#407457', background:'#edf6ef'},
     refuted: {label:'Контрпример', color:'#a3664d', background:'#fbefea'},
     checking: {label:'Проверяется', color:'#527aa9', background:'#edf3fb'}
@@ -20,9 +21,9 @@
   function array(value) { return Array.isArray(value) ? value : []; }
   function formulation(transition) {
     const task=transition?.agent_task;
-    const formalized=transition?.formulation_status!=='literature_only'&&!!task&&!!task.target&&!!task.statement&&array(transition?.obligations).length>0;
-    return {formalized,status:formalized?'formalized':transition?.formulation_status==='literature_only'?'literature_only':'unformalized',
-      label:formalized?'Точная Lean-постановка подготовлена':transition?.formulation_status==='literature_only'?'Утверждение статьи · Lean-постановка ещё не подготовлена':'Lean-постановка ещё не подготовлена',
+    const formalized=!['literature_only','candidate'].includes(transition?.formulation_status)&&!!task&&!!task.target&&!!task.statement&&array(transition?.obligations).length>0;
+    return {formalized,status:formalized?'formalized':['literature_only','candidate'].includes(transition?.formulation_status)?transition.formulation_status:'unformalized',
+      label:formalized?'Точная Lean-постановка подготовлена':transition?.formulation_status==='literature_only'?'Утверждение статьи · Lean-постановка ещё не подготовлена':transition?.formulation_status==='candidate'?'Кандидат общей структуры · нужна Lean-постановка':'Lean-постановка ещё не подготовлена',
       action:formalized?'Проверить выбранный переход':'Формализовать и проверить'};
   }
   function defaultPaperSection(paper) {
@@ -48,7 +49,8 @@
   }
   function transitionStatus(transition) {
     const value = transition?.status;
-    if(transition?.formulation_status==='literature_only'&&['proved','verified','refuted','counterexample'].includes(value))return 'incomplete';
+    if(['literature_only','candidate'].includes(transition?.formulation_status)&&['proved','verified','refuted','counterexample'].includes(value))return 'incomplete';
+    if(['proved','verified','refuted','counterexample'].includes(value)&&transition.certificate&&!['aligned','reviewed_fixture'].includes(transition.semantic_review?.status))return 'formal_only';
     if (['proved','verified'].includes(value)) return transition.certificate ? 'proved' : 'incomplete';
     if (['refuted','counterexample'].includes(value)) return transition.certificate ? 'refuted' : 'incomplete';
     if (['checking','running','queued','verifying'].includes(value)) return 'checking';
@@ -60,6 +62,7 @@
     const value = transitionStatus(transition);
     const item={status:value, ...STATUS[value]};
     if(value==='hypothesis'&&transition?.formulation_status==='literature_only')item.label='Утверждение статьи';
+    if(value==='hypothesis'&&transition?.formulation_status==='candidate')item.label='Кандидат структуры';
     return item;
   }
   function relationLabel(value) { return RELATIONS[value] || String(value || 'Переход').replaceAll('_',' '); }
@@ -73,10 +76,10 @@
   }
   function proofSlice(graph,transition) {
     if(!transition)return graph;
-    if(transition.formulation_status==='literature_only')return {nodes:[],edges:[]};
+    if(['literature_only','candidate'].includes(transition.formulation_status))return {nodes:[],edges:[]};
     const targets=new Set([...array(transition.obligations).map(o=>o.target),transition.agent_task?.target].filter(Boolean));
     const keep=new Set(array(graph.nodes).filter(n=>targets.has(n.id)||targets.has(n.target)||targets.has(n.name)).map(n=>String(n.id)));
-    if(!keep.size)return graph;
+    if(!keep.size)return {nodes:[],edges:[]};
     let changed=true;while(changed){changed=false;for(const edge of array(graph.edges)){if(keep.has(String(edge.target))&&!keep.has(String(edge.source))){keep.add(String(edge.source));changed=true;}}}
     return {nodes:array(graph.nodes).filter(n=>keep.has(String(n.id))),edges:array(graph.edges).filter(e=>keep.has(String(e.source))&&keep.has(String(e.target)))};
   }
@@ -168,7 +171,15 @@
     }
     section(box,title,value) {
       if(value===undefined||value===null||value===''||(Array.isArray(value)&&!value.length))return;
-      box.append(this.node('h4',{},title),this.node('p',{class:'objects-value'},this.text(value)));
+      const content=this.node('p',{class:'objects-value'});
+      if(window.MathPresentation)window.MathPresentation.render(content,this.text(value));else content.textContent=this.text(value);
+      box.append(this.node('h4',{},title),content);
+    }
+    mathSummary(box,summary){
+      if(!summary)return;
+      if(summary.description){const p=this.node('p');window.MathPresentation.render(p,summary.description);box.append(p);}
+      for(const f of array(summary.formulas)){const block=this.node('div',{class:'guided-formula'});block.append(this.node('span',{class:'guided-note'},f.label||''));const math=this.node('div');window.MathPresentation.formula(math,f.tex,{display:true});block.append(math);box.append(block);}
+      this.section(box,'Условия',summary.assumptions);this.section(box,'Границы утверждения',summary.limitations);
     }
     badge(transition) {const p=presentation(transition);return this.node('span',{class:'research-status '+p.status},p.label);}
     details(title,value) {const d=this.node('details',{class:'research-raw'});d.append(this.node('summary',{},title),this.node('pre',{},typeof value==='string'?value:JSON.stringify(value,null,2)));return d;}
@@ -257,11 +268,12 @@
     inspect() {
       const box=this.$('objects-inspector'),entry=selected(this.graph,this.selection);box.replaceChildren();
       if(!entry){box.append(this.node('p',{class:'research-small-label'},'Объекты и переходы'),this.node('h3',{},'Выберите отправную точку'),this.node('p',{class:'research-hint'},'Здесь будут определения объектов, точная связь и условия её проверки.'));return;}
-      const item=entry.value;box.append(this.node('p',{class:'research-small-label'},entry.kind==='object'?'Математический объект':relationLabel(item.relation_type)),this.node('h3',{},item.title||item.id));
+      const item=entry.value,summary=window.MathPresentation?.entitySummary?.(this.run||{object_graph:this.graph},entry.kind,item);box.append(this.node('p',{class:'research-small-label'},entry.kind==='object'?'Математический объект':relationLabel(item.relation_type)),this.node('h3',{},summary?.title||item.title||item.id));
       if(entry.kind==='object') {
-        this.section(box,'Определение',item.definition);this.section(box,'Параметры',item.parameters);this.section(box,'Условия',item.assumptions);
+        if(summary){this.mathSummary(box,summary);box.append(this.details('Исходное определение и параметры',{definition:item.definition,parameters:item.parameters,assumptions:item.assumptions}));}
+        else{this.section(box,'Определение',item.definition);this.section(box,'Параметры',item.parameters);this.section(box,'Условия',item.assumptions);}
         const tags=this.node('div',{class:'research-msc-tags'});for(const code of array(item.msc_codes)){const b=this.node('button',{type:'button'},code);b.onclick=()=>this.callbacks.onMSC?.(code);tags.append(b);}box.append(tags);
-        this.section(box,'Формальные определения',item.lean_refs);
+        if(array(item.lean_refs).length)box.append(this.details('Формальные определения Lean',item.lean_refs));
         const relations=array(this.graph.transitions).filter(t=>[...array(t.source_ids),...array(t.target_ids)].includes(item.id));
         if(relations.length){box.append(this.node('h4',{},'Связанные переходы'));for(const transition of relations){const b=this.node('button',{type:'button',class:'objects-relation-link'},transition.title||transition.id);b.onclick=()=>this.select('transition:'+transition.id,true);box.append(b);}}
         return;
@@ -269,7 +281,8 @@
       box.append(this.badge(item));
       const formal=formulation(item);
       if(!formal.formalized)box.append(this.node('p',{class:'objects-formulation-note','data-formulation-status':formal.status},formal.label));
-      this.section(box,'Утверждение',item.claim);this.section(box,'Условия перехода',item.assumptions);this.section(box,'Преобразование',item.construction);
+      if(summary){this.mathSummary(box,summary);box.append(this.details('Исходная формулировка перехода',{claim:item.claim,assumptions:item.assumptions,construction:item.construction}));}
+      else{this.section(box,'Утверждение',item.claim);this.section(box,'Условия перехода',item.assumptions);this.section(box,'Преобразование',item.construction);}
       const names=ids=>array(ids).map(id=>this.graph.objects.find(o=>o.id===id)?.title||id).join(' + ');
       this.section(box,'Откуда → куда',names(item.source_ids)+' → '+names(item.target_ids));
       const actions=this.node('div',{class:'objects-transition-actions'}),verify=this.node('button',{type:'button',class:'button primary','data-verify-transition':item.id},formal.action);

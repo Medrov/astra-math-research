@@ -1,0 +1,444 @@
+{
+  "kind": "actual_model_search",
+  "run_id": "97fde89034994eb9ac0fbfe5576e8fcd",
+  "source_sha256": "f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75",
+  "selected_theorem": "Arxiv261038474.subtract_restore",
+  "profile": {
+    "summary": "Теорема Arxiv261038474.subtract_restore устанавливает тождество композиции двух явно заданных полиномиальных преобразований трёх координат над произвольным коммутативным кольцом. Статус VERIFIED принят из предоставленных данных; новая проверка Lean не выполнялась.",
+    "objects": [
+      "Произвольный тип R : Type u_1 с экземпляром CommRing R и произвольные b w : Polynomial R.",
+      "Координатное кольцо A = MvPolynomial (Fin 3) R; преобразования представлены функциями Fin 3 → A.",
+      "univariate p i = Polynomial.eval₂ MvPolynomial.C (MvPolynomial.X i) p.",
+      "F = graphSubtract b w: (x,y,z) ↦ (y,x−b(y),z−w(y)).",
+      "G = graphRestore b w: (T,U,Z) ↦ (U+b(T),T,Z+w(T))."
+    ],
+    "operations": [
+      "Полиномиальная подстановка: compose F G i = MvPolynomial.eval₂Hom MvPolynomial.C G (F i), то есть F после G.",
+      "Перестановка первых двух координат и добавление либо вычитание полиномов от одной координаты.",
+      "Перенос вычисления полинома через гомоморфизм кольца и сокращение слагаемых."
+    ],
+    "assumptions": [
+      "Единственная алгебраическая предпосылка — CommRing R; b и w не ограничены степенью или коэффициентами.",
+      "Не требуются поле, отсутствие делителей нуля, ненулевое кольцо, деление или локализация.",
+      "Вспомогательная eval_univariate квантифицирует также произвольные S : Type u_2, [CommRing S], f : R →+* S, v : Fin 3 → S, p : Polynomial R и i : Fin 3.",
+      "В предоставленном аудите указаны propext, Quot.sound и Classical.choice; unsafe = false."
+    ],
+    "conclusion_shape": "Для всех {R : Type u_1} [CommRing R] и b w : Polynomial R выполнено compose (graphSubtract b w) (graphRestore b w) = MvPolynomial.X как равенство функций Fin 3 → A. Это одна сторона обратимости; другая сторона отдельно установлена предоставленной restore_subtract.",
+    "mechanism": "Готовое доказательство применяет funext и fin_cases к трём координатам. Лемма eval_univariate, доказанная через Polynomial.hom_eval₂, превращает многомерную подстановку в вычисление одномерного полинома. Получаются координаты X₀, (X₁+b(X₀))−b(X₀), (X₂+w(X₀))−w(X₀); упрощение даёт X₀, X₁, X₂. Повторно использовать следует совместимость вычисления с гомоморфизмами и готовые тождества композиции.",
+    "status": "model_proposed",
+    "formal": {
+      "target": "Arxiv261038474.subtract_restore",
+      "type": "∀ {R : Type u_1} [inst : CommRing R] (b w : Polynomial R),\n  Arxiv261038474.compose (Arxiv261038474.graphSubtract b w) (Arxiv261038474.graphRestore b w) = MvPolynomial.X",
+      "axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "source_sha256": "f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75"
+    }
+  },
+  "routes": [
+    {
+      "id": "route_1",
+      "msc_code": "13",
+      "title": "Commutative algebra",
+      "rationale": "Коммутативная алгебра: подстановка задаёт эндоморфизм координатного кольца A. Два предоставленных тождества композиции позволяют исследовать оформление этих подстановок как взаимно обратных R-алгебраических гомоморфизмов. Основной механизм — определение гомоморфизма образами переменных и совместимость eval₂ с композицией; наличие подходящей готовой упаковки в mathlib требует поиска.",
+      "queries": [
+        "MvPolynomial aeval",
+        "MvPolynomial hom ext",
+        "AlgEquiv.ofAlgHom"
+      ],
+      "status": "complete",
+      "candidates": [
+        {
+          "transition_id": "route_1_substitution_to_algebra_equivalence",
+          "title": "Контравариантная подстановка и упаковка обратимости",
+          "rank": 1,
+          "rationale": "Использовать исходные F и G без изменения определений. Упаковать eval₂Hom C F и eval₂Hom C G как R-алгебраические гомоморфизмы, поскольку они фиксируют коэффициенты. Для любых H,K : Fin 3 → A подстановка удовлетворяет φ_K ∘ φ_H = φ_(Arxiv261038474.compose H K): обе стороны фиксируют коэффициенты и отправляют каждую X i в compose H K i. Затем применить два исходных тождества и конструкцию AlgEquiv.ofAlgHom.",
+          "limitations": [
+            "Для всех R : Type u с [CommRing R] и всех b w : Polynomial R.",
+            "Используются оба предоставленных тождества: subtract_restore и restore_subtract.",
+            "Не требуются поле, отсутствие делителей нуля, ненулевость R, локализация или топология."
+          ],
+          "evidence": [
+            {
+              "title": "Фролов–Дорофеев · полиномиальные тождества §9.1",
+              "url": "",
+              "name": "Arxiv261038474.subtract_restore"
+            },
+            {
+              "title": "AlgEquiv.coe_algHom_ofAlgHom",
+              "url": "",
+              "name": "Mathlib.Algebra.Algebra.Equiv · AlgEquiv.coe_algHom_ofAlgHom · source sha256: 1f8d885d9c480c6ebfbfec6d343ae3d2f3a74e09d45f731bec0ecc2d77b51d4c"
+            },
+            {
+              "title": "AlgEquiv.ofAlgHom_coe_algHom",
+              "url": "",
+              "name": "Mathlib.Algebra.Algebra.Equiv · AlgEquiv.ofAlgHom_coe_algHom · source sha256: 1f8d885d9c480c6ebfbfec6d343ae3d2f3a74e09d45f731bec0ecc2d77b51d4c"
+            }
+          ]
+        }
+      ],
+      "hits": [
+        {
+          "id": "lean:6b5e0205942eef05f509b3025603f19e7585c2b3f30f5ff917570ee04d2cb83b",
+          "name": "AlgEquiv.coe_algHom_ofAlgHom",
+          "module": "Mathlib.Algebra.Algebra.Equiv",
+          "statement": "theorem coe_algHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :\r\n    ↑(ofAlgHom f g h₁ h₂) = f",
+          "doc_comment": "",
+          "source_sha256": "1f8d885d9c480c6ebfbfec6d343ae3d2f3a74e09d45f731bec0ecc2d77b51d4c",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04961904761904762,
+          "query_matches": [
+            "AlgEquiv.ofAlgHom"
+          ]
+        },
+        {
+          "id": "lean:89b6e115705ccfdae9ebf70ed418866315eb33d7073be897b12eb5b0db1417d5",
+          "name": "MvPolynomial.ext",
+          "module": "Mathlib.Algebra.MvPolynomial.Basic",
+          "statement": "theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q",
+          "doc_comment": "",
+          "source_sha256": "68ca7a10c6159b13b84ea7a89682eb7d414e757929466e91dfb5cd12a6b87643",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04961904761904762,
+          "query_matches": [
+            "MvPolynomial hom ext"
+          ]
+        },
+        {
+          "id": "lean:d08398526a6e11c108a1b346eb25be11b06161a8d0c8ea4356f8e029ccfc26e2",
+          "name": "MvPolynomial.aeval_comp_rename",
+          "module": "Mathlib.Algebra.MvPolynomial.Rename",
+          "statement": "lemma aeval_comp_rename [Algebra R S] :\r\n    (aeval (R",
+          "doc_comment": "",
+          "source_sha256": "2a5fde0bd35031403e5a870f36b1e5c377609fbad73fa04f1890ec2237bd4b34",
+          "extraction": "textual_unverified",
+          "rank_score": 0.047619047619047616,
+          "query_matches": [
+            "MvPolynomial aeval"
+          ]
+        },
+        {
+          "id": "lean:1cf4ae880931b4f8c9ef890b41747132c65d144df00011d9a4d7f41591de7ea8",
+          "name": "MvPolynomial.aeval_comp_toMvPolynomial",
+          "module": "Mathlib.Algebra.MvPolynomial.Equiv",
+          "statement": "lemma MvPolynomial.aeval_comp_toMvPolynomial (f : σ → S) (i : σ) :\r\n    (aeval (R",
+          "doc_comment": "",
+          "source_sha256": "48cc71fbe587834c114d79d1c67a9a3b9a2a98ada8e745e71c492aa87d8a6735",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04745454545454546,
+          "query_matches": [
+            "MvPolynomial aeval"
+          ]
+        },
+        {
+          "id": "lean:cf5172c3fdf3b4220ccf5094038fb5b47398d84225f52844831e573d88a3ddb8",
+          "name": "AlgEquiv.ofAlgHom_coe_algHom",
+          "module": "Mathlib.Algebra.Algebra.Equiv",
+          "statement": "theorem ofAlgHom_coe_algHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :\r\n    ofAlgHom (↑f) g h₁ h₂ = f",
+          "doc_comment": "",
+          "source_sha256": "1f8d885d9c480c6ebfbfec6d343ae3d2f3a74e09d45f731bec0ecc2d77b51d4c",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04745454545454546,
+          "query_matches": [
+            "AlgEquiv.ofAlgHom"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "route_2",
+      "msc_code": "14",
+      "title": "Algebraic geometry",
+      "rationale": "Алгебраическая геометрия: явные полиномиальные обратные преобразования дают направление к изоморфизму аффинного трёхмерного пространства над R. Предоставленная graph_to_axis дополнительно переводит граф t ↦ (b(t),t,w(t)) в координатную ось. Можно искать перенос этого результата на спектры координатных колец и идеалы графа; схема-теоретическая формализация не является заключением выбранной теоремы.",
+      "queries": [
+        "AlgebraicGeometry.Spec.map",
+        "MvPolynomial Ideal quotient",
+        "PrimeSpectrum comap"
+      ],
+      "status": "complete",
+      "candidates": [
+        {
+          "transition_id": "route_2_bridge_spectrum",
+          "title": "От обратных подстановок к гомеоморфизму спектра",
+          "rank": 1,
+          "rationale": "Продолжить F и G с переменных на A посредством eval₂Hom. Затем применить PrimeSpectrum.comap: h(𝔭)=αF⁻¹(𝔭), где справа стоит прообраз идеала, а обратное отображение задаётся 𝔭↦αG⁻¹(𝔭).",
+          "limitations": [
+            "Для всех R : Type u с CommRing R и всех b w : Polynomial R.",
+            "Используются обе предоставленные стороны обратимости: subtract_restore и restore_subtract.",
+            "На спектре берётся топология Зарисского; топология на R не требуется."
+          ],
+          "evidence": [
+            {
+              "title": "Фролов–Дорофеев · полиномиальные тождества §9.1",
+              "url": "",
+              "name": "Arxiv261038474.subtract_restore"
+            },
+            {
+              "title": "PrimeSpectrum.comap_id",
+              "url": "",
+              "name": "Mathlib.RingTheory.Spectrum.Prime.Topology · PrimeSpectrum.comap_id · source sha256: 491e8007106ff62582e3ff3e76ad1db4042fb3296935521920b2e445d52c4412"
+            }
+          ]
+        },
+        {
+          "transition_id": "route_2_bridge_quotient",
+          "title": "Совместимость автоморфизма с факторизацией коэффициентов",
+          "rank": 2,
+          "rationale": "Использовать отображение q = MvPolynomial.eval₂Hom (MvPolynomial.C.comp (Ideal.Quotient.mk L)) MvPolynomial.X. Оно индуцирует θ : A/K → Ā. Обратное отображение переводит коэффициент r mod L в класс C r, а переменную Xᵢ — в класс Xᵢ; корректность коэффициентного отображения обеспечивается занулением элементов L.",
+          "limitations": [
+            "Для всех R : Type u с CommRing R, всех b w : Polynomial R и всех L : Ideal R.",
+            "Не требуются простота, максимальность или собственность L; не требуется свойство Якобсона для R."
+          ],
+          "evidence": [
+            {
+              "title": "Фролов–Дорофеев · полиномиальные тождества §9.1",
+              "url": "",
+              "name": "Arxiv261038474.subtract_restore"
+            },
+            {
+              "title": "MvPolynomial.quotient_map_C_eq_zero",
+              "url": "",
+              "name": "Mathlib.RingTheory.Polynomial.Quotient · MvPolynomial.quotient_map_C_eq_zero · source sha256: c3250ffee63cdba75c1ca69f55119d94391d0781e2b05dc89a1c55caba1076d0"
+            },
+            {
+              "title": "MvPolynomial.quotientEquivQuotientMvPolynomial_rightInverse",
+              "url": "",
+              "name": "Mathlib.RingTheory.Polynomial.Quotient · MvPolynomial.quotientEquivQuotientMvPolynomial_rightInverse · source sha256: c3250ffee63cdba75c1ca69f55119d94391d0781e2b05dc89a1c55caba1076d0"
+            },
+            {
+              "title": "MvPolynomial.quotientEquivQuotientMvPolynomial_leftInverse",
+              "url": "",
+              "name": "Mathlib.RingTheory.Polynomial.Quotient · MvPolynomial.quotientEquivQuotientMvPolynomial_leftInverse · source sha256: c3250ffee63cdba75c1ca69f55119d94391d0781e2b05dc89a1c55caba1076d0"
+            }
+          ]
+        }
+      ],
+      "hits": [
+        {
+          "id": "lean:7c356a59f383c1c611cb2712ce59123a12bd5cd5cb0217a73902362e6bd8b045",
+          "name": "PrimeSpectrum.comap_id",
+          "module": "Mathlib.RingTheory.Spectrum.Prime.Topology",
+          "statement": "theorem comap_id : comap (RingHom.id R) = ContinuousMap.id _",
+          "doc_comment": "",
+          "source_sha256": "491e8007106ff62582e3ff3e76ad1db4042fb3296935521920b2e445d52c4412",
+          "extraction": "textual_unverified",
+          "rank_score": 0.05161904761904762,
+          "query_matches": [
+            "PrimeSpectrum comap"
+          ]
+        },
+        {
+          "id": "lean:d5c64322c4c3de6c43e53617c96fa2d3c5cab30047c95bafc6d342a6caf1dee1",
+          "name": "MvPolynomial.quotient_mk_comp_C_isIntegral_of_isJacobsonRing",
+          "module": "Mathlib.RingTheory.Jacobson.Ring",
+          "statement": "theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing {R : Type*} [CommRing R] [IsJacobsonRing R]\r\n    (P : Ideal (MvPolynomial (Fin n) R)) [hP : P.IsMaximal] :\r\n    RingHom.IsIntegral (RingHom.comp (Ideal.Quotient.mk P) (MvPolynomial.C))",
+          "doc_comment": "",
+          "source_sha256": "353ca5dec74f354ca28221abf0b3004e69e69bfb674839b7efbc4950d9c450fd",
+          "extraction": "textual_unverified",
+          "rank_score": 0.05,
+          "query_matches": [
+            "MvPolynomial Ideal quotient"
+          ]
+        },
+        {
+          "id": "lean:d979acb5e785c78869f5ec6bc77de0ee38ba86e7c26f93622570c4e6322b9455",
+          "name": "MvPolynomial.quotient_map_C_eq_zero",
+          "module": "Mathlib.RingTheory.Polynomial.Quotient",
+          "statement": "theorem quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :\r\n    (Ideal.Quotient.mk (Ideal.map (C : R →+* MvPolynomial σ R) I :\r\n      Ideal (MvPolynomial σ R))).comp C i = 0",
+          "doc_comment": "",
+          "source_sha256": "c3250ffee63cdba75c1ca69f55119d94391d0781e2b05dc89a1c55caba1076d0",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04961904761904762,
+          "query_matches": [
+            "MvPolynomial Ideal quotient"
+          ]
+        },
+        {
+          "id": "lean:60b72442b1c48c3749f41e479f77778c1b2aa65d14b4405f466c3c98f3d70bcd",
+          "name": "MvPolynomial.quotientEquivQuotientMvPolynomial_rightInverse",
+          "module": "Mathlib.RingTheory.Polynomial.Quotient",
+          "statement": "lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :\r\n    Function.RightInverse\r\n      (eval₂ (Ideal.Quotient.lift I\r\n        ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)\r\n          fun _ hi => quotient_map_C_eq_zero hi)\r\n          fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))\r\n      (Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))\r\n        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha)",
+          "doc_comment": "",
+          "source_sha256": "c3250ffee63cdba75c1ca69f55119d94391d0781e2b05dc89a1c55caba1076d0",
+          "extraction": "textual_unverified",
+          "rank_score": 0.049478260869565215,
+          "query_matches": [
+            "MvPolynomial Ideal quotient"
+          ]
+        },
+        {
+          "id": "lean:6ea801c30cf79d347b59af5877621590231ae58b3eccd48936227635e6a4a6fb",
+          "name": "MvPolynomial.quotientEquivQuotientMvPolynomial_leftInverse",
+          "module": "Mathlib.RingTheory.Polynomial.Quotient",
+          "statement": "lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :\r\n    Function.LeftInverse\r\n      (eval₂ (Ideal.Quotient.lift I\r\n        ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)\r\n          fun _ hi => quotient_map_C_eq_zero hi)\r\n          fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))\r\n      (Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))\r\n        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha)",
+          "doc_comment": "",
+          "source_sha256": "c3250ffee63cdba75c1ca69f55119d94391d0781e2b05dc89a1c55caba1076d0",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04766666666666666,
+          "query_matches": [
+            "MvPolynomial Ideal quotient"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "route_3",
+      "msc_code": "37",
+      "title": "Dynamical systems and ergodic theory",
+      "rationale": "Динамические системы: после вычисления координат на R³ обе стороны обратимости позволяют рассматривать F как обратимое дискретное преобразование и изучать его итерации. Здесь пригодны механизмы переноса полиномиальной композиции в композицию функций и построения Equiv из взаимно обратных отображений. Это более дальний маршрут: периодичность, устойчивость и топологические свойства из исходного тождества не следуют.",
+      "queries": [
+        "MvPolynomial eval₂ composition",
+        "Equiv.ofBijective",
+        "Function.iterate"
+      ],
+      "status": "complete",
+      "candidates": [
+        {
+          "transition_id": "route_3_evaluation_to_equiv",
+          "title": "Вычисление координат переносит полиномиальную обратимость в Equiv",
+          "rank": 1,
+          "rationale": "Использовать исходные определения из StructureInput. Для любых H,K : Fin 3 → A установить совместимость E(compose H K) = E(H) ∘ E(K) и E(MvPolynomial.X) = id. Применить её к обоим исходным тождествам. Полученная биективность T позволяет построить Equiv.ofBijective T; его обратное отображение совпадает с явно заданным U по единственности обратного.",
+          "limitations": [
+            "Для всех R : Type u и S : Type v с CommRing R и CommRing S.",
+            "Для всех b w : Polynomial R и f : R →+* S.",
+            "Используются обе предоставленные теоремы subtract_restore и restore_subtract."
+          ],
+          "evidence": [
+            {
+              "title": "Фролов–Дорофеев · полиномиальные тождества §9.1",
+              "url": "",
+              "name": "Arxiv261038474.subtract_restore"
+            },
+            {
+              "title": "MvPolynomial.eval₂_neg",
+              "url": "",
+              "name": "Mathlib.Algebra.MvPolynomial.CommRing · MvPolynomial.eval₂_neg · source sha256: a1ab165bc4a8a21b4cf86d32ac5a708d891667124245c548a5958cbb7c666f28"
+            },
+            {
+              "title": "Equiv.ofBijective_apply_symm_apply",
+              "url": "",
+              "name": "Mathlib.Logic.Equiv.Defs · Equiv.ofBijective_apply_symm_apply · source sha256: 8d472e8e07c73b35b8568f52286d82f9dbb1583f3ff940b93f71484c394ff99b"
+            }
+          ]
+        },
+        {
+          "transition_id": "route_3_polynomial_integer_iteration",
+          "title": "Полиномиальная реализация целочисленной динамики",
+          "rank": 2,
+          "rationale": "Рекурсивно строить Pₙ,Qₙ через исходную Arxiv261038474.compose. Совместимость вычисления с композицией переносит эту рекурсию в Function.iterate. Взаимная обратимость T и U позволяет объединить прямые и обратные итерации в D : ℤ → (Fin 3 → S) → (Fin 3 → S).",
+          "limitations": [
+            "Для всех R : Type u и S : Type v с CommRing R и CommRing S.",
+            "Для всех b w : Polynomial R и f : R →+* S.",
+            "Для всех m n : ℕ, k ℓ : ℤ и v : Fin 3 → S.",
+            "Используется совместимость E(compose H K) = E(H) ∘ E(K) и обе стороны обратимости."
+          ],
+          "evidence": [
+            {
+              "title": "Фролов–Дорофеев · полиномиальные тождества §9.1",
+              "url": "",
+              "name": "Arxiv261038474.subtract_restore"
+            },
+            {
+              "title": "Equiv.ofBijective_apply_symm_apply",
+              "url": "",
+              "name": "Mathlib.Logic.Equiv.Defs · Equiv.ofBijective_apply_symm_apply · source sha256: 8d472e8e07c73b35b8568f52286d82f9dbb1583f3ff940b93f71484c394ff99b"
+            },
+            {
+              "title": "Function.Commute.iterate_iterate_self",
+              "url": "",
+              "name": "Mathlib.Logic.Function.Iterate · Function.Commute.iterate_iterate_self · source sha256: db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520"
+            }
+          ]
+        }
+      ],
+      "hits": [
+        {
+          "id": "lean:067b96955847d2fa793fb177de6a1bd16d9cc9d5f4839e934f793c6ec518cf56",
+          "name": "MvPolynomial.eval₂_neg",
+          "module": "Mathlib.Algebra.MvPolynomial.CommRing",
+          "statement": "theorem eval₂_neg : (-p).eval₂ f g = -p.eval₂ f g",
+          "doc_comment": "",
+          "source_sha256": "a1ab165bc4a8a21b4cf86d32ac5a708d891667124245c548a5958cbb7c666f28",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04961904761904762,
+          "query_matches": [
+            "MvPolynomial eval₂ composition"
+          ]
+        },
+        {
+          "id": "lean:10b5c948588aa2c944684d7f1efb792684c84fbbd32f0cec35d283a4a78e3d25",
+          "name": "MvPolynomial.eval₂_zero",
+          "module": "Mathlib.Algebra.MvPolynomial.Eval",
+          "statement": "theorem eval₂_zero : (0 : MvPolynomial σ R).eval₂ f g = 0",
+          "doc_comment": "",
+          "source_sha256": "d771943c6bfb07265f937c24b3201c2a9b86e07ae4cbc34d391e86d9d02b80f7",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04945454545454546,
+          "query_matches": [
+            "MvPolynomial eval₂ composition"
+          ]
+        },
+        {
+          "id": "lean:4972b42f32bdac98e5be3dd310d148f525f1c946232984b64fe33fc2b805be90",
+          "name": "Equiv.ofBijective_apply_symm_apply",
+          "module": "Mathlib.Logic.Equiv.Defs",
+          "statement": "lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :\r\n    f ((ofBijective f hf).symm x) = x",
+          "doc_comment": "",
+          "source_sha256": "8d472e8e07c73b35b8568f52286d82f9dbb1583f3ff940b93f71484c394ff99b",
+          "extraction": "textual_unverified",
+          "rank_score": 0.047619047619047616,
+          "query_matches": [
+            "Equiv.ofBijective"
+          ]
+        },
+        {
+          "id": "lean:63211f899017485a5f55c09f331ab8af74861063b6439de1a762b2f92a53ae2b",
+          "name": "Function.Commute.iterate_iterate_self",
+          "module": "Mathlib.Logic.Function.Iterate",
+          "statement": "theorem iterate_iterate_self (m n : ℕ) : Commute f^[m] f^[n]",
+          "doc_comment": "",
+          "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+          "extraction": "textual_unverified",
+          "rank_score": 0.047619047619047616,
+          "query_matches": [
+            "Function.iterate"
+          ]
+        },
+        {
+          "id": "lean:eb8cf636996d6a45c7bab41cf4a66ee9cb6b4e01d8c759a9f578409f5df1e0a0",
+          "name": "MvPolynomial.eval₂_one",
+          "module": "Mathlib.Algebra.MvPolynomial.Eval",
+          "statement": "theorem eval₂_one : (1 : MvPolynomial σ R).eval₂ f g = 1",
+          "doc_comment": "",
+          "source_sha256": "d771943c6bfb07265f937c24b3201c2a9b86e07ae4cbc34d391e86d9d02b80f7",
+          "extraction": "textual_unverified",
+          "rank_score": 0.04747826086956522,
+          "query_matches": [
+            "MvPolynomial eval₂ composition"
+          ]
+        }
+      ]
+    }
+  ],
+  "seed": null,
+  "seed_note": "Codex App Server exposes no deterministic sampling seed.",
+  "budget": {
+    "max_calls": 8,
+    "timeout_seconds": 600,
+    "max_parallel": 2
+  },
+  "usage": {
+    "calls": 4,
+    "total_tokens": 71931,
+    "elapsed_seconds": 251.578
+  },
+  "graph_migration": {
+    "search_run": "97fde89034994eb9ac0fbfe5576e8fcd",
+    "source_graph_revision": 1,
+    "proof_graph_revision": 2,
+    "migration": "Added the exact retained hit excerpts; search responses, mathematical claims and source selection unchanged.",
+    "proof_run": "0bc277e25f094fe894becf31b4fca6f1"
+  }
+}

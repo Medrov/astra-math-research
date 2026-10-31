@@ -1,0 +1,40 @@
+$ lean -o StructureInput.olean StructureInput.lean
+exit_code=0
+
+$ lean -o Bridge.olean Bridge.lean
+exit_code=0
+
+$ lean -o Audit.olean Audit.lean
+exit_code=0
+'CommonStructure.fiberShear_apply' depends on axioms: [propext, Quot.sound]
+'CommonStructure.fiberShear_inverse' depends on axioms: [propext, Quot.sound]
+'CommonStructure.fiberShear_graph' depends on axioms: [propext, Quot.sound]
+'CommonStructure.graphSubtract_eq_prodShear' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CommonStructure.graphSubtract_graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CommonStructure.squareShear_not_additive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]
+Equiv.prodShear.{u_9, u_10, u_11, u_12} {α₁ : Type u_9} {α₂ : Type u_10} {β₁ : Type u_11} {β₂ : Type u_12}
+  (e₁ : α₁ ≃ α₂) (e₂ : α₁ → β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂
+Equiv.subRight.{u_5} {G : Type u_5} [AddGroup G] (a : G) : G ≃ G
+Equiv.prodCongr.{u_10, u_11, u_12, u_9} {α₁ : Type u_9} {α₂ : Type u_10} {β₁ : Type u_11} {β₂ : Type u_12}
+  (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂
+
+$ lean -o LibraryNames.olean LibraryNames.lean
+exit_code=0
+Homeomorph.shearAddRight.{w} (G : Type w) [TopologicalSpace G] [AddGroup G] [IsTopologicalAddGroup G] : G × G ≃ₜ G × G
+Homeomorph.shearAddRight_coe.{w} (G : Type w) [TopologicalSpace G] [AddGroup G] [IsTopologicalAddGroup G] :
+  ⇑(Homeomorph.shearAddRight G) = fun z => (z.1, z.1 + z.2)
+LinearMap.prod.{u, v, w, y} {R : Type u} {M : Type v} {M₂ : Type w} {M₃ : Type y} [Semiring R] [AddCommMonoid M]
+  [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M] [Module R M₂] [Module R M₃] (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
+  M →ₗ[R] M₂ × M₃
+LinearMap.fst.{u, v, w} (R : Type u) (M : Type v) (M₂ : Type w) [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
+  [Module R M] [Module R M₂] : M × M₂ →ₗ[R] M
+LinearMap.snd.{u, v, w} (R : Type u) (M : Type v) (M₂ : Type w) [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
+  [Module R M] [Module R M₂] : M × M₂ →ₗ[R] M₂
+LinearEquiv.prodCongr.{u, v, w, y, z} {R : Type u} {M : Type v} {M₂ : Type w} {M₃ : Type y} {M₄ : Type z} [Semiring R]
+  [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄] {module_M : Module R M}
+  {module_M₂ : Module R M₂} {module_M₃ : Module R M₃} {module_M₄ : Module R M₄} (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄) :
+  (M × M₃) ≃ₗ[R] M₂ × M₄
