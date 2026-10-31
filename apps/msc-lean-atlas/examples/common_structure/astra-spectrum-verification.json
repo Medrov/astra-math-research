@@ -1,0 +1,279 @@
+{
+  "status": "complete",
+  "outcome": "proved",
+  "success": true,
+  "target": "SpectrumBridge.coordinate_and_spectrum_equivalence",
+  "expected_statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  ∃ e : MvPolynomial (Fin 3) R ≃ₐ[R] MvPolynomial (Fin 3) R,\n    e.toAlgHom.toRingHom = SpectrumBridge.alphaF b w ∧\n    e.symm.toAlgHom.toRingHom = SpectrumBridge.alphaG b w ∧\n    ∃ h : PrimeSpectrum (MvPolynomial (Fin 3) R) ≃ₜ PrimeSpectrum (MvPolynomial (Fin 3) R),\n      (h : PrimeSpectrum (MvPolynomial (Fin 3) R) → PrimeSpectrum (MvPolynomial (Fin 3) R)) =\n        (fun p => PrimeSpectrum.comap (SpectrumBridge.alphaF b w) p) ∧\n      (h.symm : PrimeSpectrum (MvPolynomial (Fin 3) R) → PrimeSpectrum (MvPolynomial (Fin 3) R)) =\n        (fun p => PrimeSpectrum.comap (SpectrumBridge.alphaG b w) p) ∧\n      h '' SpectrumBridge.vanishing (SpectrumBridge.graphIdeal b w) =\n        SpectrumBridge.vanishing (SpectrumBridge.axisIdeal R)",
+  "target_preserved": true,
+  "obligations": [
+    {
+      "id": "substitution_inverses",
+      "target": "SpectrumBridge.substitution_inverses",
+      "statement_sha256": "54c2a6dd3c5012a246cb712fdd255a152ebfbdda1b951f6f9c332e7310a0615c",
+      "ok": true,
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "ideal_transport",
+      "target": "SpectrumBridge.ideal_transport",
+      "statement_sha256": "5ea00ff6926bd6e9ec7a45f57ae9d8645190d861237ebe29515bd70b7cd7c713",
+      "ok": true,
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "coordinate_and_spectrum_equivalence",
+      "target": "SpectrumBridge.coordinate_and_spectrum_equivalence",
+      "statement_sha256": "73fe7666b1ff135e44c560ad281d2aa4b081825106afef399bb9b4f5fb7e2fa9",
+      "ok": true,
+      "expected_outcome": "proved"
+    }
+  ],
+  "obligations_passed": true,
+  "source_sha256": "c07fe4aaf73619939df559f94e926d0e4fa2002433b15176c61a225deab9a9dd",
+  "contract_sha256": "73fe7666b1ff135e44c560ad281d2aa4b081825106afef399bb9b4f5fb7e2fa9",
+  "contract_file_sha256": "a8cdf8bbd82d4bb158d475956d4d621dbed8fe1233abfb6ba71ea355ddfb7391",
+  "olean_sha256": "78f0bee52eaef7e421303c9eec05c43fe7e50265986b43d9c831a6e55aad7aa3",
+  "axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "audit": {
+    "status": "passed",
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "unexpected_axioms": [],
+    "unsafe_declarations": [],
+    "ignored_implementation_helpers": [],
+    "audited_roots": [
+      "SpectrumBridge.alphaF",
+      "SpectrumBridge.alphaF.eq_1",
+      "SpectrumBridge.alphaG",
+      "SpectrumBridge.alphaG.eq_1",
+      "SpectrumBridge.axisIdeal",
+      "SpectrumBridge.axisIdeal._proof_1",
+      "SpectrumBridge.axisIdeal.eq_1",
+      "SpectrumBridge.coordinate_and_spectrum_equivalence",
+      "SpectrumBridge.graphIdeal",
+      "SpectrumBridge.graphIdeal.eq_1",
+      "SpectrumBridge.ideal_transport",
+      "SpectrumBridge.substitution_inverses",
+      "SpectrumBridge.vanishing"
+    ],
+    "scope": "logical_local_declarations_and_target_axiom_closure"
+  },
+  "source_usage": {
+    "status": "related",
+    "selected_theorem": "Arxiv261038474.subtract_restore",
+    "selected_theorem_used": true,
+    "relevant_definitions": [
+      "Arxiv261038474.compose",
+      "Arxiv261038474.graphRestore",
+      "Arxiv261038474.graphSubtract",
+      "Arxiv261038474.univariate"
+    ],
+    "used_definitions": [
+      "Arxiv261038474.compose",
+      "Arxiv261038474.graphRestore",
+      "Arxiv261038474.graphSubtract",
+      "Arxiv261038474.univariate"
+    ],
+    "type_participation": [
+      "Arxiv261038474.graphRestore",
+      "Arxiv261038474.graphSubtract",
+      "Arxiv261038474.univariate"
+    ],
+    "proof_only_participation": [
+      "Arxiv261038474.compose",
+      "Arxiv261038474.subtract_restore"
+    ],
+    "reachable_input_declarations": [
+      "Arxiv261038474.compose",
+      "Arxiv261038474.eval_univariate",
+      "Arxiv261038474.graphRestore",
+      "Arxiv261038474.graphSubtract",
+      "Arxiv261038474.graphSubtract._proof_1",
+      "Arxiv261038474.restore_subtract",
+      "Arxiv261038474.subtract_restore",
+      "Arxiv261038474.univariate"
+    ],
+    "scope": "selected_theorem_or_input_definitions_in_its_transitive_type_dependencies",
+    "limitation": "Участие в типе или доказательстве — структурный сигнал, не гарантия смысловой связи или новизны.",
+    "required": true
+  },
+  "started_at": "2026-10-31T10:02:59.029392+00:00",
+  "finished_at": "2026-10-31T10:03:54.993696+00:00",
+  "kind": "retained_astra_spectrum_result",
+  "run_id": "abf14508267f4c1a83e58b37d01e65dc",
+  "search_run_id": "97fde89034994eb9ac0fbfe5576e8fcd",
+  "source_graph_ref": {
+    "id": "b1c886d16151432f8c03357b8f9f69e2",
+    "revision": 2
+  },
+  "graph_ref": {
+    "id": "2ad811629f2f4651b237047127ba90be",
+    "revision": 1
+  },
+  "semantic_review": {
+    "status": "aligned",
+    "reason": "Для любого коммутативного кольца R и любых b,w : Polynomial R сохранены исходные подстановки и доказаны обе композиции, равенство Ideal.map αF J = IΓ, существование R-алгебраического автоморфизма и гомеоморфизма простого спектра с указанными прямым и обратным comap. Равенство h(V(IΓ)) = V(J) имеет требуемое направление; топология спектра — Зарисского. Итоговый отчёт подтверждает сохранение цели и выполнение всех обязательств.",
+    "limitations": [
+      "R-линейность подстановок на алгебре следует из AlgEquiv; отсутствие R-линейности координатного преобразования в общем случае отдельно не формализовано.",
+      "Результат касается заключительного вычитания графа, а не всей статьи или предшествующей замены координат.",
+      "Проверка Lean не устанавливает новизну или исследовательскую полезность результата."
+    ],
+    "method": "model_review_not_formal_certificate"
+  },
+  "compiler": "Lean (version 4.19.0, x86_64-w64-windows-gnu, commit 6caaee842e94, Release)",
+  "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+  "environment_fingerprint": "8043028aeb74ed9b587edb10ff2db63d9226eba7ac888bf7e5dfa769c8cb62ba",
+  "input_source": "research_fixtures/Arxiv261038474.lean",
+  "input_source_sha256": "f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75",
+  "proof_usage": {
+    "calls": 5,
+    "total_tokens": 213206,
+    "elapsed_seconds": 461.937
+  },
+  "budget": {
+    "max_calls": 16,
+    "timeout_seconds": 1800,
+    "max_parallel": 2
+  },
+  "seed": "not exposed by app-server",
+  "source_hash_algorithm": "sha256 of UTF-8 text normalized to LF",
+  "candidate_raw_sha256": "efa7b79c7708f114cf2014d762414f782f2a490e0829dc26a6f77c26fc8ad262",
+  "limitations": [
+    "R-линейность подстановок на алгебре следует из AlgEquiv; отсутствие R-линейности координатного преобразования в общем случае отдельно не формализовано.",
+    "Результат касается заключительного вычитания графа, а не всей статьи или предшествующей замены координат.",
+    "Проверка Lean не устанавливает новизну или исследовательскую полезность результата.",
+    "Prime spectrum with Zariski topology; scheme structure sheaves not formalized.",
+    "Existing source proofs and pinned mathlib were available; not blind rediscovery."
+  ],
+  "diagnostics": [
+    {
+      "file": "StructureInput.lean",
+      "command": [
+        "lean.exe",
+        "-o",
+        "StructureInput.olean",
+        "StructureInput.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 7.281,
+      "stdout": "",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "Candidate.lean",
+      "command": [
+        "lean.exe",
+        "-o",
+        "Candidate.olean",
+        "Candidate.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.312,
+      "stdout": "Candidate.lean:29:6: warning: try 'simp' instead of 'simpa'\nnote: this linter can be disabled with `set_option linter.unnecessarySimpa false`\nCandidate.lean:33:6: warning: try 'simp' instead of 'simpa'\nnote: this linter can be disabled with `set_option linter.unnecessarySimpa false`\nCandidate.lean:31:6: warning: this tactic is never executed\nnote: this linter can be disabled with `set_option linter.unreachableTactic false`\nCandidate.lean:35:6: warning: this tactic is never executed\nnote: this linter can be disabled with `set_option linter.unreachableTactic false`\nCandidate.lean:31:6: warning: 'simp [SpectrumBridge.alphaF, SpectrumBridge.alphaG]' tactic does nothing\nnote: this linter can be disabled with `set_option linter.unusedTactic false`\nCandidate.lean:35:6: warning: 'simp [SpectrumBridge.alphaF, SpectrumBridge.alphaG]' tactic does nothing\nnote: this linter can be disabled with `set_option linter.unusedTactic false`\n",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "AtlasInspect.lean",
+      "command": [
+        "lean.exe",
+        "-o",
+        "AtlasInspect.olean",
+        "AtlasInspect.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.25,
+      "stdout": "",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "AtlasDump.lean",
+      "command": [
+        "lean.exe",
+        "AtlasDump.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 12.922,
+      "stdout": "",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "StructureInputAxioms.lean",
+      "command": [
+        "lean.exe",
+        "StructureInputAxioms.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.125,
+      "stdout": "'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "CandidateAxioms.lean",
+      "command": [
+        "lean.exe",
+        "CandidateAxioms.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 7.781,
+      "stdout": "'SpectrumBridge.coordinate_and_spectrum_equivalence' depends on axioms: [propext, Classical.choice, Quot.sound]\n'SpectrumBridge.substitution_inverses' depends on axioms: [propext, Classical.choice, Quot.sound]\n'SpectrumBridge.ideal_transport' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "Contract.lean",
+      "command": [
+        "lean.exe",
+        "-o",
+        "Contract.olean",
+        "Contract.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.75,
+      "stdout": "",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    }
+  ],
+  "source_print_axioms": {
+    "theorems": [
+      "Arxiv261038474.eval_univariate",
+      "Arxiv261038474.graph_to_axis",
+      "Arxiv261038474.subtract_restore",
+      "Arxiv261038474.restore_subtract"
+    ],
+    "file": "StructureInputAxioms.lean",
+    "exit_code": 0,
+    "stdout": "'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+    "stderr": ""
+  },
+  "candidate_print_axioms": {
+    "theorems": [
+      "SpectrumBridge.coordinate_and_spectrum_equivalence",
+      "SpectrumBridge.substitution_inverses",
+      "SpectrumBridge.ideal_transport"
+    ],
+    "file": "CandidateAxioms.lean",
+    "exit_code": 0,
+    "stdout": "'SpectrumBridge.coordinate_and_spectrum_equivalence' depends on axioms: [propext, Classical.choice, Quot.sound]\n'SpectrumBridge.substitution_inverses' depends on axioms: [propext, Classical.choice, Quot.sound]\n'SpectrumBridge.ideal_transport' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+    "stderr": ""
+  }
+}

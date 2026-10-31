@@ -111,6 +111,39 @@ def _agent_task(value):
                 statement=_text(value.get('statement'), 'target statement'))
 
 
+def validate_source_transition(value):
+    """Validate an exact literature input snapshot, never a Lean certificate."""
+    _fields(value, {'kind', 'graph_ref', 'question', 'msc_codes', 'transition', 'objects', 'sources',
+                    'semantic_hash', 'source_sha256'}, 'source transition')
+    if value.get('kind') != 'literature_transition':
+        raise ValueError('Source transition must be explicitly literary, not compiler verified')
+    ref = value.get('graph_ref')
+    _fields(ref, {'id', 'revision'}, 'source graph reference')
+    identifier = _identifier(ref.get('id'), 'source graph', UUID_HEX)
+    revision = ref.get('revision')
+    if not isinstance(revision, int) or isinstance(revision, bool) or revision < 1:
+        raise ValueError('Source graph revision must be exact')
+    sources = _array(value.get('sources'), 'source transition sources')
+    if any(not isinstance(s, dict) or s.get('structure_transition') or s.get('structure_source_id') for s in sources):
+        raise ValueError('A literary input must cite original sources, not another structure input')
+    clean = validate_graph(dict(title='Literature input', question=value.get('question'),
+        msc_codes=value.get('msc_codes'), objects=value.get('objects'), transitions=[value.get('transition')], sources=sources))
+    transition = clean['transitions'][0]
+    if {o['id'] for o in clean['objects']} != set(transition['source_ids'] + transition['target_ids']):
+        raise ValueError('Source snapshot must contain exactly the transition endpoint objects')
+    if {s['id'] for s in clean['sources']} != set(transition.get('source_refs', [])):
+        raise ValueError('Source snapshot must contain exactly the cited sources')
+    semantic = _fingerprints(clean)['transitions'][transition['id']]
+    if value.get('semantic_hash') != semantic:
+        raise ValueError('Source transition semantic hash mismatch')
+    normalized = dict(kind='literature_transition', graph_ref=dict(id=identifier, revision=revision),
+        question=clean['question'], msc_codes=clean['msc_codes'], transition=transition,
+        objects=clean['objects'], sources=clean['sources'], semantic_hash=semantic)
+    if value.get('source_sha256') != _hash(normalized):
+        raise ValueError('Source transition snapshot hash mismatch')
+    return dict(normalized, source_sha256=value['source_sha256'])
+
+
 def validate_graph(graph):
     """Return a clean input graph; derived server fields cannot confer status.
 
@@ -142,9 +175,9 @@ def validate_graph(graph):
         if not isinstance(relation, str) or relation not in RELATION_TYPES:
             raise ValueError('Invalid relation_type')
         formulation = item.get('formulation_status', 'formalized')
-        if formulation not in ('formalized', 'literature_only'):
+        if formulation not in ('formalized', 'literature_only', 'candidate'):
             raise ValueError('Invalid formulation_status')
-        literature_only = formulation == 'literature_only'
+        literature_only = formulation in ('literature_only', 'candidate')
         if literature_only and (item.get('agent_task') is not None or item.get('obligations') != [] or item.get('case_id') is not None):
             raise ValueError('Literature-only transitions cannot contain a formal task, obligations, or case_id')
         transition = dict(id=_identifier(item.get('id')), title=_text(item.get('title'), 'transition title', limit=300),
@@ -182,7 +215,8 @@ def validate_graph(graph):
         clean['transitions'].append(transition)
     _unique([item['id'] for item in clean['transitions']], 'transition ids')
     for item in _array(graph.get('sources', []), 'sources'):
-        _fields(item, {'id', 'title', 'url', 'locator', 'versioned_id', 'snapshot_sha256', 'section_id'}, 'source')
+        _fields(item, {'id', 'title', 'url', 'locator', 'versioned_id', 'snapshot_sha256', 'section_id',
+                       'structure_source_id', 'structure_target', 'structure_source_sha256', 'structure_transition', 'library_evidence'}, 'source')
         url = _text(item.get('url'), 'source URL', limit=4000, empty=True)
         parsed = urlsplit(url)
         if url and (parsed.scheme not in ('http', 'https') or not parsed.netloc):
@@ -192,12 +226,38 @@ def validate_graph(graph):
         for key in ('versioned_id', 'snapshot_sha256', 'section_id'):
             if key in item:
                 source[key] = _text(item[key], 'source ' + key, limit=512)
+        structure_keys = {'structure_source_id', 'structure_target', 'structure_source_sha256'}
+        if structure_keys.intersection(item):
+            if not structure_keys.issubset(item):
+                raise ValueError('Incomplete structure source binding')
+            source['structure_source_id'] = _identifier(item['structure_source_id'], 'structure source', UUID_HEX)
+            source['structure_target'] = _identifier(item['structure_target'], 'structure target', LEAN_NAME)
+            source['structure_source_sha256'] = _identifier(item['structure_source_sha256'], 'source hash', re.compile(r'^[a-f0-9]{64}$'))
+        if 'library_evidence' in item:
+            evidence = item['library_evidence']
+            _fields(evidence, {'id','title','name','module','statement','doc_comment','source_sha256','extraction'}, 'library evidence')
+            source['library_evidence'] = {key:_text(value, 'library '+key, limit=30000, empty=True) for key,value in evidence.items()}
+        if 'structure_transition' in item:
+            source['structure_transition'] = validate_source_transition(item['structure_transition'])
+            if structure_keys.intersection(item):
+                raise ValueError('A source cannot be both a Lean theorem and a literature transition')
         clean['sources'].append(source)
     _unique([item['id'] for item in clean['sources']], 'source ids')
     source_ids = {item['id'] for item in clean['sources']}
+    structure_ids = {item['id'] for item in clean['sources'] if item.get('structure_source_id')}
+    literature_ids = {item['id'] for item in clean['sources'] if item.get('structure_transition')}
+    if structure_ids and literature_ids:
+        raise ValueError('A structure graph must have exactly one kind of original input')
     for transition in clean['transitions']:
         if set(transition.get('source_refs', [])) - source_ids:
             raise ValueError('Unknown source reference')
+        uses_input = 'StructureInput' in (transition.get('agent_task') or {}).get('imports', [])
+        if (structure_ids or uses_input) and len(structure_ids & set(transition.get('source_refs', []))) != 1:
+            raise ValueError('Every structure transition must reference exactly one pinned input source')
+        if literature_ids and len(literature_ids & set(transition.get('source_refs', []))) != 1:
+            raise ValueError('Every analogy transition must reference exactly one pinned literature input')
+        if literature_ids and not any(s.get('library_evidence') and s['id'] in transition.get('source_refs', []) for s in clean['sources']):
+            raise ValueError('An analogy transition requires retained library evidence')
     if 'layout' in graph:
         if not isinstance(graph['layout'], dict) or len(_json(graph['layout'])) > 100000:
             raise ValueError('Invalid layout')
@@ -209,7 +269,7 @@ def validate_graph(graph):
 
 def transition_contract(transition):
     """Formal task for the existing controller, plus all mandatory goals."""
-    if transition.get('formulation_status', 'formalized') == 'literature_only':
+    if transition.get('formulation_status', 'formalized') in ('literature_only', 'candidate'):
         return dict(task=None, obligations=[])
     return dict(**json.loads(_json(transition['agent_task'])),
                 obligations=[{key: item[key] for key in ('id', 'target', 'statement', 'expected_outcome')}
@@ -226,11 +286,12 @@ def _fingerprints(graph):
         value.update(question=graph['question'], contract=transition_contract(transition),
                      source_objects=sorted((ref, objects[ref]) for ref in transition['source_ids']),
                      target_objects=sorted((ref, objects[ref]) for ref in transition['target_ids']))
-        if transition.get('formulation_status', 'formalized') == 'literature_only':
-            value['formulation_status'] = 'literature_only'
+        if transition.get('formulation_status', 'formalized') in ('literature_only', 'candidate'):
+            value['formulation_status'] = transition['formulation_status']
         if 'source_refs' in transition:
             value['source_provenance'] = [{key: source[key] for key in
-                ('id', 'url', 'locator', 'versioned_id', 'snapshot_sha256', 'section_id') if key in source}
+                ('id', 'url', 'locator', 'versioned_id', 'snapshot_sha256', 'section_id',
+                  'structure_source_id', 'structure_target', 'structure_source_sha256', 'structure_transition', 'library_evidence') if key in source}
                 for source in (sources[ref] for ref in sorted(transition['source_refs']))]
         transitions[transition['id']] = _hash(value)
     return dict(semantic_hash=_hash(dict(question=graph['question'], objects=objects, transitions=transitions)),
@@ -254,7 +315,7 @@ def _environment(value):
 
 def _verdict(transition, result):
     """A claimed outcome is never sufficient; check all bound goal witnesses."""
-    if transition.get('formulation_status', 'formalized') == 'literature_only':
+    if transition.get('formulation_status', 'formalized') in ('literature_only', 'candidate'):
         return 'unknown', ['literature-only transition has no formal contract']
     errors = []
     report = result.get('verification')

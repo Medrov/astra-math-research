@@ -1,0 +1,972 @@
+{
+  "release": "v0.3.0",
+  "release_date_local": "2026-11-01",
+  "timezone": "Europe/Moscow",
+  "checked_at_utc": "2026-10-31T21:39:57.687275+00:00",
+  "status": "passed",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.10",
+    "node": "24.15.0",
+    "lean": "4.19.0",
+    "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b"
+  },
+  "validation": {
+    "python": {
+      "command": "python -m unittest discover -s tests -v",
+      "exit_code": 0,
+      "tests": 283,
+      "elapsed_seconds": 638.421,
+      "skipped": 0,
+      "failed": 0
+    },
+    "javascript": {
+      "command": "node --test tests/test*.cjs",
+      "exit_code": 0,
+      "tests": 197,
+      "passed": 197,
+      "failed": 0,
+      "skipped": 0,
+      "note": "Node TAP includes legacy file-level harness entries. Local historical fixtures were present; some tests explicitly skip without those fixtures in a clean clone."
+    },
+    "assets": {
+      "commands": [
+        "npm run build:math",
+        "npm run build:graph-bundle"
+      ],
+      "exit_codes": [
+        0,
+        0
+      ]
+    }
+  },
+  "original_math_kit": {
+    "command": "python scripts/check.py",
+    "exit_code": 0,
+    "source_count": 11,
+    "theorem_count": 149,
+    "started_at_utc": "2026-10-31T21:26:40.173354+00:00",
+    "checked_at_utc": "2026-10-31T21:36:26.328234+00:00",
+    "fresh_isolated_snapshot": true,
+    "sources_unchanged": true,
+    "external_checker": "not run",
+    "results": [
+      {
+        "file": "MathResearch/MinimalAInfinity.lean",
+        "sha256": "6738387e2de2b93bee480406edc2774b18caad29f7897e4948473a4c8a68b7e0",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 2,
+        "elapsed_seconds": 5.031,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/AlbertObstruction.lean",
+        "sha256": "49a1dfa01e3ef9ee5dce14136efb9aeb79626c43219cbcc235086099c328115e",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 4,
+        "elapsed_seconds": 8.328,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/AlbertMatrix.lean",
+        "sha256": "c9052a5fffbb948025641b65bbc1342a9a970cad9b8d23736a17b36f322f6c5a",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 11,
+        "elapsed_seconds": 24.297,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/Derivations.lean",
+        "sha256": "1beb33964181c296e3697e78347bc72cc188b9bb8abcccbaa2158b2201fa47b5",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 7,
+        "elapsed_seconds": 6.531,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/AssociativeBridge.lean",
+        "sha256": "12c04bc3a5360359acdc90f62865724f8b8663cb45b0e0c6bf65a2f4bbea6de1",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 4,
+        "elapsed_seconds": 5.969,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/TripleBridge.lean",
+        "sha256": "ef940e4c18302b44fa7a0817d8278173fe967ed0f2eca5aff0dd7a1c7e996ad3",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 2,
+        "elapsed_seconds": 4.828,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/ProbeLowerBound.lean",
+        "sha256": "8be0b4f60c5657c69a3d427f21f6120cfc208fafc1aad7d799546e3df0b0e577",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 5,
+        "elapsed_seconds": 11.203,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/AlbertSpectralGeometry.lean",
+        "sha256": "6c148e0bb302fe94202945e90d66cb90f78a070743dd3fdfd3621ff69f10d019",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 18,
+        "elapsed_seconds": 17.593,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/SpectralDefect.lean",
+        "sha256": "e25ccfe23b1293a123d163911d7b1c2e5d5513e397375f51b7c4cbe80e03501e",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 27,
+        "elapsed_seconds": 10.578,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch/OctonionIncidence.lean",
+        "sha256": "a70b3d1012235130e56d6060657992a65e07576909ede9a5b07a9e0da7e841a0",
+        "exit_code": 0,
+        "reported_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "theorem_count": 69,
+        "elapsed_seconds": 483.922,
+        "forbidden_axiom_seen": false
+      },
+      {
+        "file": "MathResearch.lean",
+        "sha256": "2af36a3b909037097226eca510e78793f13f453431514ac277152545670ba989",
+        "exit_code": 0,
+        "reported_axioms": [],
+        "theorem_count": 0,
+        "elapsed_seconds": 7.14,
+        "forbidden_axiom_seen": false
+      }
+    ]
+  },
+  "lean_reproductions": [
+    {
+      "command": "python tools/reproduce_common_structure.py",
+      "exit_code": 0,
+      "source": "apps/msc-lean-atlas/examples/common_structure/AstraCoordinateAutomorphism.lean",
+      "source_sha256": "cb23c7ddc81135d5e671636cf9258c90ee76bbcdd49c947a755e1a81ee644e9c",
+      "staged_source_matches_verified_bytes": true,
+      "target": "Arxiv261038474.coordinate_automorphism_exists",
+      "success": true,
+      "target_preserved": true,
+      "started_at": "2026-10-31T21:31:37.584291+00:00",
+      "finished_at": "2026-10-31T21:32:22.590577+00:00",
+      "obligations": [
+        {
+          "id": "substitution_bridge",
+          "target": "Arxiv261038474.substitutionAlgHom_toRingHom",
+          "statement_sha256": "7d9961cfc605c8bac84ecb0fa8ebae97728fd2304cba22f4f500b5351032841f",
+          "ok": true,
+          "expected_outcome": "proved"
+        },
+        {
+          "id": "contravariant_composition",
+          "target": "Arxiv261038474.substitutionAlgHom_comp",
+          "statement_sha256": "16b61d1c8fe37d5d876dbe5245a0aead69398ad21f823fd4b2c4e6ac8a007239",
+          "ok": true,
+          "expected_outcome": "proved"
+        },
+        {
+          "id": "two_inverse_identities",
+          "target": "Arxiv261038474.graph_substitution_inverse_identities",
+          "statement_sha256": "a246c76c0a9f573b51b8869cd71416409630e35514fd66b82a6839a721d260dd",
+          "ok": true,
+          "expected_outcome": "proved"
+        },
+        {
+          "id": "coordinate_automorphism",
+          "target": "Arxiv261038474.coordinate_automorphism_exists",
+          "statement_sha256": "0f9b80985c8362ea8bd0429d184ba8df10487a3a313583cee72cdb83cc74f3d3",
+          "ok": true,
+          "expected_outcome": "proved"
+        }
+      ],
+      "obligations_passed": true,
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [],
+        "audited_roots": [
+          "Arxiv261038474.coordinate_automorphism_exists",
+          "Arxiv261038474.graph_substitution_inverse_identities",
+          "Arxiv261038474.substitutionAlgHom",
+          "Arxiv261038474.substitutionAlgHom.eq_1",
+          "Arxiv261038474.substitutionAlgHom_comp",
+          "Arxiv261038474.substitutionAlgHom_toRingHom"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      },
+      "print_axioms": {
+        "exit_code": 0,
+        "stdout": "'Arxiv261038474.coordinate_automorphism_exists' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.substitutionAlgHom_toRingHom' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.substitutionAlgHom_comp' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_substitution_inverse_identities' depends on axioms: [propext, Classical.choice, Quot.sound]\n"
+      },
+      "source_usage": {
+        "status": "related",
+        "selected_theorem": "Arxiv261038474.subtract_restore",
+        "selected_theorem_used": true,
+        "relevant_definitions": [
+          "Arxiv261038474.compose",
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "used_definitions": [
+          "Arxiv261038474.compose",
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "type_participation": [
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "proof_only_participation": [
+          "Arxiv261038474.compose",
+          "Arxiv261038474.subtract_restore"
+        ],
+        "reachable_input_declarations": [
+          "Arxiv261038474.compose",
+          "Arxiv261038474.eval_univariate",
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.graphSubtract._proof_1",
+          "Arxiv261038474.restore_subtract",
+          "Arxiv261038474.subtract_restore",
+          "Arxiv261038474.univariate"
+        ],
+        "scope": "selected_theorem_or_input_definitions_in_its_transitive_type_dependencies",
+        "limitation": "Участие в типе или доказательстве — структурный сигнал, не гарантия смысловой связи или новизны.",
+        "required": true
+      },
+      "model_calls": 0,
+      "reproduction_kind": "retained_astra_result"
+    },
+    {
+      "command": "python tools/reproduce_common_structure.py --spectrum",
+      "exit_code": 0,
+      "source": "apps/msc-lean-atlas/examples/common_structure/AstraSpectrumHomeomorphism.lean",
+      "source_sha256": "c07fe4aaf73619939df559f94e926d0e4fa2002433b15176c61a225deab9a9dd",
+      "staged_source_matches_verified_bytes": true,
+      "target": "SpectrumBridge.coordinate_and_spectrum_equivalence",
+      "success": true,
+      "target_preserved": true,
+      "started_at": "2026-10-31T21:31:37.784345+00:00",
+      "finished_at": "2026-10-31T21:32:25.826059+00:00",
+      "obligations": [
+        {
+          "id": "substitution_inverses",
+          "target": "SpectrumBridge.substitution_inverses",
+          "statement_sha256": "54c2a6dd3c5012a246cb712fdd255a152ebfbdda1b951f6f9c332e7310a0615c",
+          "ok": true,
+          "expected_outcome": "proved"
+        },
+        {
+          "id": "ideal_transport",
+          "target": "SpectrumBridge.ideal_transport",
+          "statement_sha256": "5ea00ff6926bd6e9ec7a45f57ae9d8645190d861237ebe29515bd70b7cd7c713",
+          "ok": true,
+          "expected_outcome": "proved"
+        },
+        {
+          "id": "coordinate_and_spectrum_equivalence",
+          "target": "SpectrumBridge.coordinate_and_spectrum_equivalence",
+          "statement_sha256": "73fe7666b1ff135e44c560ad281d2aa4b081825106afef399bb9b4f5fb7e2fa9",
+          "ok": true,
+          "expected_outcome": "proved"
+        }
+      ],
+      "obligations_passed": true,
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [],
+        "audited_roots": [
+          "SpectrumBridge.alphaF",
+          "SpectrumBridge.alphaF.eq_1",
+          "SpectrumBridge.alphaG",
+          "SpectrumBridge.alphaG.eq_1",
+          "SpectrumBridge.axisIdeal",
+          "SpectrumBridge.axisIdeal._proof_1",
+          "SpectrumBridge.axisIdeal.eq_1",
+          "SpectrumBridge.coordinate_and_spectrum_equivalence",
+          "SpectrumBridge.graphIdeal",
+          "SpectrumBridge.graphIdeal.eq_1",
+          "SpectrumBridge.ideal_transport",
+          "SpectrumBridge.substitution_inverses",
+          "SpectrumBridge.vanishing"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      },
+      "print_axioms": {
+        "exit_code": 0,
+        "stdout": "'SpectrumBridge.coordinate_and_spectrum_equivalence' depends on axioms: [propext, Classical.choice, Quot.sound]\n'SpectrumBridge.substitution_inverses' depends on axioms: [propext, Classical.choice, Quot.sound]\n'SpectrumBridge.ideal_transport' depends on axioms: [propext, Classical.choice, Quot.sound]\n"
+      },
+      "source_usage": {
+        "status": "related",
+        "selected_theorem": "Arxiv261038474.subtract_restore",
+        "selected_theorem_used": true,
+        "relevant_definitions": [
+          "Arxiv261038474.compose",
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "used_definitions": [
+          "Arxiv261038474.compose",
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "type_participation": [
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "proof_only_participation": [
+          "Arxiv261038474.compose",
+          "Arxiv261038474.subtract_restore"
+        ],
+        "reachable_input_declarations": [
+          "Arxiv261038474.compose",
+          "Arxiv261038474.eval_univariate",
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.graphSubtract._proof_1",
+          "Arxiv261038474.restore_subtract",
+          "Arxiv261038474.subtract_restore",
+          "Arxiv261038474.univariate"
+        ],
+        "scope": "selected_theorem_or_input_definitions_in_its_transitive_type_dependencies",
+        "limitation": "Участие в типе или доказательстве — структурный сигнал, не гарантия смысловой связи или новизны.",
+        "required": true
+      },
+      "model_calls": 0,
+      "reproduction_kind": "retained_astra_result"
+    },
+    {
+      "command": "python tools/reproduce_common_structure.py --control",
+      "exit_code": 0,
+      "source": "apps/msc-lean-atlas/examples/common_structure/Bridge.lean",
+      "source_sha256": "88dc511fa6650eabee3f530e79efea4708fd3ef74bea52c7d993cda9770079a8",
+      "staged_source_matches_verified_bytes": true,
+      "target": "CommonStructure.graphSubtract_eq_prodShear",
+      "success": true,
+      "target_preserved": true,
+      "started_at": "2026-10-31T21:31:37.786465+00:00",
+      "finished_at": "2026-10-31T21:32:21.989726+00:00",
+      "obligations": [],
+      "obligations_passed": true,
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [
+          {
+            "name": "Finset.prod._at.CommonStructure.evaluateTriple._spec_4",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finsupp.prod._at.CommonStructure.evaluateTriple._spec_3",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "RingHom.id._at.CommonStructure.evaluateTriple._spec_1",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Multiset.prod._at.CommonStructure.evaluateTriple._spec_5",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finsupp.prod._at.CommonStructure.evaluateTriple._spec_9",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finset.prod._at.CommonStructure.evaluateTriple._spec_16",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "MvPolynomial.eval₂._at.CommonStructure.evaluateTriple._spec_2",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finsupp.sum._at.CommonStructure.evaluateTriple._spec_18",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finset.sum._at.CommonStructure.evaluateTriple._spec_13",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finsupp.sum._at.CommonStructure.evaluateTriple._spec_12",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finsupp.prod._at.CommonStructure.evaluateTriple._spec_15",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finsupp.sum._at.CommonStructure.evaluateTriple._spec_6",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finset.sum._at.CommonStructure.evaluateTriple._spec_19",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "MvPolynomial.eval₂._at.CommonStructure.evaluateTriple._spec_8",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "MvPolynomial.eval₂._at.CommonStructure.evaluateTriple._spec_14",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Multiset.prod._at.CommonStructure.evaluateTriple._spec_17",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finset.prod._at.CommonStructure.evaluateTriple._spec_10",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Finset.sum._at.CommonStructure.evaluateTriple._spec_7",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          },
+          {
+            "name": "Multiset.prod._at.CommonStructure.evaluateTriple._spec_11",
+            "kind": "axiom",
+            "unsafe": true,
+            "reason": "compiler_runtime_specialization_not_a_logical_audit_root"
+          }
+        ],
+        "audited_roots": [
+          "CommonStructure.evaluateTriple",
+          "CommonStructure.evaluateTriple._proof_1",
+          "CommonStructure.evaluateTriple.eq_1",
+          "CommonStructure.fiberShear",
+          "CommonStructure.fiberShear.eq_1",
+          "CommonStructure.fiberShear_apply",
+          "CommonStructure.fiberShear_graph",
+          "CommonStructure.fiberShear_inverse",
+          "CommonStructure.graphSubtract_eq_prodShear",
+          "CommonStructure.graphSubtract_graph_to_axis",
+          "CommonStructure.pointCoordinates",
+          "CommonStructure.pointCoordinates.eq_1",
+          "CommonStructure.polynomialProfile",
+          "CommonStructure.polynomialProfile.eq_1",
+          "CommonStructure.reorder",
+          "CommonStructure.reorder.eq_1",
+          "CommonStructure.squareShear_not_additive",
+          "Equiv.prodShear.eq_1"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      },
+      "print_axioms": {
+        "exit_code": 0,
+        "stdout": "'CommonStructure.squareShear_not_additive' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CommonStructure.fiberShear_inverse' depends on axioms: [propext, Quot.sound]\n'CommonStructure.graphSubtract_graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CommonStructure.fiberShear_apply' depends on axioms: [propext, Quot.sound]\n'CommonStructure.fiberShear_graph' depends on axioms: [propext, Quot.sound]\n'CommonStructure.graphSubtract_eq_prodShear' depends on axioms: [propext, Classical.choice, Quot.sound]\n"
+      },
+      "source_usage": {
+        "status": "related",
+        "selected_theorem": "Arxiv261038474.graph_to_axis",
+        "selected_theorem_used": false,
+        "relevant_definitions": [
+          "Arxiv261038474.alongGraph",
+          "Arxiv261038474.graphCurve",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "used_definitions": [
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "type_participation": [
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.univariate"
+        ],
+        "proof_only_participation": [],
+        "reachable_input_declarations": [
+          "Arxiv261038474.eval_univariate",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.graphSubtract._proof_1",
+          "Arxiv261038474.univariate"
+        ],
+        "scope": "selected_theorem_or_input_definitions_in_its_transitive_type_dependencies",
+        "limitation": "Участие в типе или доказательстве — структурный сигнал, не гарантия смысловой связи или новизны.",
+        "required": true
+      },
+      "model_calls": 0,
+      "reproduction_kind": "prepared_control"
+    }
+  ],
+  "prepared_published_source": {
+    "source_sha256": "b5c4b554db9f4b53df7f0c8e502b2c47c40c4c08d1a1df5ccc5d8038070569a8",
+    "checks": {
+      "inspection": {
+        "status": "complete",
+        "success": true,
+        "audit": {
+          "status": "passed",
+          "allowed_axioms": [
+            "Classical.choice",
+            "Quot.sound",
+            "propext"
+          ],
+          "unexpected_axioms": [],
+          "unsafe_declarations": [],
+          "ignored_implementation_helpers": [],
+          "audited_roots": [
+            "AlgebraObject.energy",
+            "Bridge.energy_correspondence",
+            "GraphObject.energy",
+            "GraphObject.energy._proof_1"
+          ],
+          "scope": "logical_local_declarations_and_target_axiom_closure"
+        },
+        "dependency_sources": [
+          {
+            "module": "MathResearch.MinimalAInfinity",
+            "path": "MathResearch/MinimalAInfinity.lean",
+            "sha256": "6738387e2de2b93bee480406edc2774b18caad29f7897e4948473a4c8a68b7e0",
+            "imports": [
+              "Mathlib.Algebra.Lie.Basic"
+            ],
+            "olean_sha256": "f9a7fbb2845648998f84a5c59074ba44032589b0eea70f206af4ab141e21931f"
+          },
+          {
+            "module": "MathResearch.AlbertObstruction",
+            "path": "MathResearch/AlbertObstruction.lean",
+            "sha256": "49a1dfa01e3ef9ee5dce14136efb9aeb79626c43219cbcc235086099c328115e",
+            "imports": [
+              "Mathlib.Algebra.Quaternion",
+              "Mathlib.Data.Matrix.Notation",
+              "Mathlib.Tactic.NormNum",
+              "Mathlib.Tactic.FinCases",
+              "MathResearch.MinimalAInfinity"
+            ],
+            "olean_sha256": "0fae8d6580b823b9c6f5263072c67b00f637acc25f3dec965cfb3c8ee4d9a9d0"
+          },
+          {
+            "module": "MathResearch.AlbertMatrix",
+            "path": "MathResearch/AlbertMatrix.lean",
+            "sha256": "c9052a5fffbb948025641b65bbc1342a9a970cad9b8d23736a17b36f322f6c5a",
+            "imports": [
+              "MathResearch.AlbertObstruction",
+              "Mathlib.Tactic.Abel"
+            ],
+            "olean_sha256": "48530f6f7cb4fbafb0e19f1d5d182346edefb3e9beb43eba79b617e50f5c8424"
+          },
+          {
+            "module": "MathResearch.AlbertSpectralGeometry",
+            "path": "MathResearch/AlbertSpectralGeometry.lean",
+            "sha256": "6c148e0bb302fe94202945e90d66cb90f78a070743dd3fdfd3621ff69f10d019",
+            "imports": [
+              "MathResearch.AlbertMatrix",
+              "Mathlib.Tactic.Ring",
+              "Mathlib.Tactic.Linarith"
+            ],
+            "olean_sha256": "66249179002582d0920162e248bda73b08abeacafd8a28fa16825324903939f3"
+          }
+        ],
+        "dependency_fingerprint": "7c5615080ca86b60f1cab70de957cef066457d93b57d7df783b9c7e0d97ceef9",
+        "fresh_local_build": true,
+        "lean_commands": 8,
+        "exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "print_axioms": {
+          "exit_code": 0,
+          "stdout": "'Bridge.energy_correspondence' depends on axioms: [propext, Classical.choice, Quot.sound]\n"
+        }
+      },
+      "proof": {
+        "status": "complete",
+        "success": true,
+        "target": "PublishedReuse.energy",
+        "source_sha256": "84b75b26284bb355ce15319da91f51e9dc4ecfa8cefa365fb4922ca35f240007",
+        "audit": {
+          "status": "passed",
+          "allowed_axioms": [
+            "Classical.choice",
+            "Quot.sound",
+            "propext"
+          ],
+          "unexpected_axioms": [],
+          "unsafe_declarations": [],
+          "ignored_implementation_helpers": [],
+          "audited_roots": [
+            "PublishedReuse.energy"
+          ],
+          "scope": "logical_local_declarations_and_target_axiom_closure"
+        },
+        "source_usage": {
+          "status": "related",
+          "selected_theorem": "Bridge.energy_correspondence",
+          "selected_theorem_used": true,
+          "relevant_definitions": [
+            "AlgebraObject.energy",
+            "GraphObject.energy"
+          ],
+          "used_definitions": [
+            "AlgebraObject.energy",
+            "GraphObject.energy"
+          ],
+          "type_participation": [
+            "AlgebraObject.energy",
+            "GraphObject.energy"
+          ],
+          "proof_only_participation": [
+            "Bridge.energy_correspondence"
+          ],
+          "reachable_input_declarations": [
+            "AlgebraObject.energy",
+            "Bridge.energy_correspondence",
+            "GraphObject.energy",
+            "GraphObject.energy._proof_1"
+          ],
+          "scope": "selected_theorem_or_input_definitions_in_its_transitive_type_dependencies",
+          "limitation": "Участие в типе или доказательстве — структурный сигнал, не гарантия смысловой связи или новизны.",
+          "required": true
+        },
+        "dependency_sources": [
+          {
+            "module": "MathResearch.MinimalAInfinity",
+            "path": "MathResearch/MinimalAInfinity.lean",
+            "sha256": "6738387e2de2b93bee480406edc2774b18caad29f7897e4948473a4c8a68b7e0",
+            "imports": [
+              "Mathlib.Algebra.Lie.Basic"
+            ],
+            "olean_sha256": "f9a7fbb2845648998f84a5c59074ba44032589b0eea70f206af4ab141e21931f"
+          },
+          {
+            "module": "MathResearch.AlbertObstruction",
+            "path": "MathResearch/AlbertObstruction.lean",
+            "sha256": "49a1dfa01e3ef9ee5dce14136efb9aeb79626c43219cbcc235086099c328115e",
+            "imports": [
+              "Mathlib.Algebra.Quaternion",
+              "Mathlib.Data.Matrix.Notation",
+              "Mathlib.Tactic.NormNum",
+              "Mathlib.Tactic.FinCases",
+              "MathResearch.MinimalAInfinity"
+            ],
+            "olean_sha256": "0fae8d6580b823b9c6f5263072c67b00f637acc25f3dec965cfb3c8ee4d9a9d0"
+          },
+          {
+            "module": "MathResearch.AlbertMatrix",
+            "path": "MathResearch/AlbertMatrix.lean",
+            "sha256": "c9052a5fffbb948025641b65bbc1342a9a970cad9b8d23736a17b36f322f6c5a",
+            "imports": [
+              "MathResearch.AlbertObstruction",
+              "Mathlib.Tactic.Abel"
+            ],
+            "olean_sha256": "48530f6f7cb4fbafb0e19f1d5d182346edefb3e9beb43eba79b617e50f5c8424"
+          },
+          {
+            "module": "MathResearch.AlbertSpectralGeometry",
+            "path": "MathResearch/AlbertSpectralGeometry.lean",
+            "sha256": "6c148e0bb302fe94202945e90d66cb90f78a070743dd3fdfd3621ff69f10d019",
+            "imports": [
+              "MathResearch.AlbertMatrix",
+              "Mathlib.Tactic.Ring",
+              "Mathlib.Tactic.Linarith"
+            ],
+            "olean_sha256": "66249179002582d0920162e248bda73b08abeacafd8a28fa16825324903939f3"
+          }
+        ],
+        "dependency_fingerprint": "7c5615080ca86b60f1cab70de957cef066457d93b57d7df783b9c7e0d97ceef9",
+        "fresh_local_build": true,
+        "lean_commands": 11,
+        "exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "print_axioms": {
+          "exit_code": 0,
+          "stdout": "'PublishedReuse.energy' depends on axioms: [propext, Classical.choice, Quot.sound]\n"
+        }
+      },
+      "contract_preflight": {
+        "status": "complete",
+        "well_typed": true,
+        "proof_checked": false,
+        "target": "PublishedReuse.energy",
+        "source_sha256": "57b30a4589d5bdba951145af7a253c00620623c7773f1656304851e6735ff4e6",
+        "audit": {
+          "status": "passed",
+          "allowed_axioms": [
+            "Classical.choice",
+            "Quot.sound",
+            "propext"
+          ],
+          "unexpected_axioms": [],
+          "unsafe_declarations": [],
+          "ignored_implementation_helpers": [],
+          "audited_roots": [
+            "AtlasContract_716b2b70e6c0437184ec4b23fb70a01f.expectedType0",
+            "AtlasContract_716b2b70e6c0437184ec4b23fb70a01f.expectedType1"
+          ],
+          "scope": "logical_local_declarations_and_target_axiom_closure"
+        },
+        "dependency_sources": [
+          {
+            "module": "MathResearch.MinimalAInfinity",
+            "path": "MathResearch/MinimalAInfinity.lean",
+            "sha256": "6738387e2de2b93bee480406edc2774b18caad29f7897e4948473a4c8a68b7e0",
+            "imports": [
+              "Mathlib.Algebra.Lie.Basic"
+            ],
+            "olean_sha256": "f9a7fbb2845648998f84a5c59074ba44032589b0eea70f206af4ab141e21931f"
+          },
+          {
+            "module": "MathResearch.AlbertObstruction",
+            "path": "MathResearch/AlbertObstruction.lean",
+            "sha256": "49a1dfa01e3ef9ee5dce14136efb9aeb79626c43219cbcc235086099c328115e",
+            "imports": [
+              "Mathlib.Algebra.Quaternion",
+              "Mathlib.Data.Matrix.Notation",
+              "Mathlib.Tactic.NormNum",
+              "Mathlib.Tactic.FinCases",
+              "MathResearch.MinimalAInfinity"
+            ],
+            "olean_sha256": "0fae8d6580b823b9c6f5263072c67b00f637acc25f3dec965cfb3c8ee4d9a9d0"
+          },
+          {
+            "module": "MathResearch.AlbertMatrix",
+            "path": "MathResearch/AlbertMatrix.lean",
+            "sha256": "c9052a5fffbb948025641b65bbc1342a9a970cad9b8d23736a17b36f322f6c5a",
+            "imports": [
+              "MathResearch.AlbertObstruction",
+              "Mathlib.Tactic.Abel"
+            ],
+            "olean_sha256": "48530f6f7cb4fbafb0e19f1d5d182346edefb3e9beb43eba79b617e50f5c8424"
+          },
+          {
+            "module": "MathResearch.AlbertSpectralGeometry",
+            "path": "MathResearch/AlbertSpectralGeometry.lean",
+            "sha256": "6c148e0bb302fe94202945e90d66cb90f78a070743dd3fdfd3621ff69f10d019",
+            "imports": [
+              "MathResearch.AlbertMatrix",
+              "Mathlib.Tactic.Ring",
+              "Mathlib.Tactic.Linarith"
+            ],
+            "olean_sha256": "66249179002582d0920162e248bda73b08abeacafd8a28fa16825324903939f3"
+          }
+        ],
+        "dependency_fingerprint": "7c5615080ca86b60f1cab70de957cef066457d93b57d7df783b9c7e0d97ceef9",
+        "fresh_local_build": true,
+        "lean_commands": 8,
+        "exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "model_calls": 0
+  },
+  "public_examples": [
+    "arxiv_2610_38474_graph_subtraction",
+    "published_associator_laplacian"
+  ],
+  "browser": {
+    "method": "CUA on running local application",
+    "checks": [
+      "Ready-example selector contains exactly the two public sources.",
+      "Frolov-Dorofeev source opens, selects subtract_restore and renders its formulas.",
+      "Published source imports through the UI, passes Lean inspection and selects Bridge.energy_correspondence.",
+      "Exact displayed type: forall d f : Fin 3 -> Q, AlgebraObject.energy d f = GraphObject.energy d f.",
+      "Start-search button enabled; no Astra research started for release validation."
+    ],
+    "javascript_errors": 0,
+    "console_warnings": 2,
+    "warning_scope": "Existing Cytoscape custom wheel sensitivity notice, emitted twice."
+  },
+  "review": {
+    "method": "Separate agent read-only review of the release diff and prepared-source hooks.",
+    "blockers_found": 0,
+    "independence_note": "Reviewer had authored portions of earlier arXiv/control work; this was not a fully independent mathematical review."
+  },
+  "implementation_staged_git_blob_sha256": {
+    "apps/msc-lean-atlas/research_batches.py": "8f78ec945ae9d85f6c3f713d1923abd65b35da27badc4cd9d454f8a028938e7b",
+    "apps/msc-lean-atlas/research_codex.py": "8479a8e0d1f010ec4c22a3216012239edbe7b816ffac2157d35c9ec1b2a63c76",
+    "apps/msc-lean-atlas/research_lean.py": "3d567f0c56dab6692761f4c553b804d7890de768a5f058a21e6763ef296572c3",
+    "apps/msc-lean-atlas/research_objects.py": "b1b9f4ba6e2a124959d905994d2ef5556715638c1876c75dfe1ff6d67c2dafe0",
+    "apps/msc-lean-atlas/research_service.py": "68a06933b3b7ee2fa14261f9145ebfff79784952bc147e431af96db0d536ce0f",
+    "apps/msc-lean-atlas/research_structure.py": "55382e8ae7ab429d7190c43cbe082e85ab8ccc07bf02b3221af1081c17ab4e67",
+    "apps/msc-lean-atlas/research_structure_sources.py": "ad845f6c98d3be3ae2d10615ca8285669fe656221a34e2f1d9004fc0fff3dd07",
+    "apps/msc-lean-atlas/server.py": "010a854497a02ce1a163285a67adb74232333d4031bc798838a597a4e6d3a1fa",
+    "apps/msc-lean-atlas/tests/serve_guided_replay.py": "8a1c0a2585c1588af69b01ba6628da92e8361e6ea694955389bd0ce0333fbfe1",
+    "apps/msc-lean-atlas/tests/test_candidate_checks.cjs": "d240a21a9cf3c2bce15fcf6b1f1c2f65fa89412309267f3e78f24145035c5702",
+    "apps/msc-lean-atlas/tests/test_contract_preflight.py": "9399041ac0a38991b614055f711a537f1ad29bb667dd431a8c693b92e26381f9",
+    "apps/msc-lean-atlas/tests/test_guided_research.cjs": "f8fb943990f9b8a5adb8a2876d46e12ce25bd49f8c30aa26cf6437b4d61a8dcf",
+    "apps/msc-lean-atlas/tests/test_guided_source_metadata.py": "3cf78e278bfb7b0dfabbd843598be7b2a39801f4a37ad4b093be13cc58723f30",
+    "apps/msc-lean-atlas/tests/test_math_presentation.cjs": "75d679f2dffdc5207c6b1ac8e21f9ac74f2eca456eb4e1955258b05e89ce6195",
+    "apps/msc-lean-atlas/tests/test_measure_validator.py": "b3f589e6a7a12f3c85e6dba0f798e0c7b509b764cc3109728dace9087c56fb34",
+    "apps/msc-lean-atlas/tests/test_msc_context.cjs": "de77ecf7743d822f5fa663ca80f7efed46e0893a8b8ae86532d95cf14314c233",
+    "apps/msc-lean-atlas/tests/test_object_graph.cjs": "0b387a0b1bafecd2faffd90a5fe017bc6bb1268676124be9172434f071f93afc",
+    "apps/msc-lean-atlas/tests/test_release_two_sources.py": "aeae337b89dc8e8266c48c8276148b51ab833bbffbcd76a8c3c74ef488268d1b",
+    "apps/msc-lean-atlas/tests/test_research_appearance.cjs": "e2d73c74ce90c61357986124166f9ecca6378dd18fd1352d24d4cda5eca1420f",
+    "apps/msc-lean-atlas/tests/test_research_batches.py": "bbd4623b58545e2b7980c089cfe58bb98c6b95a8f2ae5542c9b8adc2f790538e",
+    "apps/msc-lean-atlas/tests/test_research_history.cjs": "35731830bd5e88195a62ec71e9b446fd4fe31cdf9b31a43ada363e28bde24de0",
+    "apps/msc-lean-atlas/tests/test_research_history_metadata.py": "812620e2d98cf23ccbb673a8ee9a43e05082ae3d991d4d89a9062c69d1c8db3b",
+    "apps/msc-lean-atlas/tests/test_research_map.cjs": "0444d8a5c4e9af16a7b5ba76e1e2727b571000ad66dfc12617c58bc108a2e549",
+    "apps/msc-lean-atlas/tests/test_structure_search.cjs": "010927f7f2184fd6f993db7f54fdb925800d1d4a86884188f675832bcac85cd2",
+    "apps/msc-lean-atlas/tests/test_structure_sources.py": "c316b713d56060706eea5ac504d79a80428dd19e3ad27ccf376b349c7a59bee6",
+    "apps/msc-lean-atlas/tests/test_structure_workflow.py": "ea82c4347cde53c1e7b9543b87503227b5d6e7ab3fa1b67d420a69de967c9b1e",
+    "apps/msc-lean-atlas/tests/test_transition_structure.py": "0c0fba2407ce0956d8cee0b30b0f9bcb513c2a2d131808cdfec391f5a022e053",
+    "apps/msc-lean-atlas/tools/build_math_assets.cjs": "92e0dcb81a462e0bcc116f6d03c5f8ada163f3dc7fd372358e813b5568eea4fd",
+    "apps/msc-lean-atlas/tools/reproduce_common_structure.py": "8a6375048a25380dec37e8473bddd83aa617ddbeba049a6a32c1b4d01be9707e",
+    "apps/msc-lean-atlas/web/app.js": "5e1aa996973f75e2d432ede07aa7a9d8b9cc51f70b5329922c6561059986a285",
+    "apps/msc-lean-atlas/web/candidate-checks.css": "414a95cff4ac30d8636a9371372854f126b2d8bf555eb51dbe770cb0515f18c3",
+    "apps/msc-lean-atlas/web/candidate-checks.js": "9d9bf2d2b1a9c41f5d844205d054cccc547bd83a59ce2ff62cd7bf71e7147630",
+    "apps/msc-lean-atlas/web/guided-research.css": "7deda7d2cca42ce46c4f1b582b42cf74c380c432235927be4e80014579f3e6f7",
+    "apps/msc-lean-atlas/web/guided-research.js": "609fb968874cbb8313d882dda1190c56a1ab9f5eaa311b483ba76844187135ff",
+    "apps/msc-lean-atlas/web/index.html": "e5fcfa4bb05d646332caf56a3a85570e7c535a6d7024def7e942b401b0c5452c",
+    "apps/msc-lean-atlas/web/math-presentation.css": "d77c00db6b502ecbf54ed039f1006edc8af29fe7189a46bbd8f90d45cf3ba0e8",
+    "apps/msc-lean-atlas/web/math-presentation.js": "3e26d9448e2ddb1ec8d8bcbefa2603c36e163b169b8bb8b9669da6ebd8e0bd8e",
+    "apps/msc-lean-atlas/web/msc-context.js": "3ac188521a104c72303018f05af9c9a5d9ba99bc3a56c454788235730db1d2a1",
+    "apps/msc-lean-atlas/web/object-graph.js": "b21af1394336b7ecf4a0710b6c9d2baeff3f44908884f7ca3c28b0130af2a83f",
+    "apps/msc-lean-atlas/web/research-appearance.js": "6f86f556804814e9b89172783a4cbdda4b8435f0ce9b3489dba017cdb563301a",
+    "apps/msc-lean-atlas/web/research-history.css": "e8133b612c5434e4af328f3b209148ea2952a3d86d1d97dda922af7971f28e61",
+    "apps/msc-lean-atlas/web/research-history.js": "4214e956c965a68df1f4762ae31bf3a4c92c84ac110dbd5ffd8f77274e8f72cf",
+    "apps/msc-lean-atlas/web/research-map.css": "90b80c31e62a8609f298a7d1a1225ed695bfea8d09e2b1fa22ec0596dfa1740c",
+    "apps/msc-lean-atlas/web/research-map.js": "610726dd8072a49ae54ca592b7a722ddbf0f42f4d03e6ae4660e0ed5591a42ff",
+    "apps/msc-lean-atlas/web/research.css": "504f013d476ecd4afa92f9c2661b14b75e553997c4969d550c9cef1a3ae41910",
+    "apps/msc-lean-atlas/web/research.js": "22dd2fa78be2183892ec77bf3d59df40ea74d5a455f761033c7023a2b5579b64",
+    "apps/msc-lean-atlas/web/structure-search.css": "9babf6e2c399fccb2237053c10593147b63be507c2570f214e34473939bbfb11",
+    "apps/msc-lean-atlas/web/structure-search.js": "b45b07ecc19c1bc959870862f7cc68e20d2634da7a9d0d148368babdb0c0e096"
+  },
+  "model_calls_during_release": 0,
+  "limitations": [
+    "Fresh checks reproduce retained proofs; they are not blind rediscovery or a new semantic/novelty review.",
+    "Frolov-Dorofeev coverage is the final polynomial graph-subtraction step, not the whole paper.",
+    "Spectrum result is a Zariski-space homeomorphism and ideal/vanishing-locus transport, not a full scheme isomorphism.",
+    "Published energy example is a rational coordinate model; it does not identify arbitrary algebras and graphs.",
+    "Momentum search previously stopped on a Codex timeout with zero saved candidates and no Lean result.",
+    "Full local logs, temporary workspaces, research history and model sessions are excluded from publication."
+  ]
+}

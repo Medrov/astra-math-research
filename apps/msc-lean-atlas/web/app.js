@@ -35,7 +35,19 @@
   function showMap(){showTab('map');}
   function route(){showTab(location.hash==='#research'?'research':'map');}
   function startResearch(){const node=viewNode(state.selected);showTab('research');window.ResearchWorkspace?.setContext(node?.id===MSC_ROOT.id?null:node);}
-  window.MSCAtlas={open(code){if(state.nodeMap.has(code)){showMap();selectNode(code);}},selected(){return viewNode(state.selected);}};
+  window.MSCAtlas={
+    open(code){if(state.nodeMap.has(code)){showMap();selectNode(code);}},
+    selected(){return viewNode(state.selected);},
+    lookup(code){
+      const node=state.nodeMap.get(code);if(!node)return null;
+      const path=[],seen=new Set();let current=node;
+      while(current&&!seen.has(current.id)){
+        seen.add(current.id);path.unshift({code:current.code,title:current.title,parent_id:current.parent_id});
+        current=state.nodeMap.get(current.parent_id);
+      }
+      return {code:node.code,title:node.title,parent_id:node.parent_id,path};
+    }
+  };
   function selectNode(id,fromResult=false,fromGraph=false){
     if(!viewNode(id))return;
     state.selected=id;renderCatalog();renderCategory();renderBreadcrumbs();
@@ -98,6 +110,7 @@
         state.incoming.get(edge.target).push(edge);
       }
       state.selected=MSC_ROOT.id;
+      window.dispatchEvent(new Event('msc-atlas-ready'));
       renderMetadata();renderCatalog();renderCategory();renderBreadcrumbs();renderGraph();
       $('connection-status').className='connection-status ready';
       $('connection-status').replaceChildren(el('i'),document.createTextNode('Локальная карта готова'));

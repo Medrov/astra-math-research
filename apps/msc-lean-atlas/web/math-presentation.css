@@ -1,0 +1,9 @@
+.math-expression { max-width: 100%; min-width: 0; }
+.math-inline { display: inline; }
+.math-display { display: block; box-sizing: border-box; overflow-x: auto; overflow-y: hidden; padding: .35rem .2rem; margin: .45rem 0; }
+.math-display > .katex-display { margin: .35rem 0; }
+.math-fallback { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; color: inherit; }
+.math-display.math-fallback { background: #f6f7f9; border: 1px solid #dce1e7; border-radius: .4rem; padding: .65rem .8rem; }
+.math-expression .katex { font-size: 1.08em; }
+@media (max-width: 640px) { .math-expression .katex { font-size: 1em; } }
+@media print { .math-display { overflow: visible; } }

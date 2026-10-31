@@ -18,9 +18,20 @@ const tests=[
     assert.equal(Model.transitionStatus({status:'failed'}),'incomplete');
     assert.equal(Model.presentation({status:'needs_recheck'}).label,'Нужна новая проверка');
     assert.equal(Model.transitionStatus({status:'refuted'}),'incomplete');
-    assert.equal(Model.transitionStatus({status:'refuted',certificate:{id:'verified'}}),'refuted');
+    assert.equal(Model.transitionStatus({status:'refuted',certificate:{id:'verified'},semantic_review:{status:'aligned'}}),'refuted');
     assert.equal(Model.transitionStatus({status:'proved'}),'incomplete');
-    assert.equal(Model.transitionStatus({status:'proved',certificate:{id:'verified'}}),'proved');
+    assert.equal(Model.transitionStatus({status:'proved',certificate:{id:'verified'},semantic_review:{status:'reviewed_fixture'}}),'proved');
+  }],
+  ['A formal certificate never certifies the meaning of an unchecked or mismatching transition',()=>{
+    const transition={id:'bridge',status:'proved',certificate:{run_id:'verified-formal-goal'}};
+    for(const review of [undefined,'pending','mismatch','uncertain','failed']){
+      const item={...transition,semantic_review:review?{status:review}:undefined},view=Model.presentation(item);
+      assert.equal(view.status,'formal_only');assert.match(view.label,/Lean-цель проверена/);assert.match(view.label,/смысл не подтверждён/);
+      assert.notEqual(view.color,Model.presentation({...transition,semantic_review:{status:'aligned'}}).color);
+      assert.equal(item.status,'proved');assert.ok(item.certificate);
+    }
+    for(const review of ['aligned','reviewed_fixture'])assert.equal(Model.transitionStatus({...transition,semantic_review:{status:review}}),'proved');
+    assert.equal(Model.transitionStatus({...transition,status:'refuted',semantic_review:{status:'mismatch'}}),'formal_only');
   }],
   ['Selection IDs cannot collide between objects and transitions',()=>{
     const collision={objects:[{id:'same',title:'Object'}],transitions:[{id:'same',title:'Transition'}]};
@@ -52,6 +63,7 @@ const tests=[
     const proof={nodes:['definition','identity','nonnegative'].map(id=>({id})),edges:[{source:'definition',target:'identity'},{source:'identity',target:'nonnegative'}]};
     const sliced=Model.proofSlice(proof,{obligations:[{target:'identity'}]});
     assert.deepEqual(sliced.nodes.map(n=>n.id),['definition','identity']);assert.equal(sliced.edges.length,1);assert.equal(proof.nodes.length,3);
+    assert.deepEqual(Model.proofSlice(proof,{obligations:[{target:'different-version'}]}),{nodes:[],edges:[]});
   }],
   ['Browser and CommonJS expose the same model',()=>{
     const context={};vm.runInNewContext(fs.readFileSync(require.resolve('../web/object-graph.js'),'utf8'),context);

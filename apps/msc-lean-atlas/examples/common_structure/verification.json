@@ -1,0 +1,137 @@
+{
+  "kind": "prepared_control",
+  "checked_at": "2026-10-31T09:19:32.533144+00:00",
+  "status": "complete",
+  "model_calls": 0,
+  "lean_version": "4.19.0",
+  "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+  "source_hash_algorithm": "sha256_utf8_text_normalized_newlines",
+  "source_sha256": {
+    "StructureInput.lean": "f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75",
+    "Bridge.lean": "88dc511fa6650eabee3f530e79efea4708fd3ef74bea52c7d993cda9770079a8",
+    "Audit.lean": "e2770f0602da5908e230041816f8ac4a6060f83fa999dc5e476c3a328146c1c4"
+  },
+  "source_input": "research_fixtures/Arxiv261038474.lean",
+  "new_theorems": 6,
+  "input_theorems_audited": 4,
+  "audit": {
+    "status": "passed",
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "unexpected_axioms": [],
+    "theorems": {
+      "CommonStructure.fiberShear_apply": [
+        "propext",
+        "Quot.sound"
+      ],
+      "CommonStructure.fiberShear_inverse": [
+        "propext",
+        "Quot.sound"
+      ],
+      "CommonStructure.fiberShear_graph": [
+        "propext",
+        "Quot.sound"
+      ],
+      "CommonStructure.graphSubtract_eq_prodShear": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "CommonStructure.graphSubtract_graph_to_axis": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "CommonStructure.squareShear_not_additive": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Arxiv261038474.eval_univariate": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Arxiv261038474.subtract_restore": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Arxiv261038474.restore_subtract": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Arxiv261038474.graph_to_axis": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  },
+  "commands": [
+    {
+      "module": "StructureInput",
+      "command": [
+        "lean",
+        "-o",
+        "StructureInput.olean",
+        "StructureInput.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 31.734,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "module": "Bridge",
+      "command": [
+        "lean",
+        "-o",
+        "Bridge.olean",
+        "Bridge.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 5.531,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "module": "Audit",
+      "command": [
+        "lean",
+        "-o",
+        "Audit.olean",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 5.765,
+      "stdout": "'CommonStructure.fiberShear_apply' depends on axioms: [propext, Quot.sound]\n'CommonStructure.fiberShear_inverse' depends on axioms: [propext, Quot.sound]\n'CommonStructure.fiberShear_graph' depends on axioms: [propext, Quot.sound]\n'CommonStructure.graphSubtract_eq_prodShear' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CommonStructure.graphSubtract_graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CommonStructure.squareShear_not_additive' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]\nEquiv.prodShear.{u_9, u_10, u_11, u_12} {α₁ : Type u_9} {α₂ : Type u_10} {β₁ : Type u_11} {β₂ : Type u_12}\n  (e₁ : α₁ ≃ α₂) (e₂ : α₁ → β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂\nEquiv.subRight.{u_5} {G : Type u_5} [AddGroup G] (a : G) : G ≃ G\nEquiv.prodCongr.{u_10, u_11, u_12, u_9} {α₁ : Type u_9} {α₂ : Type u_10} {β₁ : Type u_11} {β₂ : Type u_12}\n  (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂\n",
+      "stderr": ""
+    },
+    {
+      "module": "LibraryNames",
+      "command": [
+        "lean",
+        "-o",
+        "LibraryNames.olean",
+        "LibraryNames.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 6.36,
+      "stdout": "Homeomorph.shearAddRight.{w} (G : Type w) [TopologicalSpace G] [AddGroup G] [IsTopologicalAddGroup G] : G × G ≃ₜ G × G\nHomeomorph.shearAddRight_coe.{w} (G : Type w) [TopologicalSpace G] [AddGroup G] [IsTopologicalAddGroup G] :\n  ⇑(Homeomorph.shearAddRight G) = fun z => (z.1, z.1 + z.2)\nLinearMap.prod.{u, v, w, y} {R : Type u} {M : Type v} {M₂ : Type w} {M₃ : Type y} [Semiring R] [AddCommMonoid M]\n  [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M] [Module R M₂] [Module R M₃] (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :\n  M →ₗ[R] M₂ × M₃\nLinearMap.fst.{u, v, w} (R : Type u) (M : Type v) (M₂ : Type w) [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]\n  [Module R M] [Module R M₂] : M × M₂ →ₗ[R] M\nLinearMap.snd.{u, v, w} (R : Type u) (M : Type v) (M₂ : Type w) [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]\n  [Module R M] [Module R M₂] : M × M₂ →ₗ[R] M₂\nLinearEquiv.prodCongr.{u, v, w, y, z} {R : Type u} {M : Type v} {M₂ : Type w} {M₃ : Type y} {M₄ : Type z} [Semiring R]\n  [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄] {module_M : Module R M}\n  {module_M₂ : Module R M₂} {module_M₃ : Module R M₃} {module_M₄ : Module R M₄} (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄) :\n  (M × M₃) ≃ₗ[R] M₂ × M₄\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Pointwise bridge to Equiv.prodShear, generic inverse and zero-section laws, and a nonlinear non-additive control. Existing polynomial identities remain separate and were freshly compiled.",
+  "limitations": [
+    "Prepared authored control, not an Astra discovery.",
+    "No new mathematics or novelty claim.",
+    "Topological and positive linear generalizations are search routes, not proved by this module.",
+    "Mathlib compiled cache reused; original 11-file suite not rerun.",
+    "No independent semantic review yet."
+  ]
+}

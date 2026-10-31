@@ -1,0 +1,88 @@
+{
+  "checked_at": "2026-10-31T10:07:11.422449+00:00",
+  "scope": "MSC 14 spectrum candidate in apps/msc-lean-atlas; root MathResearch unchanged",
+  "branch": "codex/spectrum-homeomorphism",
+  "live_run": {
+    "id": "abf14508267f4c1a83e58b37d01e65dc",
+    "status": "complete",
+    "outcome": "proved",
+    "usage": {
+      "calls": 5,
+      "total_tokens": 213206,
+      "elapsed_seconds": 461.937
+    },
+    "budget": {
+      "max_calls": 16,
+      "timeout_seconds": 1800,
+      "max_parallel": 2
+    },
+    "source_graph_ref": {
+      "id": "b1c886d16151432f8c03357b8f9f69e2",
+      "revision": 2
+    },
+    "result_graph_ref": {
+      "id": "2ad811629f2f4651b237047127ba90be",
+      "revision": 1
+    },
+    "selected_transition_id": "route_2_bridge_spectrum",
+    "semantic_status": "aligned"
+  },
+  "reproduction": {
+    "command": "python tools/reproduce_common_structure.py --spectrum",
+    "exit_code": 0,
+    "success": true,
+    "target_preserved": true,
+    "obligations": 3,
+    "obligations_passed": true,
+    "source_sha256": "c07fe4aaf73619939df559f94e926d0e4fa2002433b15176c61a225deab9a9dd",
+    "contract_sha256": "73fe7666b1ff135e44c560ad281d2aa4b081825106afef399bb9b4f5fb7e2fa9",
+    "input_source_sha256": "f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75",
+    "model_calls": 0,
+    "finished_at": "2026-10-31T10:06:26.876689+00:00",
+    "axioms": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "audit": "passed",
+    "selected_theorem_used": true,
+    "compiler_steps": [
+      {
+        "file": "StructureInput.lean",
+        "exit_code": 0
+      },
+      {
+        "file": "Candidate.lean",
+        "exit_code": 0
+      },
+      {
+        "file": "AtlasInspect.lean",
+        "exit_code": 0
+      },
+      {
+        "file": "AtlasDump.lean",
+        "exit_code": 0
+      },
+      {
+        "file": "StructureInputAxioms.lean",
+        "exit_code": 0
+      },
+      {
+        "file": "CandidateAxioms.lean",
+        "exit_code": 0
+      },
+      {
+        "file": "Contract.lean",
+        "exit_code": 0
+      }
+    ]
+  },
+  "semantic_review": {
+    "status": "aligned",
+    "method": "separate_agent_read_only_review_of_contract_and_proof",
+    "authored_proof": false,
+    "candidate_raw_sha256": "efa7b79c7708f114cf2014d762414f782f2a490e0829dc26a6f77c26fc8ad262"
+  },
+  "test_scope": "Fresh complete Lean reproduction of the selected example. Application-wide suites were not rerun; core pipeline and UI code unchanged in this step.",
+  "publication": "Local only; no commit or push."
+}

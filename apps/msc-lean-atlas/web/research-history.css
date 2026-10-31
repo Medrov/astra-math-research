@@ -1,0 +1,39 @@
+/* A native modal supplies focus containment, Escape and an inert background. */
+dialog.research-history{box-sizing:border-box;position:fixed;inset:0 0 0 auto;margin:0;width:min(600px,100%);max-width:100%;height:100%;height:100dvh;max-height:100%;padding:0;border:0;border-left:1px solid #dfe6e1;background:#fafbf8;color:#243830;box-shadow:-12px 0 48px #142b2524;font-family:inherit;font-size:16px;line-height:1.55;overflow:hidden}
+dialog.research-history:not([open]){display:none}
+dialog.research-history[open]{display:flex;flex-direction:column;animation:research-history-enter .18s ease-out}
+dialog.research-history::backdrop{background:#14272070;backdrop-filter:blur(2px)}
+.research-history [hidden]{display:none!important}
+.research-history-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:28px 28px 18px;flex:none}
+.research-history-header h2{font-family:Georgia,'Times New Roman',serif;font-size:34px;font-weight:400;line-height:1.2;letter-spacing:-.5px;margin:0 0 10px}
+.research-history-description{color:#63726d;margin:0;max-width:38ch;font-size:15px}
+.research-history-close{flex:none;border:1px solid #cdd8d0;background:#fff;color:#365643;border-radius:8px;min-height:42px;padding:9px 13px;font:inherit;font-size:14px;cursor:pointer}
+.research-history-tools{padding:0 28px 12px;border-bottom:1px solid #dfe6e1;flex:none}
+.research-history-tools label{display:block;font-weight:600;font-size:14px;margin:0 0 6px}
+.research-history-search{box-sizing:border-box;width:100%;min-height:46px;padding:11px 14px;border:1px solid #cdd8d0;border-radius:9px;background:#fff;color:inherit;font:inherit}
+.research-history-search::placeholder{color:#718078}
+.research-history-count{font-size:13px;color:#63726d;margin:10px 0 0;min-height:20px}
+.research-history-error{font-size:14px;line-height:1.5;background:#fff1e8;color:#7e3c24;border:1px solid #edcfbc;padding:10px 12px;border-radius:8px;margin:10px 0 0}
+.research-history-scroll{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:18px 22px 30px 28px}
+.research-history-list{display:grid;gap:12px;list-style:none;padding:0;margin:0}
+.research-history-row{min-width:0;margin:0;padding:0}
+.research-history-card{box-sizing:border-box;display:block;width:100%;text-align:left;white-space:normal;border:1px solid #dfe6e1;border-radius:12px;background:#fff;padding:17px 18px;color:inherit;font:inherit;cursor:pointer;transition:border-color .12s,box-shadow .12s}
+.research-history-card:hover{border-color:#8ca995;box-shadow:0 2px 10px #263e3010}
+.research-history-card[data-current=true]{border-color:#587f65;background:#f1f7ef;box-shadow:inset 3px 0 0 #587f65}
+.research-history-card[aria-disabled=true]{cursor:progress}
+.research-history-card[data-loading=true]{background:#eef3ef}
+.research-history-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:9px;font-size:12px;line-height:1.4;color:#63726d}
+.research-history-current{color:#355d42;font-weight:600}
+.research-history-title{display:block;font-size:18px;font-weight:600;line-height:1.45;overflow-wrap:anywhere}
+.research-history-source{display:block;font-size:14px;color:#63726d;line-height:1.5;overflow-wrap:anywhere;margin-top:7px}
+.research-history-meta{display:flex;flex-wrap:wrap;align-items:baseline;gap:7px 14px;margin-top:13px;font-size:12px;line-height:1.5}
+.research-history-status{color:#63726d;font-weight:500}
+.research-history-status[data-kind=active]{color:#6e5b22}
+.research-history-status[data-kind=result]{color:#365f43}
+.research-history-status[data-kind=search]{color:#405f70}
+.research-history-date{color:#63726d;margin-left:auto}
+.research-history-empty{padding:28px 10px;color:#63726d;text-align:center;font-size:16px;line-height:1.65}
+.research-history button:focus-visible,.research-history input:focus-visible{outline:3px solid #82ab93;outline-offset:3px}
+@keyframes research-history-enter{from{transform:translateX(28px);opacity:.75}to{transform:translateX(0);opacity:1}}
+@media(max-width:520px){.research-history-header{padding:22px 18px 16px;gap:12px}.research-history-header h2{font-size:30px}.research-history-tools{padding:0 18px 12px}.research-history-scroll{padding:15px 14px 24px 18px}.research-history-card{padding:15px}.research-history-date{margin-left:0}.research-history-title{font-size:17px}}
+@media(prefers-reduced-motion:reduce){dialog.research-history[open]{animation:none}.research-history-card{transition:none}}

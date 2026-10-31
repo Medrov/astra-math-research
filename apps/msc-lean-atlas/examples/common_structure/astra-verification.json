@@ -1,0 +1,268 @@
+{
+  "status": "complete",
+  "outcome": "proved",
+  "success": true,
+  "target": "Arxiv261038474.coordinate_automorphism_exists",
+  "expected_statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  ∃ α : MvPolynomial (Fin 3) R ≃ₐ[R] MvPolynomial (Fin 3) R,\n    (∀ p : MvPolynomial (Fin 3) R,\n      α p = MvPolynomial.eval₂Hom MvPolynomial.C\n        (Arxiv261038474.graphSubtract b w) p) ∧\n    (∀ p : MvPolynomial (Fin 3) R,\n      α.symm p = MvPolynomial.eval₂Hom MvPolynomial.C\n        (Arxiv261038474.graphRestore b w) p)",
+  "target_preserved": true,
+  "obligations": [
+    {
+      "id": "substitution_bridge",
+      "target": "Arxiv261038474.substitutionAlgHom_toRingHom",
+      "statement_sha256": "7d9961cfc605c8bac84ecb0fa8ebae97728fd2304cba22f4f500b5351032841f",
+      "ok": true,
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "contravariant_composition",
+      "target": "Arxiv261038474.substitutionAlgHom_comp",
+      "statement_sha256": "16b61d1c8fe37d5d876dbe5245a0aead69398ad21f823fd4b2c4e6ac8a007239",
+      "ok": true,
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "two_inverse_identities",
+      "target": "Arxiv261038474.graph_substitution_inverse_identities",
+      "statement_sha256": "a246c76c0a9f573b51b8869cd71416409630e35514fd66b82a6839a721d260dd",
+      "ok": true,
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "coordinate_automorphism",
+      "target": "Arxiv261038474.coordinate_automorphism_exists",
+      "statement_sha256": "0f9b80985c8362ea8bd0429d184ba8df10487a3a313583cee72cdb83cc74f3d3",
+      "ok": true,
+      "expected_outcome": "proved"
+    }
+  ],
+  "obligations_passed": true,
+  "source_sha256": "cb23c7ddc81135d5e671636cf9258c90ee76bbcdd49c947a755e1a81ee644e9c",
+  "contract_sha256": "0f9b80985c8362ea8bd0429d184ba8df10487a3a313583cee72cdb83cc74f3d3",
+  "contract_file_sha256": "042f68ee9c909ea8b559512da1059cc8e74696c15417eb11a5c18e16fe723306",
+  "olean_sha256": "493f723b6a72051236bb9d02bd5fd08bc5bca173ed2c05dfb66c2a4309d842d3",
+  "axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "audit": {
+    "status": "passed",
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "unexpected_axioms": [],
+    "unsafe_declarations": [],
+    "ignored_implementation_helpers": [],
+    "audited_roots": [
+      "Arxiv261038474.coordinate_automorphism_exists",
+      "Arxiv261038474.graph_substitution_inverse_identities",
+      "Arxiv261038474.substitutionAlgHom",
+      "Arxiv261038474.substitutionAlgHom.eq_1",
+      "Arxiv261038474.substitutionAlgHom_comp",
+      "Arxiv261038474.substitutionAlgHom_toRingHom"
+    ],
+    "scope": "logical_local_declarations_and_target_axiom_closure"
+  },
+  "source_usage": {
+    "status": "related",
+    "selected_theorem": "Arxiv261038474.subtract_restore",
+    "selected_theorem_used": true,
+    "relevant_definitions": [
+      "Arxiv261038474.compose",
+      "Arxiv261038474.graphRestore",
+      "Arxiv261038474.graphSubtract",
+      "Arxiv261038474.univariate"
+    ],
+    "used_definitions": [
+      "Arxiv261038474.compose",
+      "Arxiv261038474.graphRestore",
+      "Arxiv261038474.graphSubtract",
+      "Arxiv261038474.univariate"
+    ],
+    "type_participation": [
+      "Arxiv261038474.graphRestore",
+      "Arxiv261038474.graphSubtract",
+      "Arxiv261038474.univariate"
+    ],
+    "proof_only_participation": [
+      "Arxiv261038474.compose",
+      "Arxiv261038474.subtract_restore"
+    ],
+    "reachable_input_declarations": [
+      "Arxiv261038474.compose",
+      "Arxiv261038474.eval_univariate",
+      "Arxiv261038474.graphRestore",
+      "Arxiv261038474.graphSubtract",
+      "Arxiv261038474.graphSubtract._proof_1",
+      "Arxiv261038474.restore_subtract",
+      "Arxiv261038474.subtract_restore",
+      "Arxiv261038474.univariate"
+    ],
+    "scope": "selected_theorem_or_input_definitions_in_its_transitive_type_dependencies",
+    "limitation": "Участие в типе или доказательстве — структурный сигнал, не гарантия смысловой связи или новизны.",
+    "required": true
+  },
+  "environment_fingerprint": "8043028aeb74ed9b587edb10ff2db63d9226eba7ac888bf7e5dfa769c8cb62ba",
+  "started_at": "2026-10-31T09:33:44.882753+00:00",
+  "finished_at": "2026-10-31T09:34:19.230504+00:00",
+  "kind": "actual_astra_result",
+  "run_id": "0bc277e25f094fe894becf31b4fca6f1",
+  "search_run_id": "97fde89034994eb9ac0fbfe5576e8fcd",
+  "semantic_review": {
+    "status": "aligned",
+    "reason": "Для любого коммутативного кольца R и любых b,w : Polynomial R цель утверждает существование автоморфизма именно A = MvPolynomial (Fin 3) R с заданными подстановками graphSubtract и graphRestore на всех p : A. Мост к eval₂Hom и контравариантная композиция сохраняют исходные определения; subtract_restore даёт φ_G ∘ φ_F = id, а restore_subtract — φ_F ∘ φ_G = id. Представленный итоговый отчёт подтверждает сохранение цели, проверку всех обязательств и успешный аудит.",
+    "limitations": [
+      "Результат относится к заключительному вычитанию графа, а не ко всей статье или предшествующей замене координат.",
+      "Линейность следует для подстановки на A; линейность координатного преобразования на R³ и непрерывность не утверждаются.",
+      "Проверка Lean не устанавливает новизну или исследовательскую полезность результата."
+    ],
+    "method": "model_review_not_formal_certificate"
+  },
+  "compiler": "Lean 4.19.0",
+  "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+  "input_source": "research_fixtures/Arxiv261038474.lean",
+  "input_source_sha256": "f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75",
+  "search_usage": {
+    "calls": 4,
+    "total_tokens": 71931,
+    "elapsed_seconds": 251.578
+  },
+  "proof_usage": {
+    "calls": 6,
+    "total_tokens": 280775,
+    "elapsed_seconds": 429.39
+  },
+  "source_hash_algorithm": "sha256_utf8_text_normalized_newlines",
+  "limitations": [
+    "Prepared source proofs were available; this is reuse, not blind rediscovery.",
+    "Only the selected coordinate-algebra bridge is certified; four other candidates are unproved.",
+    "This does not formalize the whole paper or certify mathematical novelty."
+  ],
+  "diagnostics": [
+    {
+      "file": "StructureInput.lean",
+      "command": [
+        "lean.exe",
+        "-o",
+        "StructureInput.olean",
+        "StructureInput.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.296,
+      "stdout": "",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "Candidate.lean",
+      "command": [
+        "lean.exe",
+        "-o",
+        "Candidate.olean",
+        "Candidate.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.531,
+      "stdout": "Candidate.lean:73:30: warning: this tactic is never executed\nnote: this linter can be disabled with `set_option linter.unreachableTactic false`\nCandidate.lean:73:30: warning: 'exact h.2' tactic does nothing\nnote: this linter can be disabled with `set_option linter.unusedTactic false`\n",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "AtlasInspect.lean",
+      "command": [
+        "lean.exe",
+        "-o",
+        "AtlasInspect.olean",
+        "AtlasInspect.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.437,
+      "stdout": "",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "AtlasDump.lean",
+      "command": [
+        "lean.exe",
+        "AtlasDump.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 6.719,
+      "stdout": "",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "StructureInputAxioms.lean",
+      "command": [
+        "lean.exe",
+        "StructureInputAxioms.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.172,
+      "stdout": "'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "CandidateAxioms.lean",
+      "command": [
+        "lean.exe",
+        "CandidateAxioms.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.203,
+      "stdout": "'Arxiv261038474.coordinate_automorphism_exists' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.substitutionAlgHom_toRingHom' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.substitutionAlgHom_comp' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_substitution_inverse_identities' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    },
+    {
+      "file": "Contract.lean",
+      "command": [
+        "lean.exe",
+        "-o",
+        "Contract.olean",
+        "Contract.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.734,
+      "stdout": "",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    }
+  ],
+  "source_print_axioms": {
+    "theorems": [
+      "Arxiv261038474.eval_univariate",
+      "Arxiv261038474.graph_to_axis",
+      "Arxiv261038474.subtract_restore",
+      "Arxiv261038474.restore_subtract"
+    ],
+    "file": "StructureInputAxioms.lean",
+    "exit_code": 0,
+    "stdout": "'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+    "stderr": ""
+  },
+  "candidate_print_axioms": {
+    "theorems": [
+      "Arxiv261038474.coordinate_automorphism_exists",
+      "Arxiv261038474.substitutionAlgHom_toRingHom",
+      "Arxiv261038474.substitutionAlgHom_comp",
+      "Arxiv261038474.graph_substitution_inverse_identities"
+    ],
+    "file": "CandidateAxioms.lean",
+    "exit_code": 0,
+    "stdout": "'Arxiv261038474.coordinate_automorphism_exists' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.substitutionAlgHom_toRingHom' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.substitutionAlgHom_comp' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_substitution_inverse_identities' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+    "stderr": ""
+  }
+}

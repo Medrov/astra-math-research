@@ -2,3 +2,8 @@
 *.lean text eol=lf
 # This exported proof preserves the exact text bound by its saved SHA-256.
 apps/msc-lean-atlas/examples/arxiv_graph_subtraction/Proof.lean whitespace=-blank-at-eof
+# Retain trailing blank lines in exported Astra proofs and their historical logs.
+apps/msc-lean-atlas/examples/common_structure/AstraCoordinateAutomorphism.lean whitespace=-blank-at-eof
+apps/msc-lean-atlas/examples/common_structure/AstraSpectrumHomeomorphism.lean whitespace=-blank-at-eof
+apps/msc-lean-atlas/examples/common_structure/astra-verification.log whitespace=-blank-at-eof
+apps/msc-lean-atlas/examples/common_structure/astra-spectrum-verification.log whitespace=-blank-at-eof

@@ -180,7 +180,7 @@ def _validate_source(source):
         if any(not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.]*', word) for word in header.split()):
             raise ValueError('В импортах кандидата разрешены только явные ASCII-имена закреплённых модулей.')
     for module in lean_service._imports(source):
-        if not module.startswith("Mathlib.") and module not in {"Mathlib", "Init", "Std"} and module not in allowed_imports():
+        if not module.startswith("Mathlib.") and module not in {"Mathlib", "Init", "Std", "StructureInput"} and module not in allowed_imports():
             raise ValueError("Импорт отсутствует в закреплённой библиотеке кандидата: " + module)
 
 
@@ -217,11 +217,16 @@ def _run(context, env, work, filename, diagnostics, cancelled=None, output=True)
         raise RuntimeError("Lean отклонил " + filename)
 
 
-def _export(context, env, work, diagnostics, cancelled):
+def _export(context, env, work, diagnostics, cancelled, *, modules=None):
     shutil.copyfile(ROOT / "tools/AtlasInspect.lean", work / "AtlasInspect.lean")
     _run(context, env, work, "AtlasInspect.lean", diagnostics, cancelled)
     export_path = work / "compiler-declarations.json"
-    text = 'import AtlasInspect\nimport Candidate\nset_option maxRecDepth 8192\nset_option maxHeartbeats 2000000\n#atlas_export ["Candidate"] [] ' + json.dumps(str(export_path)) + "\n"
+    modules = list(modules or ["Candidate"])
+    if any(not NAME.fullmatch(module) for module in modules):
+        raise ValueError("Некорректный модуль семантического экспорта.")
+    text = ('import AtlasInspect\n' + ''.join('import ' + module + '\n' for module in modules) +
+            'set_option maxRecDepth 8192\nset_option maxHeartbeats 2000000\n#atlas_export [' +
+            ', '.join(json.dumps(module) for module in modules) + '] [] ' + json.dumps(str(export_path)) + "\n")
     (work / "AtlasDump.lean").write_text(text)
     _run(context, env, work, "AtlasDump.lean", diagnostics, cancelled, output=False)
     return json.loads(export_path.read_text())
@@ -262,10 +267,176 @@ def _audit_declarations(declarations, source, target):
 def _validate_type_contract(statement):
     if not isinstance(statement, str) or not statement.strip() or len(statement) > 30000:
         raise ValueError("Некорректный контракт типа цели.")
-    # Contracts come from the controller, separately from the prover's source.
-    if any(token in statement for token in ("\nimport ", "\ntheorem ", "\nend", "#", ":=")):
-        raise ValueError("Контракт должен быть одним Lean-типом, без команд.")
     _validate_source(statement)
+    # This is a conservative lexical boundary check, not a Lean parser or a
+    # sandbox. Lean elaboration and the independent exact-type audit remain
+    # authoritative. In particular := is legal in let/letI, named arguments
+    # and record terms; it must not be confused with a theorem's proof boundary.
+    masked = list(statement)
+    i, depth, string = 0, 0, False
+    while i < len(statement):
+        pair, char = statement[i:i + 2], statement[i]
+        if depth:
+            if pair in ('/-', '-/'):
+                depth += 1 if pair == '/-' else -1
+                masked[i:i + 2] = '  '; i += 2; continue
+            if char != '\n': masked[i] = ' '
+        elif string:
+            if char == '\\' and i + 1 < len(statement):
+                masked[i:i + 2] = '  '; i += 2; continue
+            if char == '"': string = False
+            if char != '\n': masked[i] = ' '
+        elif pair == '/-':
+            depth = 1; masked[i:i + 2] = '  '; i += 2; continue
+        elif pair == '-/':
+            raise ValueError('Закрытие комментария без начала в Lean-типе.')
+        elif pair == '--':
+            while i < len(statement) and statement[i] != '\n':
+                masked[i] = ' '; i += 1
+            continue
+        elif char == '"':
+            string = True; masked[i] = ' '
+        elif char == "'" and (i == 0 or not (statement[i - 1].isalnum() or statement[i - 1] in "_'")):
+            literal = re.match(r"'(?:\\.|[^'\\\n])'", statement[i:])
+            if literal:
+                length = len(literal.group()); masked[i:i + length] = ' ' * length; i += length; continue
+        i += 1
+    if depth or string:
+        raise ValueError('Незакрытый комментарий или строка в Lean-типе.')
+    masked = ''.join(masked)
+    commands = r'\b(?:import|theorem|lemma|def|abbrev|opaque|inductive|structure|class|instance|namespace|section|end|variable|variables|universe|universes|attribute|export|notation|infix|infixl|infixr|prefix|postfix)\b'
+    if re.search(commands, masked) or any(token in masked for token in ('#', '@[', '`')):
+        raise ValueError('Контракт должен быть одним Lean-типом, без команд.')
+    pairs = {'(': ')', '[': ']', '{': '}', '⦃': '⦄', '⟨': '⟩', '⟦': '⟧'}
+    stack, lets = [], [0]
+    for token in re.findall(r':=|[^\W\d]\w*|[^\s]', masked, re.UNICODE):
+        if token in pairs:
+            stack.append(pairs[token]); lets.append(0)
+        elif token in pairs.values():
+            if not stack or stack.pop() != token:
+                raise ValueError('Несогласованные скобки в Lean-типе.')
+            lets.pop()
+        elif token in ('let', 'letI', 'letI\'', 'letI!'):
+            lets[-1] += 1
+        elif token == ':=':
+            if lets[-1]:
+                lets[-1] -= 1
+            elif not stack:
+                raise ValueError('Внешнее := не является частью Lean-типа; передайте только тип.')
+    if stack:
+        raise ValueError('Незакрытая скобка в Lean-типе.')
+
+
+def type_expression(statement):
+    """Isolate a validated frozen type, including trailing line comments."""
+    _validate_type_contract(statement)
+    return '(\n' + statement + '\n)'
+
+
+def theorem_header(name, statement):
+    if not isinstance(name, str) or not NAME.fullmatch(name):
+        raise ValueError('Нужно полное имя теоремы.')
+    return 'theorem ' + name + ' : ' + type_expression(statement) + ' := '
+
+
+def verify_contract(task, work_dir, *, cancelled=None, source_library=None):
+    """Elaborate frozen definitions and propositions; never prove the propositions.
+
+    The trusted harness defines values of type Prop, not inhabitants of those
+    propositions. No theorem certificate or success=True field is produced.
+    """
+    work = Path(work_dir).resolve() / ('contract-' + uuid.uuid4().hex[:12])
+    work.mkdir(parents=True)
+    report = dict(kind='lean_contract_preflight', status='failed', well_typed=False,
+                  proof_checked=False, outcome='unknown', target=task.get('target'),
+                  contract_sha256=_sha(json.dumps(task, sort_keys=True, ensure_ascii=False)),
+                  workspace=str(work), started_at=_now(), diagnostics=[], declarations=[],
+                  checked_obligations=[], audit=dict(status='pending'))
+    stage = 'lean_contract_preflight'
+    infrastructure = False
+    try:
+        imports, prelude = task.get('imports', ['Mathlib']), task.get('prelude', '')
+        if not isinstance(imports, list) or not imports or any(not isinstance(m, str) or not NAME.fullmatch(m) for m in imports):
+            raise ValueError('Некорректные импорты формальной постановки.')
+        if not isinstance(prelude, str) or re.search(r'\b(?:theorem|lemma)\b', lean_service._mask(prelude)):
+            raise ValueError('Контекст постановки должен содержать определения, а не доказанные теоремы.')
+        if not isinstance(task.get('target'), str) or not NAME.fullmatch(task['target']):
+            raise ValueError('Некорректная цель постановки.')
+        obligations = _validate_obligations(task.get('required_obligations'))
+        items = [dict(id='primary', target=task['target'], statement=task.get('statement'))] + obligations
+        header = '\n'.join('import ' + module for module in imports) + '\n\n' + prelude + '\n\n'
+        _validate_source(header)
+        declarations, namespace = [], 'AtlasContract_' + uuid.uuid4().hex
+        for i, item in enumerate(items):
+            name = namespace + '.expectedType' + str(i)
+            declarations.append('def ' + name + ' : Prop := ' + type_expression(item['statement']))
+            report['checked_obligations'].append(dict(id=item['id'], target=item['target'],
+                                                       statement_sha256=_sha(item['statement']), declaration=name))
+        source = header + 'universe u v w\nset_option autoImplicit false\nnoncomputable section\n' + '\n\n'.join(declarations) + '\n'
+        source_path = work / 'ContractTypes.lean'
+        source_path.write_text(source, encoding='utf-8')
+        report['source_sha256'] = _sha(source_path.read_bytes())
+        infrastructure = True
+        context, env = lean_service._prepare({}, work)
+        report['context'] = context
+        import research_structure_sources as structure_sources
+        structure_sources.isolated_environment(context, env, work)
+        import research_project_library as project_library
+        if set(imports) & project_library.allowed_imports():
+            report['project_library'] = project_library.prepare_library(
+                context, env, work,
+                lambda filename: _run(context, env, work, filename, report['diagnostics'], cancelled), cancelled,
+                expected_fingerprint=project_library.pinned_fingerprint(header, required=True))
+        modules = ['ContractTypes']
+        payload = None
+        if 'StructureInput' in imports or source_library is not None:
+            if 'StructureInput' not in imports or source_library is None:
+                raise ValueError('Для StructureInput нужен закреплённый снимок содержимого.')
+            payload = structure_sources.validate_library_payload(source_library)
+            if structure_sources.pinned_fingerprint(header, required=True) != payload['source_sha256']:
+                raise ValueError('Pin StructureInput не совпадает с исходным снимком.')
+            dependencies = structure_sources.prepare_source_dependencies(payload, context, env, work,
+                lambda filename: _run(context, env, work, filename, report['diagnostics'], cancelled), cancelled)
+            if dependencies is not None:
+                report['project_library'] = dependencies
+            (work / 'StructureInput.lean').write_bytes(payload['content'].encode('utf-8'))
+            _run(context, env, work, 'StructureInput.lean', report['diagnostics'], cancelled)
+            modules.append('StructureInput')
+        infrastructure = False
+        _run(context, env, work, source_path.name, report['diagnostics'], cancelled)
+        exported = _export(context, env, work, report['diagnostics'], cancelled, modules=modules)
+        local = [d for d in exported['declarations'] if d['module'] == 'ContractTypes']
+        report['declarations'] = local
+        by_name = {d['name']: d for d in local}
+        for item in report['checked_obligations']:
+            actual = by_name.get(item['declaration'])
+            if not actual or actual.get('kind') not in ('def', 'definition') or actual.get('type') != 'Prop':
+                raise ValueError('Lean не экспортировал ожидаемое определение пропозиции: ' + item['target'])
+        report['audit'] = _audit_declarations(local, source, report['checked_obligations'][0]['declaration'])
+        if report['audit']['status'] != 'passed':
+            raise ValueError('Аудит определений постановки отклонён.')
+        if payload:
+            input_declarations = [d for d in exported['declarations'] if d['module'] == 'StructureInput']
+            selected = payload['selected_declaration']
+            actual = next((d for d in input_declarations if d['name'] == selected['name']), None)
+            audit = _audit_declarations(input_declarations, payload['content'], selected['name'])
+            if not actual or actual['type'] != selected['type'] or actual['kind'] != 'theorem' or audit['status'] != 'passed':
+                raise ValueError('Свежая проверка исходного StructureInput не соответствует снимку.')
+            if _sha((work / 'StructureInput.lean').read_bytes()) != payload['source_sha256']:
+                raise ValueError('StructureInput изменён во время проверки.')
+            report['source_library'] = dict(source_sha256=payload['source_sha256'], audit=audit)
+        if _sha(source_path.read_bytes()) != report['source_sha256']:
+            raise ValueError('Контекст постановки изменён во время проверки.')
+        report.update(status='complete', well_typed=True)
+    except (ValueError, RuntimeError, OSError, subprocess.SubprocessError, InterruptedError, TimeoutError) as error:
+        code = ('cancelled' if isinstance(error, InterruptedError) else 'lean_timeout' if isinstance(error, TimeoutError)
+                else 'infrastructure' if isinstance(error, OSError) or infrastructure and not isinstance(error, ValueError)
+                else 'invalid_contract')
+        status = 'cancelled' if code == 'cancelled' else 'timeout' if code == 'lean_timeout' else 'rejected' if code == 'invalid_contract' else 'failed'
+        report.update(status=status, error=str(error), termination=dict(code=code, stage=stage, message=str(error)))
+    report['finished_at'] = _now()
+    _save(work / 'contract-verification.json', report)
+    return report
 
 
 def _validate_obligations(value):
@@ -294,7 +465,7 @@ def _validate_obligations(value):
 
 
 def verify_candidate(source, target, work_dir, expected_statement=None, *, required_obligations=None,
-                     cancelled=None, progress=None):
+                     cancelled=None, progress=None, source_library=None, require_source_usage=True):
     """Check a source, theorem target, axiom closure and an independent type contract.
 
     expected_statement is the complete Lean TYPE, e.g. ``∀ n : Nat, n = n``.
@@ -303,6 +474,10 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
     Optional required_obligations pin additional local theorem types. All types
     are checked together in one Contract.lean compilation and accepted atomically;
     expected_outcome labels the meaning of a checked type, never changes its proof.
+    StructureInput imports require a pinned immutable content payload. Its source
+    is recompiled and audited on every check. Final results must participate in
+    the selected source theorem or its local type definitions; intermediate
+    helper nodes may explicitly set require_source_usage=False.
     """
     work = Path(work_dir).resolve() / ("lean-" + uuid.uuid4().hex[:12])
     work.mkdir(parents=True)
@@ -313,8 +488,20 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
                   workspace=str(work), started_at=_now(), diagnostics=[], declarations=[], axioms=[],
                   audit=dict(status="pending", allowed_axioms=sorted(lean_service.ALLOWED_AXIOMS)),
                   semantic_review=dict(status="not_established", note="Lean проверяет тип; смысл и неизменность определений проверяются отдельно."))
+    stage = 'validate_candidate'
     try:
         _validate_source(source)
+        structure_payload = None
+        has_structure_input = 'StructureInput' in lean_service._imports(source)
+        if has_structure_input or source_library is not None:
+            import research_structure_sources as structure_sources
+            if not has_structure_input or source_library is None:
+                raise ValueError('import StructureInput требует ровно один закреплённый source_library payload.')
+            structure_payload = structure_sources.validate_library_payload(source_library)
+            if structure_sources.pinned_fingerprint(source, required=True) != structure_payload['source_sha256']:
+                raise ValueError('Pin кандидата не совпадает с SHA-256 исходного StructureInput.')
+            if not isinstance(require_source_usage, bool):
+                raise ValueError('require_source_usage должен быть логическим значением.')
         if not isinstance(target, str) or not NAME.fullmatch(target):
             raise ValueError("Нужно полное имя одной теоремы.")
         if expected_statement is not None:
@@ -325,6 +512,7 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
                                       expected_outcome=item["expected_outcome"])
                                  for item in obligations]
         (work / "Candidate.lean").write_text(source)
+        stage = 'lean_environment'
         context, env = lean_service._prepare({}, work)
         result["context"] = context
         # Candidates never inherit compiled project modules from the checkout.
@@ -342,16 +530,38 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
                 context, env, work,
                 lambda filename: _run(context, env, work, filename, result['diagnostics'], cancelled),
                 cancelled, expected_fingerprint=pin)
+        if structure_payload is not None:
+            dependencies = structure_sources.prepare_source_dependencies(structure_payload, context, env, work,
+                lambda filename: _run(context, env, work, filename, result['diagnostics'], cancelled), cancelled)
+            if dependencies is not None:
+                result['project_library'] = dependencies
+            (work / 'StructureInput.lean').write_bytes(structure_payload['content'].encode('utf-8'))
+            if progress:
+                progress('Lean заново компилирует закреплённый исходный StructureInput.')
+            _run(context, env, work, 'StructureInput.lean', result['diagnostics'], cancelled)
+            if _sha((work / 'StructureInput.lean').read_bytes()) != structure_payload['source_sha256']:
+                raise ValueError('StructureInput изменён во время компиляции.')
+            result['source_library'] = dict(
+                source_id=structure_payload['source_id'], source_sha256=structure_payload['source_sha256'],
+                selected_declaration=structure_payload['selected_declaration'],
+                environment_fingerprint=structure_payload['environment_fingerprint'],
+                fresh_compilation=True, olean_sha256=_sha((work / 'StructureInput.olean').read_bytes()))
         if progress:
             progress("Lean компилирует исходник и проверяет целевое утверждение.")
+        stage = 'lean_candidate'
         _run(context, env, work, "Candidate.lean", result["diagnostics"], cancelled)
         result["compilation_success"] = True
-        exported = _export(context, env, work, result["diagnostics"], cancelled)
-        result["declarations"] = exported["declarations"]
-        decl = next((d for d in exported["declarations"] if d["name"] == target), None)
+        stage = 'lean_audit'
+        if structure_payload is None:
+            exported = _export(context, env, work, result["diagnostics"], cancelled)
+        else:
+            exported = _export(context, env, work, result["diagnostics"], cancelled, modules=['Candidate', 'StructureInput'])
+        candidate_declarations = [d for d in exported['declarations'] if d['module'] == 'Candidate']
+        result["declarations"] = candidate_declarations
+        decl = next((d for d in candidate_declarations if d["name"] == target), None)
         if not decl or decl["kind"] != "theorem":
             raise ValueError("Цель должна быть теоремой, объявленной в проверяемом исходнике.")
-        declarations_by_name = {d["name"]: d for d in exported["declarations"]}
+        declarations_by_name = {d["name"]: d for d in candidate_declarations}
         for item in obligations:
             obligation_decl = declarations_by_name.get(item["target"])
             if not obligation_decl or obligation_decl["kind"] != "theorem":
@@ -359,17 +569,41 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
         result["actual_statement"] = decl["type"]
         # Audit all logical local roots and the goal, excluding only generated
         # runtime specialization roots (their appearance in a closure still fails).
-        audit = _audit_declarations(exported["declarations"], source, target)
+        audit = _audit_declarations(candidate_declarations, source, target)
         unexpected, unsafe = audit['unexpected_axioms'], audit['unsafe_declarations']
         result["axioms"] = decl["axioms"]
         result["audit"] = audit
         if unexpected or unsafe:
             raise ValueError("Аудит Lean отклонил аксиомы или unsafe-декларации: " + ", ".join(unexpected + unsafe))
+        if structure_payload is not None:
+            input_declarations = [d for d in exported['declarations'] if d['module'] == 'StructureInput']
+            selected = structure_payload['selected_declaration']
+            actual = next((d for d in input_declarations if d['name'] == selected['name'] and d['kind'] == 'theorem'), None)
+            if actual is None or actual['type'] != selected['type']:
+                raise ValueError('Выбранная теорема или её тип не совпадают со свежим экспортом StructureInput.')
+            input_audit = _audit_declarations(input_declarations, structure_payload['content'], selected['name'])
+            result['source_library'].update(declarations=input_declarations, audit=input_audit)
+            if input_audit['status'] != 'passed':
+                raise ValueError('Аудит входного StructureInput отклонил аксиомы или unsafe-декларации.')
+            result['source_library']['print_axioms'] = structure_sources.print_axioms(
+                structure_payload['content'], input_declarations, context, env, work, result['diagnostics'], cancelled)
+            result['print_axioms'] = structure_sources.print_axioms(
+                source, candidate_declarations, context, env, work, result['diagnostics'], cancelled, module='Candidate')
+            if _sha((work / 'StructureInput.lean').read_bytes()) != structure_payload['source_sha256']:
+                raise ValueError('StructureInput изменён во время проверки кандидата.')
+            usage = structure_sources.source_usage(target, candidate_declarations, input_declarations,
+                                                    selected['name'], structure_payload['content'])
+            usage['required'] = require_source_usage
+            result['source_usage'] = usage
+            if require_source_usage and usage['status'] != 'related':
+                result['outcome'] = 'unrelated'
+                raise ValueError('Итоговая теорема не использует выбранную исходную теорему или определения её типа; одного импорта недостаточно.')
         contracts = [(target, expected_statement)] if expected_statement is not None else []
         contracts.extend((item["target"], item["statement"]) for item in obligations)
         if contracts:
+            stage = 'lean_contract'
             contract = "import Candidate\nuniverse u v w\nset_option autoImplicit false\n" + "".join(
-                "example : (" + statement + ") := @" + name + "\n" for name, statement in contracts)
+                "example : " + type_expression(statement) + " := @" + name + "\n" for name, statement in contracts)
             (work / "Contract.lean").write_text(contract)
             _run(context, env, work, "Contract.lean", result["diagnostics"], cancelled)
             result["contract_file_sha256"] = _sha(contract)
@@ -382,13 +616,14 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
         result.update(status="complete", outcome="proved", success=True,
                       olean_sha256=_sha((work / "Candidate.olean").read_bytes()))
     except InterruptedError as error:
-        result.update(status="cancelled", error=str(error))
+        result.update(status="cancelled", error=str(error), termination=dict(code='cancelled', stage=stage, message=str(error)))
     except TimeoutError as error:
-        result.update(status="timeout", error=str(error))
+        result.update(status="timeout", error=str(error), termination=dict(code='lean_timeout', stage=stage, message=str(error)))
     except ValueError as error:
-        result.update(status="rejected", error=str(error))
+        result.update(status="rejected", error=str(error), termination=dict(code='invalid_contract', stage=stage, message=str(error)))
     except (RuntimeError, OSError, subprocess.SubprocessError, KeyError) as error:
-        result.update(status="failed", error=str(error))
+        code = 'infrastructure' if stage == 'lean_environment' or isinstance(error, OSError) else 'invalid_contract' if stage == 'lean_contract' else 'lean_unproved'
+        result.update(status="failed", error=str(error), termination=dict(code=code, stage=stage, message=str(error)))
     if not result["success"]:
         result["obligations_passed"] = False
         for item in result["obligations"]:
