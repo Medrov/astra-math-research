@@ -1,0 +1,46 @@
+> lean.exe -o StructureInput.olean StructureInput.lean
+exit_code=0
+
+
+> lean.exe -o Candidate.olean Candidate.lean
+exit_code=0
+Candidate.lean:29:6: warning: try 'simp' instead of 'simpa'
+note: this linter can be disabled with `set_option linter.unnecessarySimpa false`
+Candidate.lean:33:6: warning: try 'simp' instead of 'simpa'
+note: this linter can be disabled with `set_option linter.unnecessarySimpa false`
+Candidate.lean:31:6: warning: this tactic is never executed
+note: this linter can be disabled with `set_option linter.unreachableTactic false`
+Candidate.lean:35:6: warning: this tactic is never executed
+note: this linter can be disabled with `set_option linter.unreachableTactic false`
+Candidate.lean:31:6: warning: 'simp [SpectrumBridge.alphaF, SpectrumBridge.alphaG]' tactic does nothing
+note: this linter can be disabled with `set_option linter.unusedTactic false`
+Candidate.lean:35:6: warning: 'simp [SpectrumBridge.alphaF, SpectrumBridge.alphaG]' tactic does nothing
+note: this linter can be disabled with `set_option linter.unusedTactic false`
+
+
+> lean.exe -o AtlasInspect.olean AtlasInspect.lean
+exit_code=0
+
+
+> lean.exe AtlasDump.lean
+exit_code=0
+
+
+> lean.exe StructureInputAxioms.lean
+exit_code=0
+'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+
+> lean.exe CandidateAxioms.lean
+exit_code=0
+'SpectrumBridge.coordinate_and_spectrum_equivalence' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SpectrumBridge.substitution_inverses' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SpectrumBridge.ideal_transport' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+
+> lean.exe -o Contract.olean Contract.lean
+exit_code=0
+

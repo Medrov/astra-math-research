@@ -1,0 +1,86 @@
+{
+  "checked_at": "2026-10-31T09:34:55.670254+00:00",
+  "scope": "apps/msc-lean-atlas only; original MathResearch 11/149 unchanged",
+  "python": {
+    "command": "python -m unittest discover -s tests -v",
+    "tests": 224,
+    "skipped": 0,
+    "exit_code": 0,
+    "elapsed_seconds": 313.408,
+    "log_sha256": "77efe122f81646dc7e4ddc025d58ac5dc5014c33aeed060e7a6dea008307ee7f"
+  },
+  "javascript": [
+    {
+      "command": "npm run test:graph",
+      "passed": 17,
+      "failed": 0,
+      "exit_code": 0
+    },
+    {
+      "command": "npm run test:objects",
+      "passed": 12,
+      "failed": 0,
+      "exit_code": 0
+    },
+    {
+      "command": "npm run test:structure",
+      "passed": 6,
+      "failed": 0,
+      "exit_code": 0
+    }
+  ],
+  "source_control": {
+    "command": "python tools/reproduce_common_structure.py --control",
+    "exit_code": 0,
+    "target_preserved": true
+  },
+  "live_search": {
+    "run_id": "97fde89034994eb9ac0fbfe5576e8fcd",
+    "status": "complete",
+    "routes": 3,
+    "candidates": 5,
+    "usage": {
+      "calls": 4,
+      "total_tokens": 71931,
+      "elapsed_seconds": 251.578
+    }
+  },
+  "live_proof": {
+    "run_id": "0bc277e25f094fe894becf31b4fca6f1",
+    "status": "complete",
+    "outcome": "proved",
+    "obligations": 4,
+    "axioms": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "usage": {
+      "calls": 6,
+      "total_tokens": 280775,
+      "elapsed_seconds": 429.39
+    }
+  },
+  "publication": "Not pushed; local feature branch codex/common-structure",
+  "retained_astra_reproduction": {
+    "command": "python tools/reproduce_common_structure.py",
+    "exit_code": 0,
+    "success": true,
+    "source_sha256": "cb23c7ddc81135d5e671636cf9258c90ee76bbcdd49c947a755e1a81ee644e9c",
+    "target_preserved": true,
+    "obligations": 4,
+    "model_calls": 0,
+    "finished_at": "2026-10-31T09:36:24.449344+00:00"
+  },
+  "browser_final": {
+    "passed": 6,
+    "failed": 0,
+    "read_only": true,
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "report": "verification/structure-ui/final-report.json"
+  },
+  "ui_test_uploads": "Archived under verification/structure-ui/uploaded-test-sources; only the real Frolov-Dorofeev source remains in the user source picker."
+}

@@ -7,11 +7,27 @@
   <title>MSC · Атлас математики</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/research.css">
+  <link rel="stylesheet" href="/structure-search.css">
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="/math-presentation.css">
+  <link rel="stylesheet" href="/guided-research.css">
+  <link rel="stylesheet" href="/candidate-checks.css">
+  <link rel="stylesheet" href="/research-map.css">
+  <link rel="stylesheet" href="/research-history.css">
   <script defer src="/vendor/graph-libs.min.js"></script>
   <script defer src="/graph-model.js"></script>
   <script defer src="/graph-presentation.js"></script>
   <script defer src="/graph-view.js"></script>
   <script defer src="/object-graph.js"></script>
+  <script defer src="/structure-search.js"></script>
+  <script defer src="/vendor/katex/katex.min.js"></script>
+  <script defer src="/math-presentation.js"></script>
+  <script defer src="/guided-research.js"></script>
+  <script defer src="/msc-context.js"></script>
+  <script defer src="/research-appearance.js"></script>
+  <script defer src="/research-map.js"></script>
+  <script defer src="/candidate-checks.js"></script>
+  <script defer src="/research-history.js"></script>
   <script defer src="/research.js"></script>
   <script defer src="/app.js"></script>
 </head>
@@ -95,16 +111,68 @@
 
     <section id="research-panel" class="app-panel" aria-labelledby="research-title" hidden>
       <div class="page-heading research-page-heading">
-        <div><p class="eyebrow">Исследовательская лаборатория</p><h1 id="research-title">От объектов к доказательству</h1><p class="lead">Выберите объекты, сформулируйте переход и проверьте его основания.</p></div>
-        <button type="button" id="research-new" class="button secondary">＋ Новое исследование</button>
+        <div><p class="eyebrow">Astra · математическая лаборатория</p><h1 id="research-title">От статьи к проверенной связи</h1><p class="lead">Выберите источник. Astra найдёт направления поиска, а Lean проверит выбранный переход.</p></div>
+        <div class="research-page-actions"><button type="button" id="guided-history-open" class="button secondary">История <span id="guided-history-count"></span></button><button type="button" id="research-new" class="button secondary">＋ Новое исследование</button></div>
       </div>
       <div id="research-error" class="notice error" role="alert" hidden></div>
+      <section id="guided-research" class="guided-research" aria-label="Исследование по шагам">
+        <nav class="guided-step-nav" aria-label="Этапы исследования"><ol id="guided-steps" class="guided-steps"></ol></nav>
+        <div id="guided-setup" class="guided-card">
+          <div class="guided-card-heading"><div><p class="eyebrow">Начните с математики</p><h2>Что будем исследовать?</h2></div><span class="guided-badge">MSC подбираются автоматически</span></div>
+          <div class="guided-source-tabs" role="group" aria-label="Тип источника"><button type="button" data-guided-source="arxiv" aria-pressed="true">Статья arXiv</button><button type="button" data-guided-source="lean" aria-pressed="false">Мой Lean-файл</button><button type="button" data-guided-source="example" aria-pressed="false">Готовый пример</button></div>
+          <form id="guided-source-form">
+            <div id="guided-arxiv-fields"><label for="guided-arxiv">Ссылка на статью</label><div class="guided-input-row"><input id="guided-arxiv" type="text" placeholder="https://arxiv.org/abs/2610.38474" autocomplete="off"><button type="submit" class="button primary" id="guided-load">Загрузить источник</button></div><p class="guided-note">Сохраним версию статьи и её разделы. Подбор связей запускается следующим шагом.</p></div>
+            <div id="guided-lean-fields" hidden><label for="guided-file">Файл с теоремой Lean</label><input id="guided-file" type="file" accept=".lean,text/plain"><p class="guided-note">Один файл с импортами Mathlib. Сначала проверим компиляцию и аксиомы.</p><button type="submit" class="button primary" id="guided-load-lean">Проверить источник</button></div>
+            <div id="guided-example-fields" hidden><label for="guided-example">Подготовленная формализация</label><select id="guided-example"><option value="">Загружаем примеры…</option></select><button type="submit" class="button primary" id="guided-load-example">Открыть пример</button></div>
+          </form>
+          <p id="guided-source-status" role="status" aria-live="polite" class="guided-source-status"></p>
+          <div id="guided-source-preview"></div>
+          <div id="guided-selection" hidden>
+            <div id="guided-theorem-field"><label for="guided-theorem">От какой теоремы ищем связи?</label><select id="guided-theorem"></select></div>
+            <div id="guided-section-field" hidden><label for="guided-section">Какую часть статьи исследуем?</label><select id="guided-section"></select></div>
+            <div id="guided-theorem-preview"></div>
+            <details class="guided-options"><summary>Пожелания и лимит работы</summary><label for="guided-question">На что обратить внимание · необязательно</label><textarea id="guided-question" rows="3" placeholder="Например: где ещё встречается этот способ построения обратного отображения?"></textarea><div class="guided-budget"><label for="guided-calls">До вызовов Astra<input id="guided-calls" type="number" min="1" max="24" value="16"></label><label for="guided-minutes">До минут на этап<input id="guided-minutes" type="number" min="1" max="30" value="30"></label></div><p class="guided-note">Поиск и проверка связи — отдельные запуски с этим лимитом. Гарантии успеха нет; остановка сохранит выполненную работу.</p></details>
+            <div class="guided-launch"><div><strong>Агентное исследование</strong><p>Подбор областей → поиск связей → планировщик, критик и доказательство выбранного перехода.</p></div><button type="button" id="guided-start" class="button primary" disabled>Найти связи</button></div>
+          </div>
+        </div>
+        <section id="guided-current" hidden aria-label="Текущее исследование"></section>
+        <section id="guided-saved-source" class="guided-card" hidden aria-label="Источник текущего исследования"></section>
+        <section id="guided-directions" hidden aria-label="Направления текущего исследования"></section>
+        <section id="guided-checks" hidden aria-label="Кандидаты и результаты проверок"></section>
+        <section id="guided-lean" class="guided-card" hidden aria-label="Проверка Lean текущего исследования"></section>
+        <section id="guided-progress" class="guided-card guided-progress" hidden aria-label="Выполнение исследования" aria-live="polite"></section>
+        <section id="guided-map" hidden aria-label="Карта объектов и доказательства"></section>
+        <details id="guided-structure-slot" class="guided-source-directions" hidden><summary>Источник и направления поиска</summary></details>
+        <section id="guided-candidates" hidden></section>
+        <section id="guided-result" class="guided-card" hidden aria-label="Итог проверки"></section>
+        <nav id="guided-step-actions" class="guided-step-actions" aria-label="Переход между этапами" hidden></nav>
+        <div id="guided-history"></div>
+      </section>
+      <details id="research-advanced" class="research-advanced" hidden><summary>Служебное представление</summary>
       <div class="research-layout">
         <aside class="research-sidebar">
           <form id="research-form" class="research-setup">
             <div class="research-section-heading"><h2>Постановка</h2><span class="research-small-label">Новый запуск</span></div>
-            <div class="research-purpose-switch" role="group" aria-label="Цель исследования"><button type="button" data-purpose="prove" aria-pressed="true">Проверить связь</button><button type="button" data-purpose="discover" aria-pressed="false">Предложить связи</button></div>
+            <div class="research-purpose-switch" role="group" aria-label="Цель исследования"><button type="button" data-purpose="prove" aria-pressed="true">Проверить связь</button><button type="button" data-purpose="discover" aria-pressed="false">Предложить связи</button><button type="button" data-purpose="structure" aria-pressed="false">Найти общую структуру</button></div>
             <p id="research-purpose-description" class="research-hint">Выберите готовый пример или задайте конкретный переход.</p>
+            <div id="structure-source-fields" hidden>
+              <label class="field-label" for="structure-source">Lean-источник</label>
+              <select id="structure-source"><option value="">Загрузка источников…</option></select>
+              <div id="structure-upload-fields" hidden>
+                <label class="field-label" for="structure-file">Один файл .lean с Mathlib</label>
+                <input id="structure-file" type="file" accept=".lean,text/plain" aria-describedby="structure-upload-hint">
+                <p id="structure-upload-hint" class="research-hint">Исходник проверяется локально. Сравнение двух файлов не требуется.</p>
+              </div>
+              <button id="structure-inspect" type="button" class="button secondary">Проверить исходник локально</button>
+              <p id="structure-source-status" class="research-hint" role="status" aria-live="polite">Инспекция Lean не вызывает модель. Astra начнёт работу только после отдельного запуска.</p>
+              <div id="structure-source-detail" class="structure-source-detail" hidden></div>
+              <label class="field-label" for="structure-target">Теорема для поиска аналогий</label>
+              <select id="structure-target" disabled><option value="">Сначала проверьте исходник</option></select>
+              <div id="structure-target-detail" hidden></div>
+              <label class="field-label" for="structure-question">Пожелание к поиску · необязательно</label>
+              <textarea id="structure-question" rows="3" maxlength="12000" placeholder="Например: найти тот же приём построения обратного отображения в других областях."></textarea>
+              <p class="research-hint">Astra предложит три направления MSC и найдёт кандидатов на общую структуру. После этого вы выберете переход для отдельной проверки Lean.</p>
+            </div>
             <div id="research-case-fields">
             <label class="field-label" for="research-case">Пример или свой вопрос</label>
             <select id="research-case" required><option value="">Загрузка примеров…</option></select>
@@ -131,11 +199,11 @@
                 <p class="research-hint">Подготовит вопрос для Astra. Исследование начнётся отдельной кнопкой ниже; утверждения статьи ещё не являются доказательствами Lean.</p>
               </div>
             </details>
-            <label class="field-label" for="research-msc">Области MSC</label>
+            <div id="research-msc-fields"><label class="field-label" for="research-msc">Области MSC</label>
             <input id="research-msc" placeholder="Например: 90C25, 65K10" autocomplete="off">
-            <p class="research-hint">Метки задают область поиска. Связь между объектами проверяется отдельно.</p>
+            <p class="research-hint">Метки задают область поиска. Связь между объектами проверяется отдельно.</p></div>
             <label class="field-label" for="research-mode">Режим работы</label>
-            <select id="research-mode"><option value="pilot">Проверить пилот · локально</option><option value="single">Один исследователь · Astra</option><option value="multi">Команда ролей · Astra</option></select>
+            <select id="research-mode"><option value="multi" selected>Агентное исследование</option><option value="single">Последовательный исследователь</option><option value="pilot">Повторить готовое доказательство · без модели</option></select>
             <p id="research-mode-description" class="research-hint">Воспроизведение подготовленного примера в Lean.</p>
             <div id="research-budget-fields" class="research-budget" hidden>
               <label for="research-max-calls"><span>Вызовов модели</span><input id="research-max-calls" type="number" min="1" max="24" value="8" required></label>
@@ -157,6 +225,7 @@
           </div>
           <div id="research-progress" class="research-progress" role="status" aria-live="polite"><span class="research-state-dot"></span><span id="research-progress-text">Запуск ещё не создан</span><span id="research-budget-status"></span></div>
           <div id="research-claim" class="research-claim" hidden></div>
+          <section id="structure-results" class="structure-results" aria-label="Поиск общей математической структуры" hidden></section>
           <nav class="research-view-switch" aria-label="Представление исследования"><a href="#map">01 · Области MSC</a><button type="button" data-research-view="objects" aria-pressed="true">02 · Объекты и переходы</button><button type="button" data-research-view="proof" aria-pressed="false">03 · Доказательство</button></nav>
           <section id="research-objects-view" class="research-objects-view" aria-labelledby="objects-title">
             <div class="research-section-heading"><div><h3 id="objects-title">Объекты и переходы</h3><p id="objects-version" class="research-hint"></p></div><div class="research-graph-buttons"><button id="objects-edit" type="button" class="button small secondary" disabled>Уточнить постановку</button><button id="objects-fit" type="button" class="button small secondary" aria-label="Вместить граф объектов">Вместить</button></div></div>
@@ -181,6 +250,11 @@
           <div id="research-detail-sources" class="research-detail-panel" role="tabpanel" aria-labelledby="research-tab-sources" hidden><form id="research-search-form" class="research-source-search"><label class="sr-only" for="research-search">Поиск по математическому корпусу</label><input id="research-search" type="search" placeholder="Определение, лемма или математическая структура"><button type="submit" class="button secondary">Найти</button></form><div id="research-search-results"></div><div id="research-sources"></div></div>
         </div>
       </div>
+      </details>
+      <dialog id="research-materials" class="research-materials" aria-labelledby="research-materials-title">
+        <div class="research-materials-heading"><h2 id="research-materials-title">Материалы исследования</h2><div id="research-materials-actions"><button type="button" id="research-materials-close" class="button secondary" aria-label="Закрыть материалы исследования">Закрыть</button></div></div>
+        <div id="research-materials-body"></div>
+      </dialog>
     </section>
 
   </main>

@@ -1,0 +1,42 @@
+{
+  "target": "Arxiv261038474.coordinate_automorphism_exists",
+  "statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  ∃ α : MvPolynomial (Fin 3) R ≃ₐ[R] MvPolynomial (Fin 3) R,\n    (∀ p : MvPolynomial (Fin 3) R,\n      α p = MvPolynomial.eval₂Hom MvPolynomial.C\n        (Arxiv261038474.graphSubtract b w) p) ∧\n    (∀ p : MvPolynomial (Fin 3) R,\n      α.symm p = MvPolynomial.eval₂Hom MvPolynomial.C\n        (Arxiv261038474.graphRestore b w) p)",
+  "imports": [
+    "StructureInput",
+    "Mathlib.Algebra.Algebra.Equiv"
+  ],
+  "prelude": "-- atlas-structure-source-sha256: f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75\nnoncomputable def Arxiv261038474.substitutionAlgHom {R : Type*} [CommRing R]\n    (H : Fin 3 → MvPolynomial (Fin 3) R) :\n    MvPolynomial (Fin 3) R →ₐ[R] MvPolynomial (Fin 3) R :=\n  MvPolynomial.aeval H",
+  "required_obligations": [
+    {
+      "id": "substitution_bridge",
+      "title": "Алгебраическая подстановка имеет исходный гомоморфизм колец",
+      "target": "Arxiv261038474.substitutionAlgHom_toRingHom",
+      "statement": "∀ {R : Type*} [CommRing R]\n    (H : Fin 3 → MvPolynomial (Fin 3) R),\n  (Arxiv261038474.substitutionAlgHom H).toRingHom =\n    MvPolynomial.eval₂Hom MvPolynomial.C H",
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "contravariant_composition",
+      "title": "Композиция подстановок соответствует исходной compose",
+      "target": "Arxiv261038474.substitutionAlgHom_comp",
+      "statement": "∀ {R : Type*} [CommRing R]\n    (H K : Fin 3 → MvPolynomial (Fin 3) R),\n  (Arxiv261038474.substitutionAlgHom K).comp\n      (Arxiv261038474.substitutionAlgHom H) =\n    Arxiv261038474.substitutionAlgHom (Arxiv261038474.compose H K)",
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "two_inverse_identities",
+      "title": "Оба исходных полиномиальных тождества дают обратимость гомоморфизмов",
+      "target": "Arxiv261038474.graph_substitution_inverse_identities",
+      "statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  ((Arxiv261038474.substitutionAlgHom\n      (Arxiv261038474.graphRestore b w)).comp\n      (Arxiv261038474.substitutionAlgHom\n        (Arxiv261038474.graphSubtract b w)) =\n    AlgHom.id R (MvPolynomial (Fin 3) R)) ∧\n  ((Arxiv261038474.substitutionAlgHom\n      (Arxiv261038474.graphSubtract b w)).comp\n      (Arxiv261038474.substitutionAlgHom\n        (Arxiv261038474.graphRestore b w)) =\n    AlgHom.id R (MvPolynomial (Fin 3) R))",
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "coordinate_automorphism",
+      "title": "Автоморфизм координатной R-алгебры с заданными прямой и обратной подстановками",
+      "target": "Arxiv261038474.coordinate_automorphism_exists",
+      "statement": "∀ {R : Type*} [CommRing R] (b w : Polynomial R),\n  ∃ α : MvPolynomial (Fin 3) R ≃ₐ[R] MvPolynomial (Fin 3) R,\n    (∀ p : MvPolynomial (Fin 3) R,\n      α p = MvPolynomial.eval₂Hom MvPolynomial.C\n        (Arxiv261038474.graphSubtract b w) p) ∧\n    (∀ p : MvPolynomial (Fin 3) R,\n      α.symm p = MvPolynomial.eval₂Hom MvPolynomial.C\n        (Arxiv261038474.graphRestore b w) p)",
+      "expected_outcome": "proved"
+    }
+  ],
+  "version": 1,
+  "research_contract_sha256": "a8433ca38ef6de2aef80918d9ad7168391693bec945e9f8f2d8130bea12f7476",
+  "input_target": "Arxiv261038474.subtract_restore"
+}

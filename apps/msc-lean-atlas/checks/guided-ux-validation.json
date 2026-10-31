@@ -1,0 +1,148 @@
+{
+  "checked_at": "2026-10-31T11:04:29.369841+00:00",
+  "scope": "Guided research UI and source catalogue metadata; no changes to Lean theorems or root MathResearch",
+  "branch": "codex/guided-research-ux",
+  "python": {
+    "command": "python -m unittest discover -s tests -v",
+    "passed": 231,
+    "skipped": 0,
+    "exit_code": 0,
+    "elapsed_seconds": 381.292,
+    "log": "verification/guided-ux-python-tests.log"
+  },
+  "javascript": {
+    "command": "node --test tests/test_graph_model.cjs tests/test_object_graph.cjs tests/test_structure_search.cjs tests/test_math_presentation.cjs tests/test_guided_research.cjs",
+    "groups": {
+      "graph": 17,
+      "objects": 12,
+      "structure": 14,
+      "math": 9,
+      "guided": 17
+    },
+    "passed": 69,
+    "failed": 0,
+    "exit_code": 0,
+    "note": "Node TAP reports 42 entries including two custom test-file harnesses; internal assertions total 69. Guided 17 rerun after final empty-screen fix, exit 0."
+  },
+  "browser": {
+    "driver": "CUA, coordinator",
+    "production_server_port": 8769,
+    "checks": [
+      "arXiv import shows exact version and prepared formalization scope",
+      "prepared theorem opens with readable formulas and recommended authored target",
+      "changing selected theorem updates its exact statement and formula",
+      "replay: start structure search through UI, queued/running progress and three MSC routes",
+      "replay: candidate check sends exact graph/revision/transition with multi mode",
+      "replay: final spectrum result renders three checked obligations and formal details",
+      "production saved search: three Russian MSC headings, five candidates, one profile formula",
+      "production saved proof at mobile width: four formulas, three check marks, zero formula fallbacks",
+      "new study has clean source step; technical workbench remains collapsed"
+    ],
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844,
+        "document_scroll_width": 375
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "document_scroll_width": 1425
+      }
+    ],
+    "viewport_reset": true,
+    "console_errors_final": 0,
+    "screenshots": [
+      "verification/guided-ui/start.png",
+      "verification/guided-ui/desktop-structure.png",
+      "verification/guided-ui/mobile-result.png"
+    ]
+  },
+  "replay": {
+    "file": "verification/guided-ui/replay-actions.json",
+    "actions": [
+      {
+        "at": "2026-10-31T10:58:49.556063+00:00",
+        "path": "/api/arxiv/import",
+        "payload": {
+          "reference": "https://arxiv.org/abs/2610.38474"
+        },
+        "accepted": true,
+        "reason": null
+      },
+      {
+        "at": "2026-10-31T10:58:56.557621+00:00",
+        "path": "/api/research/runs",
+        "payload": {
+          "purpose": "structure",
+          "mode": "multi",
+          "source_id": "c477901247234c02bd0ddc8fab3bd9cc",
+          "target": "Arxiv261038474.subtract_restore",
+          "budget": {
+            "max_calls": 16,
+            "timeout_seconds": 1800,
+            "max_parallel": 2
+          }
+        },
+        "accepted": true,
+        "reason": null
+      },
+      {
+        "at": "2026-10-31T10:59:09.875284+00:00",
+        "path": "/api/research/runs",
+        "payload": {
+          "purpose": "prove",
+          "graph_id": "b1c886d16151432f8c03357b8f9f69e2",
+          "graph_revision": 2,
+          "transition_id": "route_2_bridge_spectrum",
+          "mode": "multi",
+          "budget": {
+            "max_calls": 16,
+            "timeout_seconds": 1800,
+            "max_parallel": 2
+          },
+          "msc_codes": [
+            "13",
+            "14",
+            "37"
+          ]
+        },
+        "accepted": true,
+        "reason": null
+      }
+    ],
+    "model_calls": 0,
+    "lean_calls": 0,
+    "isolation": "Saved fixtures; POST forwarding disabled; visible replay banner; no real research/certificate created",
+    "server_stopped": true,
+    "cleanup": {
+      "pid": 26708,
+      "exit_code": 0,
+      "port_8870_free": true
+    }
+  },
+  "models_called_this_task": 0,
+  "assets": {
+    "renderer": "KaTeX 0.19.1",
+    "offline": true,
+    "manifest": "web/vendor/katex/manifest.json"
+  },
+  "files_sha256": {
+    "web/guided-research.js": "1061dfd96f2d3124fedee667162ee0faf16ea5a1c5cdfcfbc317c371d525ec82",
+    "web/guided-research.css": "04d60a61e2b68491b76bd0cd4a0d83e9206afc3622ff6de378254d2560d8c30b",
+    "web/math-presentation.js": "4291310a9b19c5b2c3eaadfcfb42efd8b327f59029c9b1bb692f121b612fb194",
+    "web/math-presentation.css": "30f625e101230a0b1fcd6da8dbe2c17e03302654556a47c15f54e46ccbcb3548",
+    "web/structure-search.js": "8c967f29924c174af3d7118717b07fea25c6b14a3b45b8772b8c3c8a5d1fef8e",
+    "web/structure-search.css": "40e62deea979c7df843c8c6acbe98b0944cf89120e6ae75531eb9212db5003a9",
+    "web/research.js": "64156391654a986127138d036691736e17345560b7fb7b15f7488fdc44415a1f",
+    "web/index.html": "fab207b13e68a8ccd5cd942058e42ff5682eddefc22dd072f6f13c974012802b",
+    "research_structure.py": "5bcb870e506dd76af37ad86434507067c81379ec9962b9afb840530d58a7e2f8",
+    "research_structure_sources.py": "facfd8e73679a11e5bfb3fb685fbb1543f2e46026d32e639b6d95171f132e8ba"
+  },
+  "limitations": [
+    "Generic arXiv import is not a Lean formalization; paper extraction/proof remains separate from formal-input three-MSC search.",
+    "Readable curated summaries require exact known source/type/contract; unknown Lean types remain literal.",
+    "No new mathematical claim was proved in the UI replay."
+  ],
+  "publication": "Local changes only; no commit or push."
+}
