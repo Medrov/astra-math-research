@@ -1,0 +1,145 @@
+{
+  "kind": "computer_use_pipeline_observation",
+  "recorded_at": "2026-11-04T09:44:33.874098+00:00",
+  "source": {
+    "title": "A proof of Sylvester's theorem",
+    "author": "Saptak Bhattacharya",
+    "url": "https://arxiv.org/abs/2403.17945v1",
+    "html": "https://arxiv.org/html/2403.17945v1",
+    "msc_codes": [
+      "15A23",
+      "15A30"
+    ],
+    "msc_origin": "source_attested"
+  },
+  "input_transition": {
+    "id": "t3",
+    "title": "Блочное умножение и сокращение",
+    "scope": "AX=XB and an invertible block T imply ET=TP, G=0, Q=0; not the whole spectral theorem"
+  },
+  "candidate": {
+    "title": "Линейная параметризация всех решений",
+    "route": "global",
+    "scope": "conditional linear parametrization of intertwining pairs by five free blocks; concrete article adapter not verified",
+    "proved": false
+  },
+  "stages": [
+    {
+      "id": "10a9d807d30141bb8eee7669b65e96f1",
+      "status": "complete",
+      "phase": "complete",
+      "outcome": "unknown",
+      "budget": {
+        "max_calls": 8,
+        "timeout_seconds": 900,
+        "max_parallel": 2
+      },
+      "usage": {
+        "calls": 1,
+        "total_tokens": 20655,
+        "elapsed_seconds": 118.75
+      },
+      "termination": null
+    },
+    {
+      "id": "fd36d7acb5074438a23918a4b415c361",
+      "status": "cancelled",
+      "phase": "cancelled",
+      "outcome": "unknown",
+      "budget": {
+        "max_calls": 10,
+        "timeout_seconds": 1200,
+        "max_parallel": 2
+      },
+      "usage": {
+        "calls": 4,
+        "total_tokens": 79566,
+        "elapsed_seconds": 629.406
+      },
+      "termination": {
+        "code": "cancelled",
+        "stage": "structure_rank",
+        "message": "Исследование остановлено пользователем."
+      }
+    },
+    {
+      "id": "e3ee6f548f2a4055a8930f8f102c14e7",
+      "status": "failed",
+      "phase": "failed",
+      "outcome": "unknown",
+      "budget": {
+        "max_calls": 16,
+        "timeout_seconds": 1800,
+        "max_parallel": 2
+      },
+      "usage": {
+        "calls": 1,
+        "total_tokens": 21290,
+        "elapsed_seconds": 74.094
+      },
+      "termination": {
+        "code": "invalid_contract",
+        "stage": "lean_contract_preflight",
+        "message": "Lean не принял черновик постановки: Lean отклонил ContractTypes.lean"
+      }
+    }
+  ],
+  "verification": {
+    "kind": "lean_contract_preflight",
+    "status": "rejected",
+    "well_typed": false,
+    "proof_checked": false,
+    "outcome": "unknown",
+    "target": "bridge_linear_parametrization",
+    "contract_sha256": "cab53609766c8cb8933030f9bd6d68484c565bd00c0c12a48fcd277f79c6c583",
+    "source_sha256": "606c0ec20609ed7cae6db72c234cc3e47b23157eb4bfb6398f979649f314435a",
+    "error": "Lean отклонил ContractTypes.lean",
+    "termination": {
+      "code": "invalid_contract",
+      "stage": "lean_contract_preflight",
+      "message": "Lean отклонил ContractTypes.lean"
+    }
+  },
+  "lean_diagnostics": [
+    {
+      "file": "ContractTypes.lean",
+      "exit_code": 1,
+      "elapsed_seconds": 4.984,
+      "stdout": "ContractTypes.lean:59:23: error: failed to synthesize\n  HSMul k (BridgeParameters U N V W) ?m.22770\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:80:23: error: failed to synthesize\n  HSMul k (BridgeParameters U N V W) ?m.32622\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\n",
+      "stderr": ""
+    }
+  ],
+  "routes": [
+    {
+      "id": "atlas_global_unclassified",
+      "status": "complete",
+      "candidates": 1
+    },
+    {
+      "id": "atlas_msc_34C10",
+      "status": "searched",
+      "candidates": 0
+    },
+    {
+      "id": "atlas_msc_46M18",
+      "status": "pending",
+      "candidates": 0
+    },
+    {
+      "id": "atlas_msc_03B35",
+      "status": "pending",
+      "candidates": 0
+    }
+  ],
+  "result": "One candidate found; formalization rejected before proof due to an unsynthesized HSMul instance. Mathematical validity remains unknown.",
+  "limits": [
+    "Not an impossibility proof or a counterexample.",
+    "No whole-article formalization or novelty claim.",
+    "Search stopped after selecting a candidate; pending MSC routes not assessed.",
+    "No manual proof substitution and no extra paid retry to force a success."
+  ],
+  "totals": {
+    "model_calls": 6,
+    "tokens": 121511
+  }
+}

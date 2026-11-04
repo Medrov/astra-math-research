@@ -14,17 +14,24 @@ OBLIGATION = obj(dict(id=TEXT, title=TEXT, target=TEXT, statement=TEXT,
                       expected_outcome={'type': 'string', 'enum': ['proved', 'refuted']}))
 TASK = obj(dict(imports=STRINGS, prelude=TEXT, target=TEXT, statement=TEXT))
 NULLABLE_TASK = {'anyOf': [TASK, {'type':'null'}]}
+GROUNDING = {'type': 'array', 'items': obj(dict(component=TEXT, source_ref=TEXT, quote=TEXT,
+    origin={'type': 'string', 'enum': ['source_excerpt', 'proposed_abstraction']}))}
 TRANSITION = obj(dict(id=TEXT, title=TEXT, source_ids=STRINGS, target_ids=STRINGS,
                       relation_type={'type': 'string', 'enum': ['construction', 'representation', 'property_transfer', 'equivalence', 'reduction']},
                       construction=TEXT, assumptions=STRINGS, claim=TEXT,
                       formulation_status={'type':'string','enum':['formalized','literature_only']}, source_refs=STRINGS,
                       obligations={'type': 'array', 'items': OBLIGATION}, agent_task=NULLABLE_TASK,
-                      case_id={'type': ['string', 'null']}))
+                      case_id={'type': ['string', 'null']}, grounding=GROUNDING))
 SOURCE = obj(dict(id=TEXT, title=TEXT, url=TEXT, locator=TEXT))
 GRAPH_SCHEMA = obj(dict(title=TEXT, question=TEXT, msc_codes=STRINGS,
                        objects={'type': 'array', 'items': OBJECT},
                        transitions={'type': 'array', 'items': TRANSITION},
                        sources={'type': 'array', 'items': SOURCE}))
+# Candidate sources refer to a controller-owned flat evidence catalogue. The
+# digest binds that alias to its exact input snapshot; it is not a proof token.
+CANDIDATE_SOURCE = obj(dict(SOURCE['properties'], provenance_sha256=TEXT))
+CANDIDATE_GRAPH_SCHEMA = obj(dict(GRAPH_SCHEMA['properties'],
+    sources={'type': 'array', 'items': CANDIDATE_SOURCE}))
 FORMALIZATION_SCHEMA = obj(dict(status={'type':'string','enum':['ready','needs_review']}, reason=TEXT,
                                limitations=STRINGS, agent_task=NULLABLE_TASK,
                                obligations={'type':'array','items':OBLIGATION}))
@@ -44,6 +51,10 @@ def proposal_prompt(run, evidence):
         'assumptions and claim. Use representation/property_transfer/construction/equivalence/reduction as appropriate; '
         'do not call every relation an isomorphism. Limit the whole graph to ' + ('12' if article else '8') + ' objects. '
         'Every transition source_refs must cite ids listed in graph.sources. '
+        'For each object, operation, assumption and conclusion provide grounding entries with component, source_ref, quote and origin. '
+        'Use component="object:<object_id>", "construction", "claim", or "assumption:<zero-based index>". '
+        'origin=source_excerpt requires an exact quote copied from supplied content; origin=proposed_abstraction has empty quote '
+        'and explicitly marks an inferred interpretation. Never invent quotations. '
         'For each transition set case_id=null; candidate declarations are not known fixtures. '
         'expected_outcome=refuted is allowed only when the obligation is explicitly a negation of the stated claim. '
         + ('This is ARTICLE EXTRACTION. Set every transition formulation_status="literature_only", agent_task=null, obligations=[]. '

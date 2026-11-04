@@ -83,4 +83,36 @@ elab_rules : command
       ("declarations", toJson records),
       ("imported_modules", toJson (env.header.moduleNames.map Name.toString))]
     liftIO <| IO.FS.writeFile output.getString result.compress
+-- Resolve only requested constants, avoiding a full module dependency dump.
+syntax "#atlas_export_names " "[" str,* "]" "[" str,* "]" str : command
+elab_rules : command
+  | `(#atlas_export_names [$names:str,*] [$inputs:str,*] $output:str) => do
+    let inputModules := inputs.getElems.map (·.getString)
+    let env ← getEnv
+    let mut records : Array Json := #[]
+    let mut missing : Array String := #[]
+    for text in names.getElems.map (·.getString) do
+      let name := text.toName
+      if let some ci := env.find? name then
+        let formatted ← liftTermElabM <| Meta.ppExpr ci.type
+        let ax ← collectAxioms name
+        let (reachable, truncated) := reachableInputs env ci inputModules
+        records := records.push <| Json.mkObj [
+          ("name", toJson name.toString),
+          ("module", toJson (moduleOf env name)),
+          ("kind", toJson (kindOf ci)),
+          ("unsafe", toJson ci.isUnsafe),
+          ("type", toJson formatted.pretty),
+          ("type_dependencies", toJson (ci.type.getUsedConstants.map Name.toString)),
+          ("dependencies", toJson (ci.getUsedConstantsAsSet.toArray.map Name.toString)),
+          ("axioms", toJson (ax.map Name.toString)),
+          ("reachable_input_declarations", toJson reachable),
+          ("dependency_walk_truncated", toJson truncated)]
+      else
+        missing := missing.push text
+    let result := Json.mkObj [
+      ("declarations", toJson records),
+      ("missing_names", toJson missing),
+      ("imported_modules", toJson (env.header.moduleNames.map Name.toString))]
+    liftIO <| IO.FS.writeFile output.getString result.compress
 end AtlasInspect

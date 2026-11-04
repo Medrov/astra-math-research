@@ -136,7 +136,7 @@ test('objects and proof use directed layouts with horizontal desktop and vertica
 test('selecting any object or transition preserves topology, domain fill and its distinguishing shape',()=>withWorkspace(container=>{
   const workspace=new map.Workspace({container});workspace.render(fixture());const before=JSON.stringify(map.cyElements(workspace.model)),ids=workspace.model.nodes.map(n=>n.id);
   for(const id of ['transition:other','object:c','transition:chosen']){workspace.select(id);assert.deepEqual(workspace.model.nodes.map(n=>n.id),ids);assert.equal(JSON.stringify(map.cyElements(workspace.model)),before);const selected=descendants(workspace.listBox).find(n=>n.attributes['data-node-id']===id);assert.equal(selected.attributes['aria-pressed'],'true');assert.match(selected.attributes.class,/research-map-node-card/);const visual=map.cyElements(workspace.model).find(n=>n.data.id===id).data;assert.equal(visual.shape,visual.kind==='transition'?'round-hexagon':'round-rectangle');const number=descendants(selected).find(n=>n.attributes.class==='research-map-node-number');assert.ok(number.attributes.style.includes(visual.color));assert.ok(number.attributes.style.includes(visual.textColor));}
-  assert.equal(workspace.focusButton,undefined);assert.equal(workspace.allButton,undefined);assert.match(workspace.listBox.children[0].children[0].textContent,/Объекты/);assert.match(workspace.listBox.children[1].children[0].textContent,/Переходы/);workspace.destroy();
+  assert.equal(workspace.focusButton,undefined);assert.equal(workspace.allButton,undefined);assert.match(workspace.listBox.children[0].children[0].textContent,/Переходы/);assert.match(workspace.listBox.children[1].children[0].textContent,/Объекты/);workspace.destroy();
 }));
 test('each canvas number resolves to the same full title in the list, selected bar and inspector',()=>withWorkspace(container=>{
   const actions=[],workspace=new map.Workspace({container,onVerify:()=>actions.push('verify'),onOpenRun:()=>actions.push('open')}),run=fixture();workspace.render(run);
@@ -145,7 +145,7 @@ test('each canvas number resolves to the same full title in the list, selected b
     const ids=workspace.model.nodes.map(node=>node.id),canvas=map.cyElements(workspace.model).filter(item=>item.data.source===undefined);
     assert.equal(new Set(canvas.map(item=>item.data.number)).size,ids.length);
     const rows=()=>descendants(workspace.listBox).filter(node=>node.tagName==='BUTTON'&&node.attributes['data-node-id']);assert.equal(rows().length,ids.length);
-    assert.deepEqual(rows().map(node=>Number(node.attributes['data-number'])),canvas.map(item=>item.data.number));
+    assert.deepEqual(rows().map(node=>Number(node.attributes['data-number'])).sort((a,b)=>a-b),canvas.map(item=>item.data.number).sort((a,b)=>a-b));
     for(const item of canvas){
       const node=workspace.model.nodes.find(value=>value.id===item.data.id),row=rows().find(value=>value.attributes['data-node-id']===node.id);assert.equal(row.attributes['data-number'],item.data.label);assert.ok(row.textContent.includes(node.title));row.onclick();
       for(const surface of [workspace.selectionBar,workspace.inspector]){const badge=descendants(surface).find(value=>value.attributes.class==='research-map-node-number');assert.equal(badge.attributes['data-node-id'],node.id);assert.equal(badge.textContent,item.data.label);assert.ok(surface.textContent.includes(node.title));}
@@ -283,12 +283,12 @@ test('article selection searches only by explicit primary click; original-claim 
   const run=articleFixture(),before=JSON.stringify(run),searches=[],verifications=[],opened=[],workspace=new map.Workspace({container,onSearchAnalogies:(...args)=>searches.push(args),onVerify:(...args)=>verifications.push(args),onOpenRun:id=>opened.push(id)});
   workspace.render(run,{runs:[{id:'old-article-attempt',purpose:'prove',status:'failed',source_graph_ref:{id:'derived',revision:1},selected_transition_id:'other'}]});workspace.select('transition:other');workspace.render(structuredClone(run));
   assert.deepEqual([searches.length,verifications.length,opened.length],[0,0,0]);assert.equal(workspace.model.nodes.length,5);
-  const primary=workspace.selectionBar.children.find(node=>node.tagName==='BUTTON');assert.equal(primary.textContent,'Найти аналоги в других областях');assert.equal(primary.disabled,false);primary.onclick();
+  const primary=workspace.selectionBar.children.find(node=>node.tagName==='BUTTON');assert.equal(primary.textContent,'Искать по всему атласу');assert.equal(primary.disabled,false);primary.onclick();
   assert.deepEqual(searches,[[workspace.run.object_graph,workspace.run.object_graph.transitions[1]]]);assert.equal(verifications.length,0);
   const direct=descendants(workspace.inspector).find(node=>node.tagName==='DETAILS'&&node.children[0]?.textContent==='Прямая проверка утверждения статьи');assert.ok(direct);
   direct.children.find(node=>node.tagName==='BUTTON'&&node.textContent==='Открыть попытку').onclick();assert.deepEqual(opened,['old-article-attempt']);assert.equal(verifications.length,0);
   direct.children.find(node=>node.tagName==='BUTTON'&&node.textContent==='Проверить утверждение статьи').onclick();assert.deepEqual(verifications,[[workspace.run.object_graph,workspace.run.object_graph.transitions[1]]]);
-  assert.match(workspace.flowPanel.textContent,/отправной точкой поиска аналогов в трёх областях MSC/);assert.equal(JSON.stringify(run),before);workspace.destroy();
+  assert.match(workspace.flowPanel.textContent,/отправной точкой поиска аналогов в других областях MSC/);assert.equal(JSON.stringify(run),before);workspace.destroy();
 }));
 
 test('invalid endpoints and an active run cannot launch an article analogy search',()=>withWorkspace(container=>{

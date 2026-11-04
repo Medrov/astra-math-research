@@ -185,14 +185,20 @@ class ArxivWorkflowTests(unittest.TestCase):
 
     def test_derived_formalization_preserves_original_and_recovers_create_bind_crash(self):
         graph = self.literature(); original = copy.deepcopy(self.service.graph(graph['id']))
-        run = self.proving(graph); rid=run['id']; self.service._retrieve({'run_id':rid})
-        with patch('research_codex.run_task',return_value=response(formalization())) as model, \
+        run = self.create(purpose='prove',question=graph['transitions'][0]['claim'],graph_id=graph['id'],
+                          graph_revision=graph['revision'],transition_id='finite_inverse',paper_ids=[],section_ids=[],
+                          budget={'max_calls':2,'timeout_seconds':600})
+        rid=run['id']; self.service._retrieve({'run_id':rid})
+        with patch('research_codex.run_task',side_effect=[response(formalization()),response({'requests':[]})]) as model, \
              patch.object(self.service,'_bind_graph',side_effect=RuntimeError('simulated crash after create')):
             with self.assertRaisesRegex(RuntimeError,'simulated crash'):
                 self.service._formalize_transition({'run_id':rid})
-        self.assertEqual(model.call_count,1)
+        self.assertEqual(model.call_count,2)
         self.assertEqual(len(self.service.registry.list_graphs()),2)
-        # The reply is durable and the budget is already exhausted: no resubmission.
+        library_ref = copy.deepcopy(self.service.get(rid)['library_context'])
+        receipt = self.service.folder(rid)/'library-context'/library_ref['input_sha256']/'context.json'
+        receipt_bytes = receipt.read_bytes()
+        # Both replies are durable and the budget is exhausted: no resubmission.
         self.service._formalize_transition({'run_id':rid})
         saved=self.service.detail(rid)
         self.assertEqual(len(self.service.registry.list_graphs()),2)
@@ -205,7 +211,10 @@ class ArxivWorkflowTests(unittest.TestCase):
         self.assertIsNone(saved['object_graph']['transitions'][0]['certificate'])
         self.assertTrue(saved['object_contract_sha256'])
         self.assertEqual(self.service._effective_task(saved)['required_obligations'],formalization()['obligations'])
-        self.assertEqual(saved['usage']['calls'],1)
+        self.assertEqual(saved['usage']['calls'],2)
+        self.assertEqual(saved['library_context'],library_ref)
+        self.assertEqual(saved['object_contract']['library_context'],library_ref)
+        self.assertEqual(receipt.read_bytes(),receipt_bytes)
 
     def test_cached_needs_review_stops_before_proof_and_preserves_literature_graph(self):
         graph=self.literature(); original=copy.deepcopy(graph)

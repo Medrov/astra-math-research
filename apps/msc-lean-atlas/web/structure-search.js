@@ -4,6 +4,7 @@
   const array=value=>Array.isArray(value)?value:[];
   const text=value=>value==null?'':typeof value==='string'?value:JSON.stringify(value,null,2);
   const active=new Set(['queued','running','cancelling']);
+  const partialFinalizing=run=>run?.purpose==='structure'&&['cancelled','budget_exhausted','failed','interrupted'].includes(run.status)&&run.partial_search?.status==='unavailable'&&array(run.partial_search.issues).some(issue=>issue?.code==='active_run');
   const localMap=typeof module==='object'&&module.exports?require('./research-map.js'):null,mapModel=()=>globalThis.ResearchMap||localMap;
   const sourceTransition=run=>mapModel()?.sourceTransition(run)||null;
   function ready(source){return source?.status==='ready'&&source.inspection?.status==='complete'&&source.inspection.success===true;}
@@ -14,13 +15,14 @@
     if(!ready(source))throw new Error('Сначала успешно проверьте Lean-источник.');
     if(!theorems(source).some(d=>d.name===target))throw new Error('Выберите теорему из проверенного исходника.');
     if(!['single','multi'].includes(mode))throw new Error('Поиск общей структуры требует режима Astra.');
-    return {purpose:'structure',source_id:source.id,target,mode,budget,...(question.trim()?{question:question.trim()}:{} )};
+    return {purpose:'structure',search_scope:'atlas',source_id:source.id,target,mode,budget,...(question.trim()?{question:question.trim()}:{} )};
   }
   function candidateGroups(run){
     const transitions=new Map(array(run?.object_graph?.transitions).map(t=>[t.id,t])),seen=new Set();
     return array(run?.structure_routes).map((route,index)=>{
       const candidates=[];
       for(const candidate of array(route.candidates)){
+        if(candidate.duplicate_of)continue;
         const id=candidate.transition_id;if(!id||seen.has(id)||!transitions.has(id))continue;seen.add(id);
         candidates.push({...candidate,transition:transitions.get(id),route,order:candidates.length});
       }
@@ -31,7 +33,11 @@
   function rankedCandidates(run){return candidateGroups(run).flatMap(group=>group.candidates);}
   function excerpt(value,limit=230){const content=text(value).replace(/\s+/g,' ').trim();if(content.length<=limit)return content;const cut=content.lastIndexOf(' ',limit);return content.slice(0,cut>limit*.6?cut:limit).trimEnd()+'…';}
   function searchSummary(run){
-    const count=rankedCandidates(run).length;
+    if(run?.status==='draft')return 'Поиск этой попытки ещё не запускался';
+    if(partialFinalizing(run))return 'Сохраняем результаты поиска';
+    const partial=run?.purpose==='structure'&&!active.has(run.status)?run.partial_search:null;
+    const count=!run?.object_graph&&['available','materialized','unavailable'].includes(partial?.status)&&Number.isInteger(partial.candidate_count)&&partial.candidate_count>=0?partial.candidate_count:rankedCandidates(run).length;
+    if(run?.contract?.atlas_seed)return (active.has(run.status)?'Поиск идёт · в этой попытке найдено кандидатов: ':'В этой попытке сохранено кандидатов: ')+count;
     if(run?.status==='complete')return 'Поиск завершён: '+count+' '+(count%10===1&&count%100!==11?'кандидат':count%10>=2&&count%10<=4&&!(count%100>=12&&count%100<=14)?'кандидата':'кандидатов');
     if(active.has(run?.status))return 'Поиск идёт · найдено кандидатов: '+count;
     return 'Поиск не завершён · сохранено кандидатов: '+count;
@@ -182,20 +188,24 @@
       }
       full.append(dl);if(profile.formal)full.append(this.details('Зафиксированное утверждение и аксиомы',profile.formal));panel.append(full);return panel;
     }
-    renderRoute(route,index,count){
+    renderRoute(route,index,count,run){
       const card=this.el('section',{class:'structure-route','data-structure-route':route?.id||'route_'+(index+1)}),names={pending:'Ожидает поиска',searched:'Источники найдены',complete:'Поиск завершён',failed:'Ошибка поиска'};
+      if(run&&!active.has(run.status)&&run.status!=='complete'){names.pending='Не начато до остановки';names.searched='Источники найдены; кандидаты не подготовлены';}
       const header=this.el('div',{class:'structure-route-header'});header.append(this.el('span',{class:'research-small-label'},'Направление '+(index+1)),this.el('span',{class:'research-status '+(route?.status==='failed'?'failed':'unknown')},names[route?.status]||'Ожидает профиля'));
       card.append(header,this.math('h4',excerpt(routeTitle(route),110)));
       if(route?.rationale)card.append(this.math('p',route.rationale,{class:'structure-route-rationale'}));
+      const outcome=({no_source:'В доступном корпусе источник не найден. Это не отсутствие математической связи.',no_supported_candidate:'Источники найдены, но обоснованный кандидат не предложен.',unsupported_conditions:'Условия найденной связи пока не подтверждены.',infrastructure:'Поиск остановлен технической ошибкой.'})[route?.search_outcome];if(outcome)card.append(this.el('p',{class:'research-hint'},outcome));
       if(route?.msc_code){const button=this.el('button',{type:'button',class:'text-button'},'MSC '+route.msc_code+' ↗');button.onclick=()=>this.callbacks.onMSC?.(route.msc_code);card.append(button);}
-      card.append(this.el('p',{class:'structure-route-count'},'Кандидатов: '+count+' · источников: '+array(route?.hits).length));
+      card.append(this.el('p',{class:'structure-route-count'},(count===null?'Кандидаты будут показаны после открытия связей':'Кандидатов: '+count)+' · источников: '+array(route?.hits).length));
       if(route){
         const full=this.el('details');full.append(this.el('summary',{},'Почему эта область · запросы и источники'));
         if(route.title)full.append(this.math('p',route.title));if(route.rationale)full.append(this.math('p',route.rationale));
         if(array(route.queries).length){full.append(this.el('h5',{},'Поисковые запросы'));const ul=this.el('ul');for(const query of route.queries)ul.append(this.math('li',query));full.append(ul);}
         if(array(route.hits).length){full.append(this.el('h5',{},'Найденные источники'));for(const hit of route.hits)full.append(this.sourceEvidence(hit));}
         card.append(full);
-        if(route.status==='complete'&&!count)card.append(this.el('p',{class:'research-hint'},'Кандидат не предложен. Это не доказывает отсутствие связи.'));
+        const duplicates=array(route.candidates).filter(candidate=>candidate.duplicate_of);
+        if(duplicates.length){card.append(this.el('p',{class:'research-hint'},'Повторных кандидатов: '+duplicates.length+'. Они уже сохранены с теми же условиями и источниками и не считаются новыми связями.'));for(const id of new Set(duplicates.map(candidate=>candidate.canonical_run_id).filter(Boolean)))if(this.callbacks.onOpenRun){const open=this.el('button',{type:'button',class:'button secondary'},'Открыть попытку с сохранённым кандидатом');open.onclick=()=>this.callbacks.onOpenRun(id);card.append(open);}}
+        if(route.status==='complete'&&count===0&&!duplicates.length)card.append(this.el('p',{class:'research-hint'},'Кандидат не предложен. Это не доказывает отсутствие связи.'));
       }
       return card;
     }
@@ -206,6 +216,9 @@
       const header=this.el('div',{class:'structure-candidate-header'});header.append(this.el('span',{class:'research-small-label'},Number.isFinite(candidate.rank)?'Место '+candidate.rank+' в этом направлении':'Без позиции в этом направлении'));
       header.append(this.el('span',{class:'structure-candidate-status','data-status':state.status||'incomplete'},state.label||'Статус проверки недоступен'));
       card.append(header,this.math('h4',summary?.title||candidate.title||transition.title));
+      card.append(this.el('p',{class:'research-hint'},'Место в списке — приоритет поиска, не вероятность истинности.'));
+      if(candidate.rationale||transition.construction)card.append(this.math('p','Зачем рассматривать: '+excerpt(candidate.rationale||transition.construction,360)));
+      if(array(transition.assumptions).length)card.append(this.math('p','Условия: '+array(transition.assumptions).slice(0,3).join('; ')));
       if(summary){
         if(summary.description)card.append(this.math('p',summary.description));
         const item=array(summary.formulas).at(-1);if(item?.tex){const f=this.el('div',{class:'structure-candidate-formula'});globalThis.MathPresentation.formula(f,item.tex,{display:true});card.append(f);}
@@ -242,24 +255,30 @@
     render(run,enabled){
       const box=this.$('structure-results');box.hidden=!enabled&&run?.purpose!=='structure';if(box.hidden){this.resultKey='';return;}
       if(this.runId!==run?.id){this.runId=run?.id;this.selected=null;}
-      const key=JSON.stringify([run?.id,run?.status,run?.structure_profile,run?.structure_routes,run?.object_graph,sourceTransition(run),this.callbacks.getRuns?.(),this.selected]);if(key===this.resultKey)return;this.resultKey=key;box.replaceChildren();
-      const intro=this.el('div',{class:'structure-intro'});intro.append(this.el('h3',{},run?.purpose==='structure'?searchSummary(run):'Теорема → три области → общая структура'),this.el('p',{},'Сравните направления и выберите связь для проверки. Поиск предлагает кандидатов; Lean проверяет выбранное утверждение в отдельном запуске.'));box.append(intro);
-      if(!run||run.purpose!=='structure'){box.append(this.el('p',{class:'structure-empty'},'Проверьте Lean-источник, выберите теорему и задайте бюджет. Astra составит профиль доказательства и исследует три направления MSC.'));return;}
+      const key=JSON.stringify([run?.id,run?.status,run?.structure_profile,run?.structure_routes,run?.object_graph,run?.partial_search,sourceTransition(run),this.callbacks.getRuns?.(),this.selected]);if(key===this.resultKey)return;this.resultKey=key;box.replaceChildren();
+      const intro=this.el('div',{class:'structure-intro'});intro.append(this.el('h3',{},run?.purpose==='structure'?searchSummary(run):'Теорема → другие области → общая структура'),this.el('p',{},'Сравните направления и выберите связь для проверки. Поиск предлагает кандидатов; Lean проверяет выбранное утверждение в отдельном запуске.'));box.append(intro);
+      if(!run||run.purpose!=='structure'){box.append(this.el('p',{class:'structure-empty'},'Проверьте Lean-источник, выберите теорему и задайте бюджет. Astra составит профиль доказательства и исследует направления MSC.'));return;}
       const origin=this.renderSourceTransition(run);if(origin)box.append(origin);
+      if(run.status==='draft'){box.append(this.el('p',{class:'structure-empty'},'Источник и очередь сохранены. Продолжите поиск отдельной кнопкой в блоке хода исследования.'));return;}
+      if(partialFinalizing(run)){box.append(this.el('p',{class:'structure-empty',role:'status'},'Итоговое число кандидатов станет доступно после завершения сохранения.'));return;}
       if(!active.has(run.status)&&run.status!=='complete'&&(run.error||run.result?.error))box.append(this.el('p',{class:'structure-empty',role:'status'},'Поиск остановлен: '+text(run.error||run.result.error)));
       const profile=run.structure_profile;
       if(profile)box.append(this.renderProfile(profile,run));
       else box.append(this.el('p',{class:'structure-empty'},active.has(run.status)?(origin?'Astra составляет структурный профиль исходного перехода.':'Astra составляет структурный профиль теоремы.'):'Структурный профиль пока не получен.'));
-      box.append(this.el('h3',{},'Три направления поиска'));
-      const groups=candidateGroups(run),routes=this.el('div',{class:'structure-routes'});
-      for(let i=0;i<3;i++){
-        const card=this.renderRoute(array(run.structure_routes)[i],i,groups[i]?.candidates.length||0);
-        for(const candidate of groups[i]?.candidates||[])card.append(this.renderCandidate(candidate,run));
-        routes.append(card);
-      }
-      box.append(routes);
+      const groups=candidateGroups(run),unopenedPartial=!run.object_graph&&run.partial_search&&['available','unavailable'].includes(run.partial_search.status)&&!active.has(run.status);
+      if(groups.length){
+        box.append(this.el('h3',{},'Направления поиска'));
+        const routes=this.el('div',{class:'structure-routes'});
+        for(const group of groups){
+          const card=this.renderRoute(group.route,group.index,unopenedPartial?null:group.candidates.length,run);
+          for(const candidate of group.candidates)card.append(this.renderCandidate(candidate,run));
+          routes.append(card);
+        }
+        box.append(routes);
+      }else if(profile)box.append(this.el('h3',{},'Направления поиска'),this.el('p',{class:'structure-empty'},'Обоснованные направления не предложены в пределах текущего поиска. Это не опровержение математической связи.'));
       const candidates=groups.flatMap(group=>group.candidates);
-      if(!candidates.length)box.append(this.el('p',{class:'structure-empty'},active.has(run.status)?'Кандидаты появятся по мере завершения направлений.':'Кандидатов с сохранённой постановкой нет. Посмотрите источники и журнал; отсутствие предложения не является опровержением.'));
+      if(unopenedPartial)box.append(this.el('p',{class:'structure-empty'},run.partial_search.status==='available'?'Частичные кандидаты сохранены; откройте найденные связи кнопкой выше.':'Частичная карта пока недоступна. Причина указана в сохранённом результате поиска.'));
+      else if(groups.length&&!candidates.length)box.append(this.el('p',{class:'structure-empty'},active.has(run.status)?'Кандидаты появятся по мере завершения направлений.':'Кандидатов с сохранённой постановкой нет. Посмотрите источники и журнал; отсутствие предложения не является опровержением.'));
     }
   }
   return {ready,theorems,selectedTarget,payload,candidateGroups,rankedCandidates,excerpt,searchSummary,candidateStatus,renderMath,profilePreview,routeTitle,sourceTransition,Workspace};
