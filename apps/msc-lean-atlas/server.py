@@ -163,6 +163,13 @@ class Handler(BaseHTTPRequestHandler):
             path=urlsplit(self.path).path
             if path=='/api/research/status': return self.json_response(research().status())
             if path=='/api/research/cases': return self.json_response({'cases':research().public_cases()})
+            if path=='/api/research/backends': return self.json_response(research().proof_backends())
+            if path=='/api/research/mechanisms':
+                query=parse_qs(urlsplit(self.path).query).get('q',[''])[0]
+                catalog=research().mechanism_store()
+                return self.json_response({'mechanisms':catalog.search(query) if query else catalog.list()})
+            if path.startswith('/api/research/mechanisms/'):
+                return self.json_response({'mechanism':research().mechanism_store().get(path.rsplit('/',1)[1])})
             if path=='/api/structure/sources': return self.json_response(research().structure_sources())
             if path.startswith('/api/structure/sources/'):
                 source=research().structure_store().get(path.rsplit('/',1)[1])
@@ -193,6 +200,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.json_response({'results':research_retrieval.search(query,research().cases())})
             if path.startswith('/api/research/runs/'):
                 parts=path.split('/')
+                if len(parts)==6 and parts[5]=='atlas': return self.json_response(research().atlas_overview(parts[4]))
                 if len(parts)>6 and parts[5]=='artifacts':
                     file=research().artifact(parts[4],unquote('/'.join(parts[6:])))
                     body=file.read_bytes();self.send_response(200)
@@ -267,6 +275,14 @@ class Handler(BaseHTTPRequestHandler):
                 parts=path.split('/')
                 if len(parts)==6 and parts[5]=='cancel': return self.json_response(research().cancel(parts[4]))
                 if len(parts)==6 and parts[5]=='resume': return self.json_response(research().start(parts[4]),202)
+                if len(parts)==6 and parts[5]=='atlas-continue': return self.json_response(research().continue_atlas(parts[4],payload),201)
+                if len(parts)==6 and parts[5]=='revise': return self.json_response({'run':research().revise_run(parts[4],payload)},201)
+                if len(parts)==6 and parts[5]=='partial-candidates':
+                    if set(payload) != {'snapshot_sha256'}:
+                        raise ValueError('Укажите хеш сохранённых частичных результатов.')
+                    service=research()
+                    service.materialize_partial_candidates(parts[4],payload['snapshot_sha256'])
+                    return self.json_response(service.detail(parts[4]))
                 return self.json_response({'error':'Не найдено'},404)
             if path=='/api/analyze': normalized_inputs(payload);return self.json_response(submit('analyze',payload),202)
             if path=='/api/verify': safe_id(payload.get('analysis_id'));return self.json_response(submit('verify',payload),202)

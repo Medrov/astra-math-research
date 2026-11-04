@@ -1,0 +1,45 @@
+{
+  "target": "CompositionBridge.conditional_transfer",
+  "statement": "∀ (a b c : ℚ), c = a + b → (b ^ 2 - a * c) ^ 2 = 1 →\n  CompositionBridge.image a b c = (b ^ 2 - a * c, b * (a + c)) ∧\n  CompositionBridge.N (CompositionBridge.image a b c) =\n    CompositionBridge.N (b, a) * CompositionBridge.N (b, c) ∧\n  CompositionBridge.N (CompositionBridge.image a b c) =\n    1 + b ^ 2 * (a + c) ^ 2 ∧\n  (b ^ 2 + a ^ 2) * (b ^ 2 + c ^ 2) = 1 + b ^ 2 * (a + c) ^ 2 ∧\n  2 * b ^ 4 - b ^ 2 * a ^ 2 + a ^ 2 * c ^ 2 = 1 + b ^ 2 * c ^ 2",
+  "imports": [
+    "Mathlib.Data.Rat.Defs",
+    "Mathlib.Algebra.Module.Prod",
+    "Mathlib.Algebra.Ring.Identities",
+    "Mathlib.Algebra.Notation.Prod",
+    "Mathlib.Algebra.Group.Action.Defs",
+    "Mathlib.Algebra.Ring.Commute",
+    "Mathlib.Algebra.Group.Defs"
+  ],
+  "prelude": "def CompositionBridge.mu (x y : ℚ × ℚ) : ℚ × ℚ :=\n  (x.1 * y.1 - x.2 * y.2, x.1 * y.2 + x.2 * y.1)\n\ndef CompositionBridge.N (x : ℚ × ℚ) : ℚ :=\n  x.1 ^ 2 + x.2 ^ 2\n\ndef CompositionBridge.compare (a b c : ℚ) : (ℚ × ℚ) × (ℚ × ℚ) :=\n  ((b, a), (b, c))\n\ndef CompositionBridge.image (a b c : ℚ) : ℚ × ℚ :=\n  CompositionBridge.mu (CompositionBridge.compare a b c).1\n    (CompositionBridge.compare a b c).2",
+  "required_obligations": [
+    {
+      "id": "structure",
+      "title": "Билинейность, квадратичность и закон композиции",
+      "target": "CompositionBridge.structural_laws",
+      "statement": "(∀ (x x' y : ℚ × ℚ),\n    CompositionBridge.mu (x + x') y = CompositionBridge.mu x y + CompositionBridge.mu x' y) ∧\n  (∀ (r : ℚ) (x y : ℚ × ℚ),\n    CompositionBridge.mu (r • x) y = r • CompositionBridge.mu x y) ∧\n  (∀ (x y y' : ℚ × ℚ),\n    CompositionBridge.mu x (y + y') = CompositionBridge.mu x y + CompositionBridge.mu x y') ∧\n  (∀ (r : ℚ) (x y : ℚ × ℚ),\n    CompositionBridge.mu x (r • y) = r • CompositionBridge.mu x y) ∧\n  (∃ B : (ℚ × ℚ) → (ℚ × ℚ) → ℚ,\n    (∀ x x' y, B (x + x') y = B x y + B x' y) ∧\n    (∀ (r : ℚ) x y, B (r • x) y = r * B x y) ∧\n    (∀ x y y', B x (y + y') = B x y + B x y') ∧\n    (∀ (r : ℚ) x y, B x (r • y) = r * B x y) ∧\n    (∀ x, CompositionBridge.N x = B x x)) ∧\n  (∀ (x y : ℚ × ℚ),\n    CompositionBridge.N (CompositionBridge.mu x y) =\n      CompositionBridge.N x * CompositionBridge.N y)",
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "comparison",
+      "title": "Конкретное сравнение и подстановка",
+      "target": "CompositionBridge.comparison_substitution",
+      "statement": "∀ (a b c : ℚ),\n  CompositionBridge.compare a b c = ((b, a), (b, c)) ∧\n  CompositionBridge.image a b c = (b ^ 2 - a * c, b * (a + c)) ∧\n  CompositionBridge.N (CompositionBridge.image a b c) =\n    (b ^ 2 - a * c) ^ 2 + b ^ 2 * (a + c) ^ 2 ∧\n  CompositionBridge.N (CompositionBridge.image a b c) =\n    CompositionBridge.N (b, a) * CompositionBridge.N (b, c) ∧\n  (b ^ 2 + a ^ 2) * (b ^ 2 + c ^ 2) =\n    (b ^ 2 - a * c) ^ 2 + b ^ 2 * (a + c) ^ 2",
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "transfer",
+      "title": "Условный перенос инварианта",
+      "target": "CompositionBridge.conditional_transfer",
+      "statement": "∀ (a b c : ℚ), c = a + b → (b ^ 2 - a * c) ^ 2 = 1 →\n  CompositionBridge.image a b c = (b ^ 2 - a * c, b * (a + c)) ∧\n  CompositionBridge.N (CompositionBridge.image a b c) =\n    CompositionBridge.N (b, a) * CompositionBridge.N (b, c) ∧\n  CompositionBridge.N (CompositionBridge.image a b c) =\n    1 + b ^ 2 * (a + c) ^ 2 ∧\n  (b ^ 2 + a ^ 2) * (b ^ 2 + c ^ 2) = 1 + b ^ 2 * (a + c) ^ 2 ∧\n  2 * b ^ 4 - b ^ 2 * a ^ 2 + a ^ 2 * c ^ 2 = 1 + b ^ 2 * c ^ 2",
+      "expected_outcome": "proved"
+    },
+    {
+      "id": "normalization",
+      "title": "Нормализация и эквивалентность представления",
+      "target": "CompositionBridge.normalization",
+      "statement": "∀ (a b c : ℚ),\n  ((b ^ 4 - 2 * b ^ 2 * a * c = 1 - a ^ 2 * c ^ 2) ↔\n    (b ^ 2 - a * c) ^ 2 = 1) ∧\n  (c = a + b →\n    b ^ 2 = (c - a) ^ 2 ∧\n    b ^ 2 * (b ^ 2 - a ^ 2 - c ^ 2) = -2 * b ^ 2 * a * c ∧\n    (b ^ 2 + a ^ 2) * (b ^ 2 + c ^ 2) - b ^ 2 * (a + c) ^ 2 =\n      2 * b ^ 4 - b ^ 2 * a ^ 2 - b ^ 2 * c ^ 2 + a ^ 2 * c ^ 2 ∧\n    ((b ^ 2 + a ^ 2) * (b ^ 2 + c ^ 2) = 1 + b ^ 2 * (a + c) ^ 2 ↔\n      2 * b ^ 4 - b ^ 2 * a ^ 2 + a ^ 2 * c ^ 2 = 1 + b ^ 2 * c ^ 2))",
+      "expected_outcome": "proved"
+    }
+  ],
+  "version": 1
+}

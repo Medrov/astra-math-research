@@ -1,0 +1,235 @@
+{
+  "export_kind": "historical_computer_use_evidence",
+  "observed_date": "2026-11-04",
+  "note": "Selected summary of a completed Computer Use-only pipeline pass. Publication does not rerun the model or Lean, install runtime history, or certify the article. Local paths, runtime IDs, raw model conversations and full article text are excluded.",
+  "paper": {
+    "versioned_id": "1606.03545v1",
+    "title": "A probabilistic proof of a binomial identity",
+    "snapshot_sha256": {
+      "abstract_html": "792f4db7dd212b699be6d7c63d0e15658d87ab37a5034c780afb30455350bfb0",
+      "article_html": "83227f04555cab5bbe73404aad80b64124488d2fac6fc4f40c4e4af063d95743",
+      "chunks": "0853568bc8c1fff353b85a899ce75157d867bc1b55c82463760fa20261006204"
+    },
+    "source_urls": {
+      "abstract": "https://arxiv.org/abs/1606.03545v1",
+      "html": "https://arxiv.org/html/1606.03545v1",
+      "pdf": "https://arxiv.org/pdf/1606.03545v1"
+    }
+  },
+  "interaction": {
+    "method": "Computer Use through the visible application UI",
+    "manual_source_or_proof_edits": false,
+    "backend_api_bypass": false
+  },
+  "model": "gpt-6-astra",
+  "proof_backend": "native",
+  "seed": null,
+  "seed_note": "No model sampling seed was available. None is assigned retrospectively.",
+  "extraction": {
+    "objects": 6,
+    "transitions": 4,
+    "selected_transition": "Вычисление через биномиальное разложение",
+    "source_msc_status": "MSC not found in saved article HTML; object-based labels are inferred.",
+    "interpretation_note": "The extracted card explicitly proposed lower summation bound k=0 instead of k=1 in section 2.2, retaining the constant term and matching the main identity. This was a model-labelled editorial interpretation, not a silent source change."
+  },
+  "stages": [
+    {
+      "stage": "article_transitions",
+      "status": "complete",
+      "phase": "complete",
+      "outcome": "unknown",
+      "budget": {
+        "max_calls": 16,
+        "timeout_seconds": 1800,
+        "max_parallel": 2
+      },
+      "usage": {
+        "calls": 1,
+        "total_tokens": 24604,
+        "elapsed_seconds": 116.156
+      },
+      "termination": null,
+      "created_at": "2026-11-04T13:29:47.823599+00:00",
+      "finished_at": "2026-11-04T13:31:43.976949+00:00"
+    },
+    {
+      "stage": "atlas_search",
+      "status": "budget_exhausted",
+      "phase": "budget_exhausted",
+      "outcome": "unknown",
+      "budget": {
+        "max_calls": 8,
+        "timeout_seconds": 600,
+        "max_parallel": 2
+      },
+      "usage": {
+        "calls": 4,
+        "total_tokens": 63592,
+        "elapsed_seconds": 603.891
+      },
+      "termination": {
+        "code": "budget_exhausted",
+        "stage": "structure_rank",
+        "message": "Исчерпан бюджет времени; математический результат остаётся неизвестным."
+      },
+      "created_at": "2026-11-04T13:32:18.957697+00:00",
+      "finished_at": "2026-11-04T13:42:20.716450+00:00"
+    },
+    {
+      "stage": "lean_check",
+      "status": "failed",
+      "phase": "failed",
+      "outcome": "unknown",
+      "budget": {
+        "max_calls": 16,
+        "timeout_seconds": 1800,
+        "max_parallel": 2
+      },
+      "usage": {
+        "calls": 2,
+        "total_tokens": 39093,
+        "elapsed_seconds": 101.516
+      },
+      "termination": {
+        "code": "invalid_contract",
+        "stage": "repair_contract",
+        "message": "Диагностика не допускает безопасного исправления имён или импортов."
+      },
+      "created_at": "2026-11-04T13:42:51.388019+00:00",
+      "finished_at": "2026-11-04T13:44:32.918657+00:00"
+    }
+  ],
+  "atlas": {
+    "total_codes": 6603,
+    "considered_codes": 6603,
+    "queried_codes": 6603,
+    "query_count": 6604,
+    "corpus_gaps": 6603,
+    "deep_completed": 1,
+    "deep_pending": 6324,
+    "queue_total": 6325,
+    "candidates_found": 1,
+    "screening_complete": true,
+    "local_queries_complete": true,
+    "deep_complete": false,
+    "proof_verified": 0,
+    "level_counts": {
+      "roots": 63,
+      "groups": 534,
+      "leaves": 6006
+    },
+    "snapshot_sha256": "6d87723dee4f05f02869e9cbdfa1c4d2c7b5049eeb3129c9877e65da7b0c1c7e",
+    "progress_sha256": "eccb316b8b19732c3fabaed8082e78876672040f1a644fd2120c0ea91c4d5e1e",
+    "stop_reason": "budget_exhausted"
+  },
+  "routes": [
+    {
+      "id": "atlas_global_unclassified",
+      "title": "Глобальный неразмеченный корпус",
+      "status": "complete"
+    },
+    {
+      "id": "atlas_msc_11T06",
+      "title": "Polynomials over finite fields",
+      "status": "searched"
+    },
+    {
+      "id": "atlas_msc_13M10",
+      "title": "Polynomials and finite commutative rings",
+      "status": "pending"
+    }
+  ],
+  "candidate": {
+    "title": "Перенос события и интегрируемости между блоками координат",
+    "origin_route": "atlas_global_unclassified",
+    "available_after_budget_stop": true,
+    "selected_for_separate_lean_check": true,
+    "source_application_status": "not_verified",
+    "proved": false
+  },
+  "verification": {
+    "kind": "lean_contract_preflight",
+    "status": "rejected",
+    "well_typed": false,
+    "proof_checked": false,
+    "outcome": "unknown",
+    "target": "regroup_probability_preservation",
+    "contract_sha256": "80cb36dbf82ad4bf969a3be5677b43bd2ca944e4769d6b5e53bf467882c1687f",
+    "source_sha256": "06065bd741989004e3cadebd996abad47addb4b6e004ed66b594b260d6741cec",
+    "audit": {
+      "status": "pending"
+    },
+    "error": "Lean отклонил ContractTypes.lean",
+    "termination": {
+      "code": "invalid_contract",
+      "stage": "lean_contract_preflight",
+      "message": "Lean отклонил ContractTypes.lean"
+    },
+    "started_at": "2026-11-04T13:43:58.747740+00:00",
+    "finished_at": "2026-11-04T13:44:08.615516+00:00"
+  },
+  "obligation_types": [
+    {
+      "id": "primary",
+      "target": "regroup_probability_preservation",
+      "statement_sha256": "af6656ff628068fd4167c505eb21836ef80c2e2d7faaecef65320f8857cd1ac4"
+    },
+    {
+      "id": "probability",
+      "target": "regroup_probability_preservation",
+      "statement_sha256": "af6656ff628068fd4167c505eb21836ef80c2e2d7faaecef65320f8857cd1ac4"
+    },
+    {
+      "id": "integral",
+      "target": "regroup_integral_preservation",
+      "statement_sha256": "f3022d8e168ad40677a01a367134736968e369f97cb5762a0eb86ce86c5b4b33"
+    },
+    {
+      "id": "l1",
+      "target": "regroup_l1_composition",
+      "statement_sha256": "05b17d6e434d1e575b9a82cf43844ee99fb3ced6ae486fb0e03b6c4c696714c5"
+    },
+    {
+      "id": "event",
+      "target": "regroup_event_transfer",
+      "statement_sha256": "808f8d4d68637f2ed4d1b78a5f845ca111a333db14c6ac6700009c125486d304"
+    }
+  ],
+  "lean_environment": {
+    "lean_version": "Lean (version 4.19.0, x86_64-w64-windows-gnu, commit 6caaee842e94, Release)",
+    "project_revision": "25f9db8104fadbea80a2ffb2fc96ef8975b3f2c0",
+    "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "mathlib_manifest_sha256": "134206d98c64064cea35395c7ab469d7f0782b1383deaecf63322abc1fd5b1d1"
+  },
+  "lean_diagnostics": [
+    {
+      "file": "ContractTypes.lean",
+      "command": [
+        "lean",
+        "-o",
+        "ContractTypes.olean",
+        "ContractTypes.lean"
+      ],
+      "command_note": "Executable path normalized; command arguments preserved.",
+      "exit_code": 1,
+      "elapsed_seconds": 9.421,
+      "stdout": "ContractTypes.lean:14:38: error: failed to synthesize\n  MeasurableSpace (RegroupZ n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:18:38: error: failed to synthesize\n  MeasurableSpace (RegroupW n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:22:19: error: unexpected token 'λ'; expected '_' or identifier\nContractTypes.lean:28:18: error: unknown identifier 'regroupExpLaw'\nContractTypes.lean:28:38: error: unknown identifier 'regroupExpLaw'\nContractTypes.lean:43:2: error: failed to synthesize\n  MeasurableSpace (RegroupW n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:44:26: error: failed to synthesize\n  MeasurableSpace (RegroupZ n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:52:2: error: failed to synthesize\n  MeasurableSpace (RegroupW n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:53:26: error: failed to synthesize\n  MeasurableSpace (RegroupZ n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:61:24: error: failed to synthesize\n  MeasurableSpace (RegroupZ n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:68:4: warning: declaration uses 'sorry'\nContractTypes.lean:84:2: error: failed to synthesize\n  MeasurableSpace (RegroupZ n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\nContractTypes.lean:87:2: error: failed to synthesize\n  MeasurableSpace (RegroupZ n)\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\n",
+      "stderr": "",
+      "timeout": false,
+      "cancelled": false
+    }
+  ],
+  "result": "One candidate survived the atlas time limit and was opened through the UI. Lean rejected its generated contract before proof; the permitted automatic repair did not produce a safe correction. Mathematical validity remains unknown.",
+  "limits": [
+    "No successful proof, counterexample, whole-article formalization or novelty claim.",
+    "The 6603-code screening is not exhaustive coverage of mathematical literature; all 6603 codes were reported as corpus gaps.",
+    "Only one of three selected deep-search directions completed within the ten-minute search budget.",
+    "The original article application and the proposed editorial interpretation have not been independently certified.",
+    "The declaration uses sorry warning appears in the rejected type-checking output; it is not a passed proof or accepted audit.",
+    "Transient UI counts preceded finalization; the saved candidate became available through Open found connections after the budget stop."
+  ],
+  "totals": {
+    "model_calls": 7,
+    "tokens": 127289
+  }
+}

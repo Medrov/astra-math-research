@@ -4,3 +4,11 @@ data/MSC_2020.tex -text -whitespace
 # Generated bundle and the saved, hash-bound proof are copied verbatim.
 web/vendor/graph-libs.min.js -whitespace
 examples/energy_kernel/Proof.lean -whitespace
+
+# Hash-bound upstream KaTeX assets must retain exact LF bytes on Windows.
+web/vendor/katex/*.css -text
+web/vendor/katex/*.js -text
+web/vendor/katex/LICENSE -text
+# The adapted Goedel backend verifies the pinned upstream source and license bytes.
+tools/goedel/upstream_core.py -text whitespace=-blank-at-eof
+tools/goedel/LICENSE -text

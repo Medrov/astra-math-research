@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>MSC · Атлас математики</title>
+  <title>AMR — Атлас математики</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/research.css">
   <link rel="stylesheet" href="/structure-search.css">
@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="/candidate-checks.css">
   <link rel="stylesheet" href="/research-map.css">
   <link rel="stylesheet" href="/research-history.css">
+  <link rel="stylesheet" href="/research-workspace.css">
+  <link rel="stylesheet" href="/atlas-search.css">
   <script defer src="/vendor/graph-libs.min.js"></script>
   <script defer src="/graph-model.js"></script>
   <script defer src="/graph-presentation.js"></script>
@@ -22,6 +24,8 @@
   <script defer src="/structure-search.js"></script>
   <script defer src="/vendor/katex/katex.min.js"></script>
   <script defer src="/math-presentation.js"></script>
+  <script defer src="/research-workspace.js"></script>
+  <script defer src="/atlas-search.js"></script>
   <script defer src="/guided-research.js"></script>
   <script defer src="/msc-context.js"></script>
   <script defer src="/research-appearance.js"></script>
@@ -32,10 +36,11 @@
   <script defer src="/app.js"></script>
 </head>
 <body>
+  <a class="workspace-skip" href="#research-title">К содержимому исследования</a>
   <header class="app-header">
-    <a class="brand" href="#map" aria-label="На карту MSC">
+    <a class="brand" href="#map" aria-label="AMR — Атлас математики: на карту">
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M9 9L23 16L9 24V9Z" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9" r="3" fill="currentColor"/><circle cx="23" cy="16" r="3" fill="currentColor"/><circle cx="9" cy="24" r="3" fill="currentColor"/></svg></span>
-      <span>MSC<small>Атлас математики</small></span>
+      <span>AMR<small>Атлас математики</small></span>
     </a>
     <div class="sidebar-section-label">Рабочее пространство</div>
     <nav class="top-nav" aria-label="Разделы приложения">
@@ -49,17 +54,17 @@
     <div id="global-error" class="notice error" role="alert" hidden></div>
     <section id="map-panel" class="app-panel" aria-labelledby="map-title">
       <div class="page-heading">
-        <div><p class="eyebrow">Атлас · MSC2020</p><h1 id="map-title">Математика как карта</h1><p class="lead">Исследуйте области, находите пересечения, выбирайте, что изучить дальше.</p></div>
+        <div><p class="eyebrow">Атлас · MSC2020</p><h1 id="map-title" tabindex="-1">Математика как карта</h1><p class="lead">Исследуйте области, находите пересечения, выбирайте, что изучить дальше.</p></div>
         <div class="dataset-stats" id="dataset-stats" aria-live="polite"><span>Загрузка классификатора…</span></div>
       </div>
       <div class="atlas-layout">
         <aside class="catalog-panel">
-          <label class="field-label" for="msc-search">Каталог областей</label>
+          <div class="atlas-catalog-heading"><label class="field-label" for="msc-search">Каталог областей</label><button id="catalog-toggle" class="button secondary small" type="button" aria-expanded="false" aria-controls="catalog-results">Показать каталог</button></div>
           <div class="search-field"><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M12.5 12.5L17 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><input id="msc-search" aria-label="Название или код MSC" type="search" placeholder="Название или код MSC" autocomplete="off"></div>
-          <div class="catalog-title"><strong id="catalog-heading">Основные разделы</strong><span id="catalog-count"></span></div>
+          <div id="catalog-results" hidden><div class="catalog-title"><strong id="catalog-heading">Основные разделы</strong><span id="catalog-count"></span></div>
           <div class="catalog-list" id="catalog-list" aria-label="Рубрики классификатора"></div>
           <div class="pagination" id="catalog-pagination"></div>
-          <button type="button" class="text-button" id="show-roots">Все основные разделы</button>
+          <button type="button" class="text-button" id="show-roots">Все основные разделы</button></div>
         </aside>
 
         <div class="graph-panel">
@@ -104,21 +109,22 @@
           <details class="graph-help"><summary>Как работать с картой</summary><p>Колесо мыши или жест двумя пальцами меняет масштаб. Перетаскивайте фон, чтобы перемещать карту, и узлы, чтобы менять их положение. Один клик выбирает рубрику; двойной клик открывает ветвь. «Локальные связи» показывает соседей выбранного узла на расстоянии от одного до трёх шагов. Стрелки над картой возвращают к предыдущим видам; звезда сохраняет рубрику. При наведении на ребро показано его значение.</p><div class="graph-legend"><span><i class="legend-line hierarchy"></i>входит в раздел</span><span><i class="legend-line reference"></i>отсылка MSC</span><span><i class="legend-line redirect"></i>условная классификация</span></div><p>В обзоре показаны основные области и подразделы. Режим «Весь классификатор» содержит все 6603 рубрики. Линии классификатора помогают ориентироваться между темами; математические соответствия проверяются отдельно.</p></details>
         </div>
 
-        <aside class="category-panel" id="category-panel" aria-live="polite"><div class="empty-state">Выберите рубрику, чтобы увидеть её описание и отсылки.</div></aside>
+        <details class="atlas-category-details"><summary>Описание и отсылки выбранной рубрики</summary><aside class="category-panel" id="category-panel" aria-live="polite"><div class="empty-state">Выберите рубрику, чтобы увидеть её описание и отсылки.</div></aside></details>
       </div>
       <footer class="source-footer"><div id="source-attribution"></div><button class="text-button" id="download-graph" type="button" disabled>Скачать полный граф JSON ↓</button></footer>
     </section>
 
     <section id="research-panel" class="app-panel" aria-labelledby="research-title" hidden>
       <div class="page-heading research-page-heading">
-        <div><p class="eyebrow">Astra · математическая лаборатория</p><h1 id="research-title">От статьи к проверенной связи</h1><p class="lead">Выберите источник. Astra найдёт направления поиска, а Lean проверит выбранный переход.</p></div>
+        <div><p class="eyebrow">AMR · математическая лаборатория</p><h1 id="research-title" tabindex="-1">Лаборатория связей</h1><p class="lead">Выберите источник. Astra найдёт направления поиска, а Lean проверит выбранный переход.</p></div>
         <div class="research-page-actions"><button type="button" id="guided-history-open" class="button secondary">История <span id="guided-history-count"></span></button><button type="button" id="research-new" class="button secondary">＋ Новое исследование</button></div>
       </div>
       <div id="research-error" class="notice error" role="alert" hidden></div>
       <section id="guided-research" class="guided-research" aria-label="Исследование по шагам">
+        <section id="workspace-context" class="workspace-context" aria-label="Контекст исследования" hidden></section>
         <nav class="guided-step-nav" aria-label="Этапы исследования"><ol id="guided-steps" class="guided-steps"></ol></nav>
         <div id="guided-setup" class="guided-card">
-          <div class="guided-card-heading"><div><p class="eyebrow">Начните с математики</p><h2>Что будем исследовать?</h2></div><span class="guided-badge">MSC подбираются автоматически</span></div>
+          <div class="guided-card-heading"><div><p class="eyebrow">Новое исследование</p><h2>С чего начнём?</h2><p class="guided-note">Добавьте статью, свой Lean-файл или откройте готовый пример.</p></div></div>
           <div class="guided-source-tabs" role="group" aria-label="Тип источника"><button type="button" data-guided-source="arxiv" aria-pressed="true">Статья arXiv</button><button type="button" data-guided-source="lean" aria-pressed="false">Мой Lean-файл</button><button type="button" data-guided-source="example" aria-pressed="false">Готовый пример</button></div>
           <form id="guided-source-form">
             <div id="guided-arxiv-fields"><label for="guided-arxiv">Ссылка на статью</label><div class="guided-input-row"><input id="guided-arxiv" type="text" placeholder="https://arxiv.org/abs/2610.38474" autocomplete="off"><button type="submit" class="button primary" id="guided-load">Загрузить источник</button></div><p class="guided-note">Сохраним версию статьи и её разделы. Подбор связей запускается следующим шагом.</p></div>
@@ -132,12 +138,18 @@
             <div id="guided-section-field" hidden><label for="guided-section">Какую часть статьи исследуем?</label><select id="guided-section"></select></div>
             <div id="guided-theorem-preview"></div>
             <details class="guided-options"><summary>Пожелания и лимит работы</summary><label for="guided-question">На что обратить внимание · необязательно</label><textarea id="guided-question" rows="3" placeholder="Например: где ещё встречается этот способ построения обратного отображения?"></textarea><div class="guided-budget"><label for="guided-calls">До вызовов Astra<input id="guided-calls" type="number" min="1" max="24" value="16"></label><label for="guided-minutes">До минут на этап<input id="guided-minutes" type="number" min="1" max="30" value="30"></label></div><p class="guided-note">Поиск и проверка связи — отдельные запуски с этим лимитом. Гарантии успеха нет; остановка сохранит выполненную работу.</p></details>
-            <div class="guided-launch"><div><strong>Агентное исследование</strong><p>Подбор областей → поиск связей → планировщик, критик и доказательство выбранного перехода.</p></div><button type="button" id="guided-start" class="button primary" disabled>Найти связи</button></div>
+            <div class="workspace-backend-field"><label for="workspace-backend">Как проверять доказательство</label><select id="workspace-backend"><option value="native">Команда Astra + Lean</option></select><p id="workspace-backend-description" class="guided-note">Постановка, доказательство и итоговая проверка сохраняются отдельно.</p></div>
+            <div class="guided-launch"><div><strong>Агентное исследование</strong><p>Области поиска подбираются автоматически. Подбор областей → поиск связей → планировщик, критик и доказательство выбранного перехода.</p><p id="guided-budget-summary" class="guided-note" aria-live="polite"></p></div><button type="button" id="guided-start" class="button primary" disabled>Найти связи</button></div>
           </div>
         </div>
+        <details id="workspace-mechanisms" class="workspace-mechanisms"><summary>Библиотека проверенных механизмов</summary><p class="guided-note">Проверка относится к сохранённому точному контракту. Применение к новой задаче требует нового доказательства.</p><div id="workspace-mechanism-list"></div><div id="workspace-mechanism-detail"></div></details>
+        <section id="guided-showcases" class="guided-showcases" aria-labelledby="guided-showcases-title"></section>
+        <div class="workspace-body"><div class="workspace-content">
         <section id="guided-current" hidden aria-label="Текущее исследование"></section>
         <section id="guided-saved-source" class="guided-card" hidden aria-label="Источник текущего исследования"></section>
         <section id="guided-directions" hidden aria-label="Направления текущего исследования"></section>
+        <section id="guided-atlas" class="atlas-search" hidden aria-label="Покрытие поиска по атласу"></section>
+        <div id="guided-connection-views" class="guided-connection-views" role="group" aria-label="Представление найденных связей" hidden></div>
         <section id="guided-checks" hidden aria-label="Кандидаты и результаты проверок"></section>
         <section id="guided-lean" class="guided-card" hidden aria-label="Проверка Lean текущего исследования"></section>
         <section id="guided-progress" class="guided-card guided-progress" hidden aria-label="Выполнение исследования" aria-live="polite"></section>
@@ -146,6 +158,7 @@
         <section id="guided-candidates" hidden></section>
         <section id="guided-result" class="guided-card" hidden aria-label="Итог проверки"></section>
         <nav id="guided-step-actions" class="guided-step-actions" aria-label="Переход между этапами" hidden></nav>
+        </div><aside id="workspace-timeline" class="workspace-timeline" aria-label="Стадии и ресурсы исследования" hidden></aside></div>
         <div id="guided-history"></div>
       </section>
       <details id="research-advanced" class="research-advanced" hidden><summary>Служебное представление</summary>
@@ -171,7 +184,7 @@
               <div id="structure-target-detail" hidden></div>
               <label class="field-label" for="structure-question">Пожелание к поиску · необязательно</label>
               <textarea id="structure-question" rows="3" maxlength="12000" placeholder="Например: найти тот же приём построения обратного отображения в других областях."></textarea>
-              <p class="research-hint">Astra предложит три направления MSC и найдёт кандидатов на общую структуру. После этого вы выберете переход для отдельной проверки Lean.</p>
+              <p class="research-hint">Astra предложит обоснованные направления MSC и найдёт кандидатов на общую структуру. После этого вы выберете переход для отдельной проверки Lean.</p>
             </div>
             <div id="research-case-fields">
             <label class="field-label" for="research-case">Пример или свой вопрос</label>
@@ -258,6 +271,6 @@
     </section>
 
   </main>
-  <footer class="app-footer"><span>Атлас математики</span><span>Исследовательское пространство · MSC2020</span></footer>
+  <footer class="app-footer"><span>AMR · Атлас математики</span><span>Исследовательское пространство · MSC2020</span></footer>
 </body>
 </html>

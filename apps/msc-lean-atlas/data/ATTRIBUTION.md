@@ -14,7 +14,7 @@ The dataset files `MSC_2020.csv`, `MSC_2020.tex`, and the derived `msc2020.json`
 retain this license. This notice concerns the classification data; it does not
 assign a license to unrelated application code or Lean libraries.
 
-Changes made by the SHAIM project: normalized identifiers, derived hierarchical
+Changes made by the AMR project: normalized identifiers, derived hierarchical
 edges, typed explicit classification references, and expanded explicit ranges and
 non-contextual suffix rules to existing categories. Source wording and source
 files are retained. No mathematical theorem or equivalence is asserted by a

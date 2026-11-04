@@ -1,0 +1,144 @@
+{
+  "kind": "fresh_portable_example_replay",
+  "started_at": "2026-11-04T09:21:30.728559+00:00",
+  "finished_at": "2026-11-04T09:22:02.197532+00:00",
+  "success": true,
+  "model_calls": 0,
+  "source_sha256": {
+    "Candidate.lean": "455648a0db4df2d99fc29cbcbea2779c44c0995bf99573bf662294c8b416c1d0",
+    "Contract.lean": "2a324f4240118af2cfc0b084756f0c7ccc39cc1c115dff89226506bf990f5a29",
+    "Axioms.lean": "ba92fabe5ec3b803a4a3ce924f242849619d870cc34b4d7b4bae2f8fecb427a5",
+    "contract.json": "98011eb06dfbd0596ae1aed7ee1bacff4ac7711c15a9c7403793f0927ac02b1d",
+    "verification-reference.json": "f30fe26d66bf994b3af9381a5facdb2b94674877d35e1402cde5104279fe821b"
+  },
+  "required_obligations": 4,
+  "source_application_status": "not_verified",
+  "novelty": "not_assessed",
+  "methodology": "deterministic replay of available proof; not rediscovery",
+  "environment": {
+    "lean_version": "Lean (version 4.19.0, x86_64-w64-windows-gnu, commit 6caaee842e94, Release)",
+    "dependency_revisions": {
+      "mathlib": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+      "plausible": "77e08eddc486491d7b9e470926b3dbe50319451a",
+      "LeanSearchClient": "25078369972d295301f5a1e53c3e5850cf6d9d4c",
+      "importGraph": "e6a9f0f5ee3ccf7443a0070f92b62f8db12ae82b",
+      "proofwidgets": "c4919189477c3221e6a204008998b0d724f49904",
+      "aesop": "5d50b08dedd7d69b3d9b3176e0d58a23af228884",
+      "Qq": "fa4f7f15d97591a9cf3aa7724ba371c7fc6dda02",
+      "batteries": "f5d04a9c4973d401c8c92500711518f7c656f034",
+      "Cli": "02dbd02bc00ec4916e99b04b2245b30200e200d0"
+    },
+    "dependency_cache": "reused; not rebuilt"
+  },
+  "target_preserved": true,
+  "obligations_passed": true,
+  "obligations": [
+    {
+      "id": "structure",
+      "target": "CompositionBridge.structural_laws",
+      "ok": true
+    },
+    {
+      "id": "comparison",
+      "target": "CompositionBridge.comparison_substitution",
+      "ok": true
+    },
+    {
+      "id": "transfer",
+      "target": "CompositionBridge.conditional_transfer",
+      "ok": true
+    },
+    {
+      "id": "normalization",
+      "target": "CompositionBridge.normalization",
+      "ok": true
+    }
+  ],
+  "axioms": {
+    "CompositionBridge.compare.eq_1": [
+      "propext"
+    ],
+    "CompositionBridge.structural_laws": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CompositionBridge.N.eq_1": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CompositionBridge.mu.eq_1": [
+      "propext"
+    ],
+    "CompositionBridge.comparison_substitution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CompositionBridge.normalization": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CompositionBridge.image.eq_1": [
+      "propext"
+    ],
+    "CompositionBridge.conditional_transfer": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "checks": [
+    {
+      "command": [
+        "lean",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "Lean (version 4.19.0, x86_64-w64-windows-gnu, commit 6caaee842e94, Release)\n",
+      "stderr": "",
+      "elapsed_seconds": 0.594
+    },
+    {
+      "command": [
+        "lean",
+        "-o",
+        "Candidate.olean",
+        "Candidate.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 17.484
+    },
+    {
+      "command": [
+        "lean",
+        "-o",
+        "Contract.olean",
+        "Contract.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 7.25
+    },
+    {
+      "command": [
+        "lean",
+        "Axioms.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "'CompositionBridge.compare.eq_1' depends on axioms: [propext]\n'CompositionBridge.structural_laws' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.N.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.mu.eq_1' depends on axioms: [propext]\n'CompositionBridge.comparison_substitution' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.normalization' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.image.eq_1' depends on axioms: [propext]\n'CompositionBridge.conditional_transfer' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+      "stderr": "",
+      "elapsed_seconds": 5.844
+    }
+  ],
+  "scope": "conditional_composition_bridge; not a formalization of the whole Fibonacci article",
+  "example": "examples/fibonacci_composition",
+  "command": "lake env python apps/msc-lean-atlas/examples/fibonacci_composition/verify.py",
+  "actual_invocation": "application Python environment + explicit Lean 4.19.0 executable; custom output directory",
+  "exit_code": 0
+}

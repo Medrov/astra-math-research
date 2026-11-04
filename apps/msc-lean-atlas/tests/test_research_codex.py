@@ -68,6 +68,26 @@ class FakeServer:
     def __exit__(self,*args): self.close()
 
 
+class BinaryConfigurationTests(unittest.TestCase):
+    def test_primary_environment_setting_and_legacy_fallback(self):
+        cases = [
+            ({'AMR_CODEX_BIN': 'preferred-codex', 'SHAIM_CODEX_BIN': 'legacy-codex'}, 'preferred-codex'),
+            ({'SHAIM_CODEX_BIN': 'legacy-codex'}, 'legacy-codex'),
+            ({'AMR_CODEX_BIN': '', 'SHAIM_CODEX_BIN': 'legacy-codex'}, 'legacy-codex'),
+            ({}, 'path-codex'),
+        ]
+        for environment, expected in cases:
+            with self.subTest(environment=environment), patch.dict(rc.os.environ, environment, clear=True), \
+                    patch.object(rc.shutil, 'which', return_value='path-codex'):
+                self.assertEqual(rc._binary(), expected)
+
+    def test_missing_binary_instructs_using_current_setting(self):
+        with patch.dict(rc.os.environ, {}, clear=True), patch.object(rc.shutil, 'which', return_value=None), \
+                patch.object(rc.Path, 'is_file', return_value=False):
+            with self.assertRaisesRegex(FileNotFoundError, 'AMR_CODEX_BIN'):
+                rc._binary()
+
+
 class CodexWorkerTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

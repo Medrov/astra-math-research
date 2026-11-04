@@ -1,0 +1,161 @@
+{
+  "kind": "demo_delivery_validation",
+  "recorded_at": "2026-11-04T09:59:46.851834+00:00",
+  "branch": "codex/atlas-wide-search",
+  "base_commit": "25f9db8104fadbea80a2ffb2fc96ef8975b3f2c0",
+  "working_tree": "uncommitted changes; this is not a release or publication",
+  "source_sha256": {
+    "README.md": "36069b993b46faa47aea47ca449c42eeb35b0e97002462acd23120a46235c012",
+    "apps/msc-lean-atlas/README.md": "e09f0a4a0791aa4b0909362169642feaee5f2acbfcaca03a3a4b0b849b7038e4",
+    "apps/msc-lean-atlas/PUBLICATION.md": "3301020162f8748a1ee44238bfdd8a6e5599af2d2c4556e3e65a7fa1ab1aba7b",
+    "apps/msc-lean-atlas/research_fibonacci_example.py": "33eb4ec00e4d460d16eb4051266cf8d315bc9e70425f012ff99691a60ca33c69",
+    "apps/msc-lean-atlas/research_structure.py": "51bd8ca3e4f6467edb5c9982b67d489709b71a35b2443a4471cbdce5a1271990",
+    "apps/msc-lean-atlas/research_structure_sources.py": "6f1345d57bf4d8de4715d1ac02c60d3db0ceae8874e2f97140c8b82150542622",
+    "apps/msc-lean-atlas/research_lean.py": "52ae904f0e8294457b1a9cbbe513a20ba90fcf833a1a8c9810b0e1a27fad8c75",
+    "apps/msc-lean-atlas/web/guided-research.js": "2a2b0aca49dc1345560e4e5b74c98c69e7f3be949e8c92153ba9c8af522ef807",
+    "apps/msc-lean-atlas/tests/test_fibonacci_demo.py": "bdee728312811963c3fce2bf160bbf75ff9b74a13d63431180291ddcac284046",
+    "apps/msc-lean-atlas/tests/test_guided_research.cjs": "41fa7aaece272ab98e2d14d3f2b31ada16658510def38eb05646a90852e6f2fe",
+    "apps/msc-lean-atlas/tests/test_release_two_sources.py": "5b09619c2bc77f6404d23fc8749346c3e837fdee7a7bc06e7070fb1cfa06c521",
+    "apps/msc-lean-atlas/checks/fibonacci-composition.json": "027057bee428679189025776b013cc4249c9756a91f783d252d9705f85894539",
+    "apps/msc-lean-atlas/checks/sylvester-pipeline.json": "b9b40d0ac55e8ae1226f8b2883f413198f32d748b0b91bf4adf524a52fbf38e7",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/.gitattributes": "451400b2eda3da4cccc4a4c5010e37b362a630d124549848721530c69db95857",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/Axioms.lean": "ba92fabe5ec3b803a4a3ce924f242849619d870cc34b4d7b4bae2f8fecb427a5",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/Candidate.lean": "455648a0db4df2d99fc29cbcbea2779c44c0995bf99573bf662294c8b416c1d0",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/contract.json": "98011eb06dfbd0596ae1aed7ee1bacff4ac7711c15a9c7403793f0927ac02b1d",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/Contract.lean": "2a324f4240118af2cfc0b084756f0c7ccc39cc1c115dff89226506bf990f5a29",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/provenance.json": "9a25293cab20f4e121bf4bd0ccf37bcef4c965813696a3a4918436de96d319ff",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/README.md": "7515edb861230622a452f3a09917ed7e773a90e6f09ae828a93e473dbb57a9b9",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/verification-reference.json": "f30fe26d66bf994b3af9381a5facdb2b94674877d35e1402cde5104279fe821b",
+    "apps/msc-lean-atlas/examples/fibonacci_composition/verify.py": "350f1be629297c7a8736bdd80b627faa7285fced9de214b5a45f7341549eda63"
+  },
+  "python": {
+    "command": "python -X utf8 -m unittest discover -s tests -v",
+    "runs": [
+      {
+        "log": "python-suite.log",
+        "log_sha256": "4fa47dfdc4d670a2ea0d9f230b24d5a8d054081a7c0e238dfd111c667f7df51f",
+        "ran": 523,
+        "seconds": 918.599,
+        "parsed": 523,
+        "passed": 512,
+        "skipped": 0,
+        "failures": [
+          "test_platform_support.NativeProcessTests.test_cancellation_terminates_worker_and_descendant"
+        ],
+        "errors": [
+          "test_analysis_engine.LocalHTTPBoundaryTests.test_cross_origin_post_is_rejected_without_work",
+          "test_analysis_engine.LocalHTTPBoundaryTests.test_foreign_host_get_cannot_read_saved_run",
+          "test_analysis_engine.LocalHTTPBoundaryTests.test_local_get_still_works",
+          "test_atlas_http.AtlasHTTP.test_changed_parent_question_cannot_reuse_old_profile",
+          "test_atlas_http.AtlasHTTP.test_read_only_overview_and_idempotent_new_draft",
+          "test_atlas_http.AtlasHTTP.test_retry_failed_is_explicit_and_pinned",
+          "test_atlas_http.AtlasHTTP.test_terminal_worker_must_finish_before_continuation",
+          "test_atlas_http.AtlasHTTP.test_wrong_hash_bad_budget_foreign_origin_and_reused_key",
+          "test_partial_candidates_http.PartialCandidateHTTP.test_preview_recover_reload_and_stale_request_preserve_stopped_run",
+          "test_research_batches.BatchTests.test_http_preview_create_get_list_and_cancel_use_existing_controller"
+        ],
+        "exit_code": 1
+      },
+      {
+        "log": "python-suite-unrestricted.log",
+        "log_sha256": "09dd92b56b6d759a28c56501e869844d548b2789b35e1dd46d3df0c8ac8ad11e",
+        "ran": 523,
+        "seconds": 613.213,
+        "parsed": 523,
+        "passed": 518,
+        "skipped": 0,
+        "failures": [
+          "test_research_persistence.PersistenceTests.test_completed_lean_stage_is_not_repeated_after_publish_interruption"
+        ],
+        "errors": [
+          "test_arxiv_workflow.ArxivWorkflowTests.test_derived_formalization_preserves_original_and_recovers_create_bind_crash",
+          "test_draft_imports.RealMissingModuleDraftTest.test_real_missing_import_moves_then_fresh_contract_elaborates",
+          "test_research_service_review.ResearchReviewTests.test_lean_work_observes_overall_deadline",
+          "test_transition_structure.TransitionStructureTests.test_formalization_and_review_receive_bridge_scope_and_cannot_import_fictitious_input"
+        ],
+        "exit_code": 1
+      },
+      {
+        "log": "python-short-temp-five.log",
+        "log_sha256": "1bd6c259ea6c9c9110493bec8caf8b4712bfc252efb6364eb7942696ea9182f5",
+        "ran": 5,
+        "seconds": 64.826,
+        "parsed": 5,
+        "passed": 4,
+        "skipped": 0,
+        "failures": [],
+        "errors": [
+          "unittest.loader._FailedTest.test_transition_structure"
+        ],
+        "exit_code": 1
+      },
+      {
+        "log": "python-short-temp-bridge.log",
+        "log_sha256": "4176fe0d5a18cdc584860a05d32ca280fc7cf98d3075d02459dce17b4e41ea34",
+        "ran": 1,
+        "seconds": 35.326,
+        "parsed": 1,
+        "passed": 1,
+        "skipped": 0,
+        "failures": [],
+        "errors": [],
+        "exit_code": 0
+      }
+    ],
+    "distinct_suite_tests_passed": 523,
+    "suite_tests": 523,
+    "unresolved_tests": [],
+    "single_all_green_full_run": false,
+    "notes": [
+      "First full run: sandbox denied localhost sockets (10 errors) and process-tree termination (1 failure).",
+      "Second full run with required localhost/process permissions: 518 passed; 4 errors and 1 failure with a longer Windows TEMP path.",
+      "All five affected tests passed unchanged with a short workspace TEMP. The first targeted invocation also had a loader error; a corrected PYTHONPATH rerun passed the remaining test.",
+      "A controlled paired probe observed Lean stderr: failed to create file ContractTypes.olean only for the long TEMP.",
+      "There is no single green full run. All 523 distinct suite tests have observed passing executions, without skips or source edits.",
+      "Model responses in the automated suite are test doubles; the separate UI article experiment made real model calls."
+    ]
+  },
+  "javascript": {
+    "command": "node --test tests/*.cjs",
+    "log_sha256": "064fe4b5bc86889204e013c2beed7ed442bc2285a996485ce5de689409ca08ff",
+    "exit_code": 0,
+    "tests": 262,
+    "passed": 262,
+    "failures": 0,
+    "skipped": 0,
+    "duration_ms": 611.1715
+  },
+  "fibonacci": {
+    "fresh_replay": "fibonacci-composition.json",
+    "success": true,
+    "obligations": 4,
+    "ui_fresh_local_check": "4/4 visibly confirmed via Computer Use",
+    "historical_files_unchanged": 7,
+    "proof_bytes_equal": {
+      "Candidate.lean": true,
+      "Contract.lean": true
+    },
+    "source_application_status": "not_verified",
+    "novelty": "not_assessed",
+    "model_calls_for_replay": 0
+  },
+  "new_paper": {
+    "report": "sylvester-pipeline.json",
+    "candidate_found": true,
+    "terminal_status": "invalid_contract",
+    "proof_checked": false,
+    "outcome": "unknown",
+    "full_atlas_search_exhausted": false
+  },
+  "original_mathresearch_suite": {
+    "modified": false,
+    "rerun": false,
+    "scope_note": "11/149 belongs to the separate original package, not this app"
+  },
+  "publication": {
+    "local_materials_prepared": true,
+    "pushed": false,
+    "released": false,
+    "assessment": "Ready as a bounded research demo with success and unsuccessful examples; not evidence of reliability on arbitrary papers."
+  }
+}

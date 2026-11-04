@@ -111,6 +111,33 @@ def _agent_task(value):
                 statement=_text(value.get('statement'), 'target statement'))
 
 
+def _library_evidence(value):
+    text_fields = {'id', 'title', 'name', 'module', 'statement', 'doc_comment', 'source_sha256', 'extraction',
+                   'type_status', 'elaborated_type', 'verification_scope', 'mechanism_id', 'source_application_status'}
+    structured = {'resolved_imports', 'semantic_assessment', 'mechanism_contract', 'provenance', 'reuse', 'requires_new_proof'}
+    _fields(value, text_fields | structured, 'library evidence')
+    result = {key:_text(item, 'library ' + key, limit=30000, empty=True)
+              for key, item in value.items() if key in text_fields}
+    if 'resolved_imports' in value:
+        result['resolved_imports'] = _strings(value['resolved_imports'], 'resolved imports', limit=40)
+        if any(not LEAN_NAME.fullmatch(module) for module in result['resolved_imports']):
+            raise ValueError('Invalid resolved library import')
+    for key in ('reuse', 'requires_new_proof'):
+        if key in value:
+            if not isinstance(value[key], bool):
+                raise ValueError('Invalid library ' + key)
+            result[key] = value[key]
+    if result.get('reuse') and result.get('requires_new_proof') is not True:
+        raise ValueError('Reusing a mechanism requires a new applicability proof')
+    for key in ('semantic_assessment', 'mechanism_contract', 'provenance'):
+        if key in value:
+            if not isinstance(value[key], dict) or len(_json(value[key])) > 120000:
+                raise ValueError('Invalid or excessive library ' + key)
+            result[key] = json.loads(_json(value[key]))
+    # This is retained search evidence. No field here grants a transition certificate.
+    return result
+
+
 def validate_source_transition(value):
     """Validate an exact literature input snapshot, never a Lean certificate."""
     _fields(value, {'kind', 'graph_ref', 'question', 'msc_codes', 'transition', 'objects', 'sources',
@@ -168,7 +195,7 @@ def validate_graph(graph):
     _unique(object_ids, 'object ids')
     for item in _array(graph.get('transitions'), 'transitions'):
         _fields(item, {'id', 'title', 'source_ids', 'target_ids', 'relation_type', 'construction', 'assumptions',
-                       'claim', 'obligations', 'agent_task', 'case_id', 'formulation_status', 'source_refs'}, 'transition',
+                       'claim', 'obligations', 'agent_task', 'case_id', 'formulation_status', 'source_refs', 'grounding'}, 'transition',
                 {'semantic_hash', 'status', 'formal_outcome', 'semantic_review', 'results', 'last_result',
                  'certificate', 'previous_certificate', 'dependency_error'})
         relation = item.get('relation_type')
@@ -191,6 +218,9 @@ def validate_graph(graph):
         if 'source_refs' in item:
             transition['source_refs'] = [_identifier(ref, 'source reference') for ref in _strings(item['source_refs'], 'source_refs')]
             _unique(transition['source_refs'], 'source references')
+        if 'grounding' in item:
+            from research_cards import validate_grounding
+            transition['grounding'] = validate_grounding(item['grounding'], set(transition.get('source_refs', [])))
         for key in ('source_ids', 'target_ids'):
             if not transition[key] or any(ref not in object_ids for ref in transition[key]):
                 raise ValueError('Unknown or empty object references: ' + key)
@@ -234,9 +264,7 @@ def validate_graph(graph):
             source['structure_target'] = _identifier(item['structure_target'], 'structure target', LEAN_NAME)
             source['structure_source_sha256'] = _identifier(item['structure_source_sha256'], 'source hash', re.compile(r'^[a-f0-9]{64}$'))
         if 'library_evidence' in item:
-            evidence = item['library_evidence']
-            _fields(evidence, {'id','title','name','module','statement','doc_comment','source_sha256','extraction'}, 'library evidence')
-            source['library_evidence'] = {key:_text(value, 'library '+key, limit=30000, empty=True) for key,value in evidence.items()}
+            source['library_evidence'] = _library_evidence(item['library_evidence'])
         if 'structure_transition' in item:
             source['structure_transition'] = validate_source_transition(item['structure_transition'])
             if structure_keys.intersection(item):
@@ -293,6 +321,8 @@ def _fingerprints(graph):
                 ('id', 'url', 'locator', 'versioned_id', 'snapshot_sha256', 'section_id',
                   'structure_source_id', 'structure_target', 'structure_source_sha256', 'structure_transition', 'library_evidence') if key in source}
                 for source in (sources[ref] for ref in sorted(transition['source_refs']))]
+        if 'grounding' in transition:
+            value['grounding'] = transition['grounding']
         transitions[transition['id']] = _hash(value)
     return dict(semantic_hash=_hash(dict(question=graph['question'], objects=objects, transitions=transitions)),
                 objects=objects, transitions=transitions)

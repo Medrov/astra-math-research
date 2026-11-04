@@ -48,6 +48,15 @@ test('article path preserves version and selected section, never fabricates Lean
   assert.throws(()=>m.discoveryPayload(p,'invented',{}));
 });
 test('bad budgets rejected before POST',()=>{for(const args of [[0,10],[25,10],[2,31],['oops',10],[1.5,4]])assert.throws(()=>m.budget(...args));});
+
+test('a prepared demo always requests a fresh local contract check instead of reusing source inspection',async()=>{
+  const requests=[],example={id:'fibonacci_composition_bridge',source_sha256:'same',recommended_target:'CompositionBridge.conditional_transfer',verification_kind:'exact_demo_contract'},source={id:'new'};
+  const workspace=Object.create(m.Workspace.prototype);workspace.token=7;workspace.catalog={sources:[{id:'old',status:'ready',source_sha256:'same'}]};workspace.notice=()=>{};
+  workspace.cb={api:async(url,payload)=>{requests.push({url,payload});return{source};}};
+  let accepted;workspace.acceptSource=(...args)=>{accepted=args;};await workspace.prepareExample(example,7);
+  assert.deepEqual(requests,[{url:'/api/structure/sources',payload:{example_id:example.id}}]);assert.equal(accepted[0],source);assert.equal(accepted[1],example.recommended_target);
+  requests.length=0;await workspace.prepareExample({...example,verification_kind:undefined},7);assert.deepEqual(requests,[{url:'/api/structure/sources/old',payload:undefined}]);
+});
 test('transition title takes precedence over truncated generated claim',()=>{
   assert.equal(m.titleOf({selected_transition_id:'s',title:'Candidate truncated',object_graph:{transitions:[{id:'s',title:'Спектр: граф → ось'}]}}),'Спектр: граф → ось');
 });
@@ -57,7 +66,7 @@ test('budget exhaustion is not mathematical refutation',()=>{
 
 // Only the DOM operations used by the workspace are supplied; production methods
 // and registered input handlers run unchanged. No browser, API or model is used.
-function withWorkspace(check){
+function withWorkspace(check,features={}){
   class Element {
     constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.attributes={};this.dataset={};this.value='';this.hidden=false;this.disabled=false;this.text='';}
     append(...items){for(const item of items){item.parent=this;this.children.push(item);}}
@@ -76,12 +85,126 @@ function withWorkspace(check){
   const tabs=['arxiv','lean','example'].map(kind=>{const tab=new Element();tab.dataset.guidedSource=kind;return tab;});
   const previousDocument=global.document,previousWindow=global.window;
   global.document={getElementById:node,createElement:tag=>new Element(tag),querySelectorAll:()=>tabs};
-  global.window={ObjectGraphModel:require('../web/object-graph.js')};
+  global.window={ObjectGraphModel:require('../web/object-graph.js'),...features};
+  const restore=()=>{if(previousDocument===undefined)delete global.document;else global.document=previousDocument;if(previousWindow===undefined)delete global.window;else global.window=previousWindow;};
+  let result;
   try{
     const workspace=new m.Workspace({api(){throw Error('Unexpected API call in unit test');},action(){throw Error('Unexpected run action in unit test');}});
-    return check(workspace,node,tabs);
-  }finally{if(previousDocument===undefined)delete global.document;else global.document=previousDocument;if(previousWindow===undefined)delete global.window;else global.window=previousWindow;}
+    result=check(workspace,node,tabs);
+  }catch(error){restore();throw error;}
+  if(result?.then)return result.finally(restore);
+  restore();return result;
 }
+
+test('showcases explain two saved results without invoking research and expose source links and separate rechecks',()=>withWorkspace((workspace,node)=>{
+  const box=node('guided-showcases'),cards=descendants(box).filter(n=>n.tagName==='ARTICLE');assert.equal(cards.length,2);
+  assert.match(box.textContent,/Готовые разборы/);assert.match(box.textContent,/Сохранённое доказательство · 4 обязательства/);assert.match(box.textContent,/Сохранённое доказательство · 3 равенства/);
+  assert.match(box.textContent,/Применение к статье и научная новизна не подтверждены/);assert.match(box.textContent,/Историческое доказательство Astra сохранено отдельно в Proof\.lean/);
+  const links=descendants(box).filter(n=>n.tagName==='A');assert.deepEqual(links.map(n=>n.attributes.href),['https://arxiv.org/html/2409.02933v1#S2','https://arxiv.org/html/2610.38474v1#S9.SS1']);
+  for(const card of cards){const details=card.children.find(n=>n.tagName==='DETAILS');assert.equal(details.children[0].textContent,'Как получен результат');assert.notEqual(details.open,true);assert.equal(details.children.filter(n=>n.tagName==='SECTION').length,4);assert.ok(card.children.some(n=>n.tagName==='BUTTON'));}
+  assert.equal(workspace.source,null);assert.equal(workspace.paper,null);
+}));
+
+test('showcase local replay bypasses cached inspection and creates only a fresh prepared source',()=>withWorkspace(async(workspace,node)=>{
+  const id='arxiv_2610_38474_graph_subtraction',target='Arxiv261038474.subtract_restore',requests=[];
+  workspace.catalog={sources:[{id:'old',status:'ready',source_sha256:'same'}],examples:[{id,source_sha256:'same',recommended_target:target}]};
+  workspace.cb.api=async(url,payload)=>{requests.push({url,payload});return {source:{...ready,id:'fresh',inspection:{status:'complete',success:true,audit:{status:'passed'}},declarations:[{kind:'theorem',name:target,type:'True'}]}};};
+  const status=document.createElement('p');await workspace.openShowcase(id,status);
+  assert.deepEqual(requests,[{url:'/api/structure/sources',payload:{example_id:id}}]);assert.equal(workspace.source.id,'fresh');assert.equal(workspace.kind,'example');assert.equal(node('guided-theorem').value,target);assert.equal(workspace.busy,false);
+  assert.match(status.textContent,/Новый локальный повтор: источник скомпилирован, аудит аксиом пройден/);assert.match(node('guided-source-preview').textContent,/Arxiv261038474\.lean скомпилирован заново/);assert.ok(node('guided-source-preview').focused);
+}));
+
+test('showcase duplicate clicks cannot start a second local check and failed checks stay failed',()=>withWorkspace(async(workspace,node)=>{
+  const id='arxiv_2610_38474_graph_subtraction',requests=[];workspace.catalog={examples:[{id,recommended_target:'Input.main'}]};
+  let reject;workspace.cb.api=(url,payload)=>{requests.push({url,payload});return new Promise((resolve,fail)=>{reject=fail;});};
+  const status=document.createElement('p'),first=workspace.openShowcase(id,status);await Promise.resolve();assert.equal(workspace.busy,true);assert.ok(workspace.showcaseButtons.every(b=>b.disabled));
+  await workspace.openShowcase(id,status);assert.equal(requests.length,1);reject(new Error('Lean failed'));await first;
+  assert.equal(workspace.source,null);assert.match(status.textContent,/Проверка не завершена: Lean failed/);assert.doesNotMatch(status.textContent,/аудит аксиом пройден/);assert.equal(workspace.busy,false);assert.ok(workspace.showcaseButtons.every(b=>!b.disabled));
+}));
+
+test('Fibonacci showcase does not turn successful source inspection into a successful four-obligation result',()=>withWorkspace(async(workspace,node)=>{
+  const id='fibonacci_composition_bridge',target='CompositionBridge.conditional_transfer';workspace.catalog={examples:[{id,recommended_target:target,verification_kind:'exact_demo_contract'}]};
+  workspace.cb.api=async()=>({source:{...ready,declarations:[{kind:'theorem',name:target}],demo_verification:{verified:false,fresh_local_check:true,formal_contract:{required_obligations:[]},verification:{success:false}}}});
+  const status=document.createElement('p');await workspace.openShowcase(id,status);assert.match(status.textContent,/Полная локальная проверка не подтверждена/);assert.doesNotMatch(status.textContent,/4\/4 обязательства проверены/);
+}));
+
+test('prepared demo preview distinguishes exact four-goal check from source inspection and keeps theorem selection',()=>withWorkspace((workspace,node)=>{
+  const contract=require('../examples/fibonacci_composition/contract.json'),goal=contract.target;
+  const create=document.createElement;document.createElement=tag=>{const n=create(tag);Object.defineProperty(n,'innerHTML',{set(){throw Error('Demo uses safe text rendering');}});return n;};
+  const source={...ready,declarations:[{kind:'theorem',name:goal}],demo_verification:{verified:true,fresh_local_check:true,source_application_status:'not_verified',msc:[{code:'15A63',origin:'reviewer_inferred'}],formal_contract:contract,scope_note:'Conditional <img src=x onerror=alert(1)>',verification:{status:'complete',obligations:contract.required_obligations.map(g=>({id:g.id,ok:true}))}}};
+  workspace.renderTheorem=()=>{};workspace.acceptSource(source,goal,source.demo_verification.scope_note);
+  const preview=node('guided-source-preview'),text=preview.textContent;
+  assert.match(text,/Локальная проверка: 4\/4 обязательства/);assert.match(text,/Применение к исходной статье отдельно не проверено/);assert.match(text,/MSC 15A63 — содержательное предположение, не метаданные статьи/);
+  const section=descendants(preview).find(n=>n.attributes['aria-label']==='Проверка готовой демонстрации'),visible=section.children.filter(n=>n.tagName!=='DETAILS').map(n=>n.textContent).join('');assert.doesNotMatch(visible,/not_verified|reviewer_inferred/);assert.match(visible,/Локальная проверка: 4\/4/);assert.match(visible,/Применение к исходной статье отдельно не проверено/);assert.match(visible,/MSC 15A63 — содержательное предположение/);
+  const disclosures=section.children.filter(n=>n.tagName==='DETAILS');assert.equal(disclosures.length,2);assert.equal(disclosures[0].children[0].textContent,'Обязательства демонстрации · 4');assert.equal(disclosures[1].children[0].textContent,'Результат локальной проверки');assert.match(disclosures[1].textContent,/not_verified/);for(const disclosure of disclosures)assert.notEqual(disclosure.open,true);
+  assert.match(text,/без модели/);assert.equal(text.split(source.demo_verification.scope_note).length-1,1);for(const item of contract.required_obligations)assert.ok(text.includes(item.statement));
+  const obligationRows=()=>descendants(node('guided-source-preview')).find(n=>n.attributes.class==='guided-obligations').children;
+  for(const [i,row]of obligationRows().entries()){assert.equal(row.children.length,3);const[marker,title,details]=row.children;assert.match(marker.attributes.class,/guided-check good/);assert.equal(marker.textContent,'✓');assert.equal(title.textContent,contract.required_obligations[i].title);assert.equal(details.tagName,'DETAILS');assert.equal(details.attributes.class,'guided-details');}
+  assert.equal(node('guided-theorem').value,goal);assert.equal(node('guided-selection').hidden,false);assert.equal(workspace.source,source);
+  const all=[];const walk=n=>{all.push(n);for(const child of n.children||[])walk(child);};walk(preview);assert.equal(all.some(n=>['SCRIPT','IMG'].includes(n.tagName)),false);
+  for(const change of [{verified:false},{fresh_local_check:false}]){workspace.acceptSource({...source,demo_verification:{...source.demo_verification,...change}},goal);assert.doesNotMatch(node('guided-source-preview').textContent,/Локальная проверка: 4\/4/);assert.match(node('guided-source-preview').textContent,/не подтверждена/);for(const row of obligationRows()){assert.equal(row.children[0].textContent,'○');assert.doesNotMatch(row.children[0].attributes.class,/good/);}}
+  workspace.acceptSource({...source,demo_verification:undefined},goal);assert.match(node('guided-source-preview').textContent,/Lean-источник проверен/);assert.doesNotMatch(node('guided-source-preview').textContent,/4\/4/);
+}));
+
+test('article preview shows source-reported MSC with literal retained evidence, separately from research routes',()=>withWorkspace((workspace,node)=>{
+  const create=document.createElement;document.createElement=tag=>{const element=create(tag);Object.defineProperty(element,'innerHTML',{set(){throw Error('MSC evidence must be rendered as text');}});return element;};
+  const quote='2020 Mathematics Subject Classification: 15A15. <img src=x onerror=alert(1)> $A^*A$';
+  workspace.paper={versioned_id:'2403.19691v1',title:'Determinants',authors:[],sections:[],msc_codes:['15','15A15'],msc_status:'source_reported',msc_extraction_version:2,
+    msc_evidence:[{codes:['15A15'],source_document:'article_html',source_sha256:'a'.repeat(64),locator:'article > .ltx_classification',quote},{codes:['15'],source_document:'abstract_html',source_sha256:'b'.repeat(64),locator:'.msc-classes',quote:'MSC classes: 15'}]};
+  workspace.state={run:{msc_codes:['37'],structure_routes:[{msc_code:'16'}]}};
+  const before=JSON.stringify(workspace.paper);workspace.renderPaper();
+  const walk=element=>[element,...element.children.flatMap(walk)],all=walk(node('guided-source-preview')),section=all.find(element=>element.attributes['aria-label']==='MSC статьи');
+  assert.ok(section);assert.equal(section.dataset.mscStatus,'source_reported');assert.match(section.textContent,/MSC статьи: 15, 15A15/);assert.doesNotMatch(section.textContent,/MSC статьи: (16|37)/);assert.match(section.textContent,/MSC classes: 15/);
+  const details=section.children.find(element=>element.tagName==='DETAILS');assert.ok(details);assert.notEqual(details.open,true);
+  assert.match(details.textContent,/Документ: HTML статьи/);assert.match(details.textContent,/Фрагмент: article > \.ltx_classification/);assert.match(details.textContent,new RegExp('SHA-256: '+'a'.repeat(64)));assert.match(details.textContent,/Версия извлечения: 2/);
+  const technical=details.children.find(element=>element.tagName==='DETAILS');assert.ok(technical);assert.notEqual(technical.open,true);assert.match(technical.textContent,/Технические сведения об извлечении/);
+  assert.equal(all.find(element=>element.tagName==='BLOCKQUOTE').textContent,quote);assert.equal(all.some(element=>['IMG','SCRIPT'].includes(element.tagName)),false);assert.equal(JSON.stringify(workspace.paper),before);
+}));
+
+test('article preview distinguishes retained-HTML absence from unknown and legacy MSC metadata',()=>withWorkspace((workspace,node)=>{
+  const paper={versioned_id:'2403.19691v1',title:'Determinants',authors:[],sections:[]};
+  for(const [metadata,expected,status]of [
+    [{msc_codes:[],msc_status:'not_found_in_retained_html'},'MSC не найдены в сохранённом HTML','not_found_in_retained_html'],
+    [{msc_codes:[],msc_status:'unknown'},'MSC источника пока не определены','unknown'],
+    [{msc_codes:[],msc_status:'not_reported_in_html'},'MSC источника пока не определены','unknown'],
+    [{msc_codes:['15A15']},'MSC источника пока не определены','unknown'],
+    [{msc_codes:[],msc_status:'source_reported'},'MSC источника пока не определены','unknown'],
+    [{msc_codes:['15A15'],msc_status:'not_found_in_retained_html'},'MSC источника пока не определены','unknown']
+  ]){
+    workspace.paper={...paper,...metadata};workspace.renderPaper();const section=descendants(node('guided-source-preview')).find(element=>element.attributes['aria-label']==='MSC статьи');
+    assert.equal(section.dataset.mscStatus,status);assert.equal(section.children[0].textContent,expected);assert.doesNotMatch(section.textContent,/В статье нет MSC|MSC статьи: 15A15/);
+  }
+}));
+
+test('ready article keeps prepared theorem as an explicit alternative without starting research',()=>withWorkspace((workspace,node)=>{
+  const paper={versioned_id:'2409.02933v1',title:'Saved article <script>',authors:['A. Author'],sections:[{id:'S4',title:'Composition'}]},example={id:'prepared',scope_note:'A conditional step, not the entire article'},chosen=[];
+  const before=JSON.stringify({paper,example});workspace.paper=paper;workspace.usePrepared=value=>chosen.push(value);workspace.cb.start=()=>{throw Error('Rendering must not launch research');};workspace.renderPaper(example);
+  const preview=node('guided-source-preview'),source=preview.children[0],heading=source.children[0];assert.equal(source.attributes.class,'guided-ready-source');assert.equal(heading.attributes.class,'guided-ready-heading');assert.match(heading.textContent,/arXiv 2409\.02933v1/);assert.match(heading.textContent,/Saved article <script>/);assert.doesNotMatch(preview.textContent,/Lean-источник проверен|4\/4/);
+  const prepared=descendants(preview).find(n=>n.attributes.class==='guided-prepared'),use=prepared.children.find(n=>n.tagName==='BUTTON');assert.match(prepared.textContent,/A conditional step/);assert.equal(chosen.length,0);assert.equal(use.textContent,'Использовать проверенную теорему');use.onclick();assert.deepEqual(chosen,[example]);assert.equal(node('guided-section-field').hidden,false);assert.equal(node('guided-theorem-field').hidden,true);assert.equal(JSON.stringify({paper,example}),before);
+}));
+
+test('visible budget follows both numeric inputs and reports the actual per-run limits',()=>withWorkspace((workspace,node)=>{
+  node('guided-calls').value='16';node('guided-minutes').value='30';node('guided-calls').oninput();
+  assert.match(node('guided-budget-summary').textContent,/Лимит каждого запуска: до 16 вызовов Astra · до 30 мин/);assert.match(node('guided-budget-summary').textContent,/Поиск и проверка связи запускаются отдельно/);
+  node('guided-calls').value='8';node('guided-calls').onchange();node('guided-minutes').value='1.234';node('guided-minutes').oninput();assert.match(node('guided-budget-summary').textContent,/до 8 вызовов Astra · до 1 мин 14 с/);
+  node('guided-minutes').value='10';node('guided-minutes').onchange();assert.match(node('guided-budget-summary').textContent,/до 10 мин/);
+  node('guided-calls').value='';node('guided-calls').oninput();assert.equal(node('guided-budget-summary').dataset.state,'error');assert.match(node('guided-budget-summary').textContent,/Укажите от 1 до 24/);assert.doesNotMatch(node('guided-budget-summary').textContent,/Лимит каждого запуска/);
+  node('guided-calls').value='6';workspace.updateStart();assert.equal(node('guided-budget-summary').dataset.state,'ready');assert.match(node('guided-budget-summary').textContent,/до 6 вызовов Astra/);
+}));
+
+test('ready source and budget edits emit a pinned search only after the explicit start click',()=>withWorkspace(async(workspace,node)=>{
+  const starts=[],sources=[];workspace.cb.start=async payload=>starts.push(payload);workspace.cb.setSource=(...args)=>sources.push(args);
+  node('guided-calls').value='8';node('guided-minutes').value='10';node('guided-question').value=' Preserve scope ';workspace.acceptSource(ready,'Input.main','Conditional scope');
+  assert.equal(starts.length,0);assert.equal(sources.length,0);assert.equal(node('guided-start').disabled,false);assert.equal(node('guided-start').textContent,'Искать по всему атласу');
+  node('guided-calls').value='6';node('guided-calls').oninput();node('guided-minutes').value='4.5';node('guided-minutes').onchange();assert.equal(starts.length,0);
+  await node('guided-start').onclick();assert.equal(starts.length,1);assert.equal(starts[0].source_id,'s');assert.equal(starts[0].target,'Input.main');assert.equal(starts[0].search_scope,'atlas');assert.deepEqual(starts[0].budget,{max_calls:6,timeout_seconds:270,max_parallel:2});assert.equal(starts[0].proof_backend,'native');assert.deepEqual(sources,[[ready,'Input.main']]);
+  node('guided-calls').value='25';node('guided-calls').oninput();await node('guided-start').onclick();assert.equal(starts.length,1);assert.match(node('guided-source-status').textContent,/Укажите от 1 до 24/);
+}));
+
+test('a delayed prepared-source response cannot repopulate a newer source selection',async()=>{
+  let resolve,accepted=0;const workspace=Object.create(m.Workspace.prototype);workspace.token=5;workspace.catalog={sources:[]};workspace.notice=()=>{};workspace.acceptSource=()=>accepted++;workspace.cb={api:()=>new Promise(done=>{resolve=done;})};
+  const request=workspace.prepareExample({id:'example',recommended_target:'Input.main'},5);workspace.token++;resolve({source:ready});await request;assert.equal(accepted,0);
+});
 
 test('changing a file, prepared source or article invalidates the previous inspected target',()=>{
   for(const [id,event]of [['guided-file','onchange'],['guided-example','onchange'],['guided-arxiv','oninput']])withWorkspace((workspace,node)=>{
@@ -130,6 +253,12 @@ test('progress counts exact obligations once and excludes definitions, generated
   workspace.renderProgress({...run,formal_contract:null});assert.doesNotMatch(node('guided-progress').textContent,/Проверено обязательств/);
 }));
 
+test('initial formalization never renders zero of zero while a known accepted contract keeps zero of three',()=>withWorkspace((workspace,node)=>{
+  const fresh={purpose:'prove',status:'running',phase:'formalize_transition',proof_progress:{started:false,obligations_total:0,proved:0,failed:0,pending:0}};workspace.renderProgress(fresh);assert.match(node('guided-progress').textContent,/Готовим точную постановку; обязательства появятся после её принятия/);assert.doesNotMatch(node('guided-progress').textContent,/Проверено обязательств|0 из 0|после полной сборки/);
+  workspace.renderProgress({...fresh,phase:'prove',proof_progress:{started:true,obligations_total:3,proved:0,failed:0,pending:3}});assert.match(node('guided-progress').textContent,/Проверено обязательств: 0 из 3/);assert.doesNotMatch(node('guided-progress').textContent,/Готовим точную постановку/);
+  workspace.renderProgress({...fresh,phase:'prove',proof_progress:{started:true,obligations_total:0,proved:0}});assert.match(node('guided-progress').textContent,/Состав обязательств пока недоступен/);assert.doesNotMatch(node('guided-progress').textContent,/0 из 0|Готовим точную постановку/);
+}));
+
 test('saved graph cards use certificate and semantic review instead of a fixed candidate label',()=>withWorkspace((workspace,node)=>{
   workspace.renderCandidates(null,{transitions:[
     {id:'proved',title:'Verified relation',status:'proved',certificate:{run_id:'proof'},semantic_review:{status:'aligned'}},
@@ -143,7 +272,44 @@ test('saved graph cards use certificate and semantic review instead of a fixed c
 
 const originalClaim='Кандидат общей структуры, без заявления о проверке Lean.';
 function resultFixture(){const run=structuredClone(verified);run.selected_transition_id='bridge';run.object_graph={transitions:[{id:'bridge',claim:originalClaim}]};run.result.semantic_review.reason='Постановка сохраняет объекты и предпосылки выбранной связи.';return run;}
-function originalDisclosure(box){return box.children.find(child=>child.tagName==='DETAILS'&&child.children[0]?.textContent==='Исходная формулировка кандидата');}
+function descendants(box){return [...(box.children||[])].flatMap(child=>[child,...descendants(child)]);}
+function originalDisclosure(box){return descendants(box).find(child=>child.tagName==='DETAILS'&&child.children[0]?.textContent==='Исходная формулировка кандидата');}
+
+function documentFixture(){const run=resultFixture(),contract=structuredClone(require('../examples/fibonacci_composition/contract.json'));run.id='document-proof';run.formal_contract=contract;run.object_graph.transitions[0].title='Перенос через композицию квадратичной формы';run.object_graph.transitions[0].assumptions=['c = a + b'];run.source_card={editable:true,assumptions:['(b² − ac)² = 1']};run.source_application_status='not_verified';Object.assign(run.result.verification,{target:contract.target,compilation_success:true,obligations:contract.required_obligations.map(goal=>({id:goal.id,target:goal.target,ok:true,expected_statement:goal.statement}))});run.result.semantic_review.limitations=['Последовательность Фибоначчи отдельно не формализована.'];run.nodes=[{id:'CompositionBridge.image',status:'defined'},{id:'Generated.helper',status:'proved'}];return run;}
+function hasClass(node,name){return String(node.attributes?.class||'').split(' ').includes(name);}
+
+test('result document leads with selected relation and exact goal count; boundaries precede closed technical reports',()=>withWorkspace((workspace,node)=>{
+  const run=documentFixture(),before=JSON.stringify(run),opened=[];workspace.cb.details=kind=>opened.push(kind);workspace.cb.start=()=>{throw Error('Viewing a result cannot start work');};workspace.renderResult(run);
+  const box=node('guided-result'),heading=box.children[0],actions=box.children.find(n=>hasClass(n,'guided-result-actions')),technical=box.children.find(n=>hasClass(n,'guided-result-technical'));
+  assert.equal(heading.children.find(n=>n.tagName==='H2').textContent,run.object_graph.transitions[0].title);assert.equal(descendants(heading).filter(n=>n.textContent===m.verdict(run).title).length,1);assert.match(heading.textContent,/Обязательства: 4\/4/);
+  const obligations=box.children.find(n=>hasClass(n,'guided-result-obligations')),boundaries=box.children.find(n=>hasClass(n,'guided-result-boundaries'));assert.ok(box.children.indexOf(obligations)<box.children.indexOf(technical));assert.ok(box.children.indexOf(boundaries)<box.children.indexOf(technical));assert.equal(boundaries.tagName,'SECTION');assert.match(boundaries.textContent,/Фибоначчи отдельно не формализована/);const scope=box.children.find(n=>hasClass(n,'guided-result-scope'));assert.ok(box.children.indexOf(scope)<box.children.indexOf(obligations));assert.match(scope.textContent,/применимость к исходному переходу статьи отдельно не подтверждена/);assert.match(boundaries.textContent,/c = a \+ b/);assert.equal(technical.open,undefined);
+  assert.equal(obligations.children[1].children.length,4);for(const goal of run.formal_contract.required_obligations)assert.ok(obligations.textContent.includes(goal.statement));
+  const primary=actions.children.filter(n=>hasClass(n,'primary'));assert.equal(primary.length,1);assert.equal(primary[0].textContent,'Доказательство и отчёт Lean');primary[0].onclick();assert.deepEqual(opened,['result']);assert.ok(hasClass(actions.children.find(n=>n.textContent==='Создать исправленную версию'),'secondary'));assert.equal(JSON.stringify(run),before);
+}));
+
+test('document count and actions remain honest for partial proof, semantic uncertainty and rejected formulation',()=>withWorkspace((workspace,node)=>{
+  const partial=documentFixture();partial.status='budget_exhausted';partial.outcome='unknown';partial.termination={code:'budget_exhausted',stage:'prove'};partial.result.verification.success=false;partial.result.verification.obligations_passed=false;partial.result.verification.obligations[2].ok=false;partial.result.verification.obligations[3].ok=false;workspace.renderResult(partial);assert.match(node('guided-result').children[0].textContent,/Обязательства: 2\/4/);assert.notEqual(node('guided-result').dataset.verdict,'proved');
+  const uncertain=documentFixture();uncertain.result.semantic_review.status='uncertain';workspace.renderResult(uncertain);assert.equal(node('guided-result').dataset.verdict,'formal_only');assert.match(node('guided-result').children[0].textContent,/смысл не подтверждён/);
+  const rejected=preflightRun();rejected.source_card={editable:true};rejected.termination={code:'invalid_contract',stage:'lean_contract_preflight'};Object.assign(rejected.contract_verification,{well_typed:false,status:'rejected',termination:rejected.termination,diagnostics:[{file:'ContractTypes.lean',exit_code:1,stdout:'unknown identifier Missing.name',stderr:''}]});workspace.renderResult(rejected);
+  const box=node('guided-result'),technical=box.children.find(n=>hasClass(n,'guided-result-technical')),primary=box.children.find(n=>hasClass(n,'guided-result-actions')).children.find(n=>hasClass(n,'primary'));assert.equal(primary.textContent,'Создать исправленную версию');assert.equal(technical.open,undefined);assert.ok(descendants(technical).some(n=>n.attributes['data-contract-preflight']==='not_accepted'));assert.match(technical.textContent,/unknown identifier Missing.name/);assert.notEqual(box.dataset.verdict,'refuted');
+}));
+
+test('successful document separates historical pre-proof caveats from current final limits and source assumptions',()=>withWorkspace((workspace,node)=>{
+  const run=documentFixture(),oldContract='Результатов проверки текущих обязательств Lean не предоставлено.',oldFormalization='ready не является доказательством';run.contract_review={status:'aligned',reason:'Историческая рецензия',limitations:[oldContract]};run.formalization_review={status:'ready',reason:'Исходный черновик принят',limitations:[oldFormalization]};run.source_card.scope='Область исходной карточки';const before=JSON.stringify(run);workspace.renderResult(run);
+  const box=node('guided-result'),boundaries=box.children.find(n=>hasClass(n,'guided-result-boundaries')),groups=boundaries.children.filter(n=>n.tagName==='DETAILS'),group=title=>groups.find(n=>n.children[0].textContent===title);
+  assert.match(box.children[0].textContent,/4\/4/);assert.equal(group('Условия исходной карточки').open,undefined);assert.match(group('Условия исходной карточки').textContent,/условия литературной карточки/);assert.match(group('Условия исходной карточки').textContent,/c = a \+ b/);
+  assert.match(group('Ограничения итоговой рецензии').textContent,/Фибоначчи отдельно не формализована/);assert.doesNotMatch(group('Ограничения итоговой рецензии').textContent,/не предоставлено|ready/);assert.match(group('Рецензия постановки до доказательства').textContent,/не предоставлено/);assert.match(group('Исходная формализация').textContent,/ready не является/);assert.match(group('Границы исходной карточки').textContent,/Область исходной карточки/);
+  const visible=n=>n.tagName==='DETAILS'?n.children[0].textContent:n.children.length?n.children.map(visible).join(' '):n.textContent;assert.doesNotMatch(visible(box),/не предоставлено|ready не является/);assert.match(visible(box),/применимость к исходному переходу статьи отдельно не подтверждена/);assert.equal(box.textContent.split(oldContract).length-1,1);assert.equal(box.textContent.split(oldFormalization).length-1,1);assert.equal(JSON.stringify(run),before);
+}));
+
+test('result and connections retain a scroll anchor without repeated headings or status and preserve partial controls',()=>withWorkspace((workspace,node)=>{
+  const run=documentFixture();for(const step of ['result','connections']){workspace.step=step;workspace.renderCurrent(run,null);const anchor=node('guided-current');assert.equal(anchor.hidden,false);assert.equal(anchor.dataset.anchorOnly,'true');assert.equal(anchor.children.length,0);anchor.scrollIntoView();assert.equal(anchor.scrolled,true);}
+  workspace.partialPanel=()=>workspace.el('p',{},'Сохранённые кандидаты доступны');workspace.renderCurrent(run,null);assert.match(node('guided-current').textContent,/Сохранённые кандидаты доступны/);assert.equal(node('guided-current').dataset.anchorOnly,'false');
+}));
+
+test('the document view passes its selected section to the compact workspace without restarting research',()=>withWorkspace((workspace,node)=>{
+  const rendered=[];node('research-panel').classList={toggle(){}};workspace.workspace={render:(...args)=>rendered.push(args),sourceCard:()=>null,result:()=>null};const run=documentFixture();workspace.render({run,runs:[]});assert.deepEqual(rendered[0],[run,undefined,{step:'result'}]);workspace.goStep('connections',{scroll:false,remember:false});assert.equal(rendered.at(-1)[2].step,'connections');
+}));
 
 test('a verified generic result separates original candidate wording from actual verification',()=>withWorkspace((workspace,node)=>{
   const run=resultFixture(),before=JSON.stringify(run);workspace.renderResult(run);const box=node('guided-result');
@@ -198,7 +364,7 @@ function articleGraph(){return{id:'original-graph',revision:3,sources:[{url:'htt
 function articleSnapshot(){const graph=articleGraph();return{kind:'literature_transition',graph_ref:{id:graph.id,revision:graph.revision},transition:graph.transitions[0],objects:graph.objects,sources:graph.sources,source_sha256:'a'.repeat(64)};}
 test('an article analogy request pins one saved transition without requiring or leaking a Lean source',()=>{
   const graph=articleGraph(),before=JSON.stringify(graph),limits=m.budget(16,30),payload=m.transitionSearchPayload(graph,graph.transitions[0],limits,'  Compare the coordinate change.  ');
-  assert.deepEqual(payload,{purpose:'structure',mode:'multi',graph_id:'original-graph',graph_revision:3,transition_id:'coordinate_change',budget:{max_calls:16,timeout_seconds:1800,max_parallel:2},question:'Compare the coordinate change.'});
+  assert.deepEqual(payload,{purpose:'structure',search_scope:'atlas',mode:'multi',graph_id:'original-graph',graph_revision:3,transition_id:'coordinate_change',budget:{max_calls:16,timeout_seconds:1800,max_parallel:2},question:'Compare the coordinate change.'});
   for(const key of ['source_id','target','paper_ids','section_ids','msc_codes'])assert.equal(key in payload,false);
   for(const change of [g=>delete g.id,g=>g.revision=0,g=>g.revision='3',g=>g.transitions[0].id='other',g=>g.transitions[0].formulation_status='candidate',g=>g.sources.push({structure_transition:articleSnapshot()})]){const invalid=structuredClone(graph);change(invalid);assert.throws(()=>m.transitionSearchPayload(invalid,graph.transitions[0],limits));}
   assert.equal(JSON.stringify(graph),before);
@@ -213,19 +379,15 @@ test('source navigation keeps the original article separate from the selected br
   assert.equal(m.titleOf(search),'Аналоги: Замена координаты');assert.equal(m.verdict({...search,status:'complete',outcome:'unknown',object_graph:{transitions:[{}]}}).kind,'search');
 });
 
-test('explicit analogy launch uses the existing budget and blocks double clicks and active runs',async()=>{
-  let workspace,node;withWorkspace((w,n)=>{workspace=w;node=n;workspace.$=node;});
-  workspace.setBusy=function(value){this.busy=value;};workspace.source=null;workspace.paper=null;node('guided-calls').value='16';node('guided-minutes').value='30';node('guided-question').value='Извлеки все переходы из другой статьи — старый скрытый вопрос';
-  const starts=[],errors=[];let release;workspace.cb.start=payload=>{starts.push(payload);return new Promise(resolve=>{release=resolve;});};workspace.cb.error=message=>errors.push(message);
-  const graph=articleGraph(),pending=workspace.searchAnalogies(graph,graph.transitions[0]);assert.equal(starts.length,1);assert.equal(workspace.busy,true);await workspace.searchAnalogies(graph,graph.transitions[0]);assert.equal(starts.length,1);
-  release();await pending;assert.equal(workspace.busy,false);assert.equal(node('guided-current').scrolled,true);assert.deepEqual(starts[0],m.transitionSearchPayload(graph,graph.transitions[0],m.budget(16,30)));
-  workspace.state={run:{status:'running'}};await workspace.searchAnalogies(graph,graph.transitions[0]);assert.equal(starts.length,1);assert.match(errors[0],/Дождитесь завершения/);
+test('an active research blocks the primary analogy budget dialog before any launch',async()=>{
+  let workspace;withWorkspace(w=>{workspace=w;});const errors=[];workspace.cb.start=()=>{throw Error('Unexpected launch');};workspace.cb.error=message=>errors.push(message);
+  workspace.state={run:{status:'running'}};const graph=articleGraph();await workspace.searchAnalogies(graph,graph.transitions[0]);assert.equal(workspace.searchDialog,undefined);assert.match(errors[0],/Дождитесь завершения/);
 });
 
 test('the run heading keeps the work journal without destructive ancestor shortcuts',()=>withWorkspace((workspace,node)=>{
   const opened=[],origin=articleSnapshot(),run={purpose:'prove',status:'failed',source_graph_ref:{id:'bridge-map',revision:1},source_transition_id:'bridge',contract:{source_transition:origin}};
   workspace.cb.openSource=(...args)=>opened.push(args);workspace.cb.details=()=>{};workspace.cb.start=()=>{throw Error('Back navigation must not start work');};workspace.renderCurrent(run,null);
-  const actions=node('guided-current').children.find(child=>child.attributes.class==='guided-inline-actions');assert.ok(actions);
+  const actions=node('guided-current').children.find(child=>String(child.attributes.class||'').split(' ').includes('guided-inline-actions'));assert.ok(actions);
   assert.deepEqual(actions.children.map(child=>child.textContent),['Журнал работы']);
   assert.deepEqual(opened,[]);
 }));
@@ -264,12 +426,27 @@ test('candidate checks belong to bridge maps and refresh when another run change
   workspace.map={render(){}};
   const article={id:'article-run',purpose:'discover',status:'complete',object_graph:{id:'article-map',revision:1,objects:[],sources:[{id:'paper',versioned_id:'2610.35651v2'}],transitions:[{id:'article-step',formulation_status:'literature_only'}]}};
   workspace.render({run:article,runs:[]});workspace.goStep('connections',{scroll:false,remember:false});
-  assert.equal(node('guided-checks').hidden,true);assert.equal(node('guided-directions').hidden,false);assert.equal(renders.length,0);
+  assert.equal(node('guided-checks').hidden,true);assert.equal(node('guided-directions').hidden,false);assert.equal(node('guided-connection-views').hidden,true);assert.equal(node('guided-map').hidden,false);assert.equal(renders.length,0);
   const run={...article,id:'bridge-search',purpose:'structure',object_graph:{...article.object_graph,id:'bridge-map',transitions:[{id:'bridge',formulation_status:'candidate'}]}};
-  workspace.render({run,runs:[]});assert.equal(node('guided-checks').hidden,false);assert.equal(node('guided-directions').hidden,true);assert.equal(renders.length,1);
+  workspace.render({run,runs:[]});assert.equal(node('guided-checks').hidden,false);assert.equal(node('guided-directions').hidden,true);assert.equal(node('guided-connection-views').hidden,false);assert.equal(node('guided-map').hidden,true);assert.equal(renders.length,1);
   workspace.render({run,runs:[{id:'new-proof',status:'running',updated_at:'one'}]});assert.equal(renders.length,2);
   workspace.goStep('source',{scroll:false,remember:false});assert.equal(node('guided-checks').hidden,true);assert.ok(suspensions.length);
 }));
+
+test('bridge list and map use the actual guided callbacks and retain selection filters and active batch snapshots',()=>{
+  let map,checks;
+  const features={ResearchMap:{Workspace:class{constructor(options){map=this;this.options=options;this.renders=[];}render(...args){this.renders.push(args);}setView(view){this.view=view;}select(selection){this.focus=selection;this.options.onSelection({kind:'transition',value:{id:selection.split(':')[1]}});}}},CandidateChecks:{Workspace:class{constructor(options){checks=this;this.options=options;this.query={value:'norm'};this.filter={value:'attention'};this.preview={snapshot:'keep'};this.batch={id:'batch',status:'running'};this.renders=[];this.suspends=0;}render(...args){this.renders.push(args);}select(id){this.selectedId=id;}suspend(){this.suspends++;}}}};
+  return withWorkspace((workspace,node)=>{
+    node('research-panel').classList={toggle(){}};workspace.cb.start=workspace.cb.verify=workspace.cb.action=()=>{throw Error('Switching views cannot start, stop or verify');};
+    const graph={id:'bridge-map',revision:2,objects:[],transitions:[{id:'first',title:'First',formulation_status:'candidate'},{id:'second',title:'Second',formulation_status:'candidate'}]},run={id:'bridge-run',purpose:'structure',status:'complete',object_graph:graph},state={run,runs:[]},before=JSON.stringify(run);
+    workspace.render(state);const group=node('guided-connection-views'),listButton=group.children[0],mapButton=group.children[1];assert.equal(group.attributes.role,'group');assert.equal(listButton.textContent,'Список связей');assert.equal(mapButton.textContent,'Карта');assert.equal(listButton.attributes['aria-pressed'],'true');assert.equal(mapButton.attributes['aria-controls'],'guided-map');assert.equal(node('guided-checks').hidden,false);assert.equal(node('guided-map').hidden,true);assert.equal(map.renders.length,0);
+    checks.select('second');const snapshot=checks.preview,batch=checks.batch;checks.options.onSelect(graph,graph.transitions[1]);assert.equal(node('guided-map').hidden,false);assert.equal(node('guided-checks').hidden,true);assert.equal(map.focus,'transition:second');assert.equal(checks.selectedId,'second');assert.equal(mapButton.attributes['aria-pressed'],'true');assert.equal(node('guided-map').scrolled,true);assert.equal(checks.suspends,0);
+    map.select('transition:first');listButton.onclick();assert.equal(checks.selectedId,'first');assert.equal(node('guided-checks').hidden,false);assert.equal(node('guided-map').hidden,true);assert.equal(checks.query.value,'norm');assert.equal(checks.filter.value,'attention');assert.equal(checks.preview,snapshot);assert.equal(checks.batch,batch);assert.equal(group.children[0],listButton);
+    mapButton.onclick();assert.equal(map.focus,'transition:first');const renders=checks.renders.length;workspace.render({...state,run:{...run,updated_at:'poll'},runs:[{id:'child',status:'running'}]});assert.equal(checks.renders.length,renders+1);assert.equal(checks.suspends,0);assert.equal(checks.preview,snapshot);assert.equal(checks.batch.status,'running');assert.equal(node('guided-checks').hidden,true);
+    listButton.onclick();assert.equal(node('guided-checks').hidden,false);assert.equal(checks.batch,batch);workspace.goStep('source',{scroll:false,remember:false});assert.equal(group.hidden,true);assert.equal(checks.suspends,1);workspace.goStep('connections',{scroll:false,remember:false});assert.equal(checks.selectedId,'first');assert.equal(checks.query.value,'norm');assert.equal(JSON.stringify(run),before);
+    workspace.showMap('objects','transition:second');workspace.render({run:{...run,id:'new-search'},runs:[]});assert.equal(workspace.connectionView,'list');assert.equal(node('guided-checks').hidden,false);assert.equal(node('guided-map').hidden,true);
+  },features);
+});
 
 function refineRun(){
   const object=id=>({id,title:id,definition:'Definition '+id,parameters:['p'],assumptions:['Condition '+id],msc_codes:['13']});
@@ -291,7 +468,7 @@ test('refinement rejects empty or unchanged scope, shared-object changes, active
 });
 
 test('the review result exposes exact feedback and an accessible selected-scope editor without automatic work',()=>withWorkspace((workspace,node)=>{
-  const run=refineRun(),before=JSON.stringify(run);workspace.renderResult(run);const box=node('guided-result');assert.ok(box.textContent.includes(run.result.reason));const button=box.children.find(child=>child.tagName==='BUTTON'&&child.textContent==='Уточнить постановку');assert.ok(button);button.onclick();
+  const run=refineRun(),before=JSON.stringify(run);workspace.renderResult(run);const box=node('guided-result');assert.ok(box.textContent.includes(run.result.reason));const button=descendants(box).find(child=>child.tagName==='BUTTON'&&child.textContent==='Уточнить постановку');assert.ok(button);button.onclick();
   const edit=workspace.refinement;assert.equal(edit.dialog.tagName,'DIALOG');assert.equal(edit.dialog.open,true);assert.equal(edit.dialog.attributes['aria-labelledby'],'guided-refinement-title');assert.equal(edit.fields.claim.value,run.object_graph.transitions[0].claim);assert.equal(edit.fields.title.focused,true);assert.deepEqual(edit.fields.objects.map(item=>item.id),['local','output']);assert.match(edit.dialog.textContent,/доступен только для чтения/);assert.match(edit.dialog.textContent,/Сертификат не переносится/);assert.equal(JSON.stringify(run),before);
   workspace.closeRefinement();assert.equal(workspace.refinement,null);assert.equal(edit.dialog.open,false);assert.equal(node('guided-research').children.includes(edit.dialog),false);
 }));
@@ -334,11 +511,11 @@ test('an accepted contract preflight, even for False, is never a proof or certif
   for(const change of [r=>r.contract_verification.target='Other.goal',r=>r.contract_verification.proof_checked=true,r=>r.contract_verification.audit.status='failed',r=>r.contract_verification.well_typed=false]){const invalid=structuredClone(run);change(invalid);assert.equal(m.contractPreflight(invalid).accepted,false);assert.notEqual(m.verdict(invalid).kind,'proved');assert.notEqual(m.verdict(invalid).kind,'formal_only');}
 });
 test('contract preflight has a separate compact panel with exact goal, definitions and expandable diagnostics',()=>withWorkspace((workspace,node)=>{
-  const run=preflightRun();workspace.renderResult(run);const box=node('guided-result'),panel=box.children.find(child=>child.attributes['aria-label']==='Постановка в Lean');assert.ok(panel);assert.equal(panel.attributes['data-contract-preflight'],'accepted');assert.match(panel.textContent,/не доказывает утверждение и не выдаёт сертификат/);assert.match(panel.textContent,/Цель: Frozen.goal/);assert.match(panel.textContent,/Определения: context/);assert.ok(panel.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Точный тип цели'));assert.ok(panel.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Определения постановки'));assert.ok(panel.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Диагностика Lean и полный отчёт проверки постановки'));assert.equal(box.dataset.verdict,'incomplete');
+  const run=preflightRun();workspace.renderResult(run);const box=node('guided-result'),panel=descendants(box).find(child=>child.attributes['aria-label']==='Постановка в Lean');assert.ok(panel);assert.equal(panel.attributes['data-contract-preflight'],'accepted');assert.match(panel.textContent,/не доказывает утверждение и не выдаёт сертификат/);assert.match(panel.textContent,/Цель: Frozen.goal/);assert.match(panel.textContent,/Определения: context/);assert.ok(panel.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Точный тип цели'));assert.ok(panel.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Определения постановки'));assert.ok(panel.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Диагностика Lean и полный отчёт проверки постановки'));assert.equal(box.dataset.verdict,'incomplete');
   workspace.renderProgress({...run,status:'running',phase:'prove'});assert.ok(node('guided-progress').children.some(child=>child.attributes['aria-label']==='Постановка в Lean'));assert.equal(m.progressText({status:'running',phase:'lean_contract_preflight'}),'Lean проверяет определения и тип цели');
 }));
 test('compiler rejection of a contract is distinct from unproved theorem, timeout and source-validation rejection',()=>withWorkspace((workspace,node)=>{
-  const run=preflightRun();run.termination={code:'invalid_contract',stage:'lean_contract_preflight',message:'Compiler failed'};Object.assign(run.contract_verification,{status:'failed',well_typed:false,error:'Command failed',diagnostics:[{file:'ContractTypes.lean',exit_code:1,stdout:'ContractTypes.lean:12:3: error: unknown constant Frozen.symbol\nFull preserved explanation',stderr:''}],termination:run.termination});workspace.renderResult(run);assert.equal(m.verdict(run).title,'Lean отклонил постановку');const panel=node('guided-result').children.find(child=>child.attributes['aria-label']==='Постановка в Lean');assert.equal(panel.attributes['data-contract-preflight'],'not_accepted');assert.match(panel.textContent,/unknown constant Frozen.symbol/);assert.match(panel.textContent,/Full preserved explanation/);assert.match(panel.textContent,/до доказательства/);assert.notEqual(node('guided-result').dataset.verdict,'refuted');
+  const run=preflightRun();run.termination={code:'invalid_contract',stage:'lean_contract_preflight',message:'Compiler failed'};Object.assign(run.contract_verification,{status:'failed',well_typed:false,error:'Command failed',diagnostics:[{file:'ContractTypes.lean',exit_code:1,stdout:'ContractTypes.lean:12:3: error: unknown constant Frozen.symbol\nFull preserved explanation',stderr:''}],termination:run.termination});workspace.renderResult(run);assert.equal(m.verdict(run).title,'Lean отклонил постановку');const panel=descendants(node('guided-result')).find(child=>child.attributes['aria-label']==='Постановка в Lean');assert.equal(panel.attributes['data-contract-preflight'],'not_accepted');assert.match(panel.textContent,/unknown constant Frozen.symbol/);assert.match(panel.textContent,/Full preserved explanation/);assert.match(panel.textContent,/до доказательства/);assert.notEqual(node('guided-result').dataset.verdict,'refuted');
   run.contract_verification.status='timeout';run.contract_verification.termination={code:'lean_timeout',stage:'lean_contract_preflight'};assert.match(m.contractPreflight(run).title,/по времени/);
   run.contract_verification.status='rejected';run.contract_verification.diagnostics=[];run.contract_verification.termination={code:'invalid_contract',stage:'lean_contract_preflight'};assert.equal(m.contractPreflight(run).title,'Постановка не прошла предварительную проверку');
 }));
@@ -348,11 +525,11 @@ test('contract preflight logs do not masquerade as previous proof checks when th
 });
 
 test('accepted preflight never masks a later rejection of the actual proof contract',()=>withWorkspace((workspace,node)=>{
-  for(const stage of ['compose','lean_contract']){const run=preflightRun();run.termination={code:'invalid_contract',stage,message:'Contract.lean rejected a different proof type'};run.result={verification:{success:false,target:'Frozen.goal',target_preserved:false,diagnostics:[{file:'Contract.lean',exit_code:1,stdout:'error: type mismatch in final proof',stderr:''}]}};const before=JSON.stringify(run);assert.equal(m.contractPreflight(run).accepted,true);assert.equal(m.verdict(run).title,'Доказательство не прошло проверку на точную цель');assert.equal(m.verdict(run).kind,'incomplete');assert.doesNotMatch(m.terminationInfo(run).explanation,/а не её доказательство/);workspace.renderResult(run);const box=node('guided-result');assert.match(box.textContent,/Доказательство не прошло проверку на точную цель/);assert.match(box.textContent,/Contract.lean rejected/);assert.ok(box.children.some(child=>child.attributes['data-contract-preflight']==='accepted'));assert.equal(JSON.stringify(run),before);}
+  for(const stage of ['compose','lean_contract']){const run=preflightRun();run.termination={code:'invalid_contract',stage,message:'Contract.lean rejected a different proof type'};run.result={verification:{success:false,target:'Frozen.goal',target_preserved:false,diagnostics:[{file:'Contract.lean',exit_code:1,stdout:'error: type mismatch in final proof',stderr:''}]}};const before=JSON.stringify(run);assert.equal(m.contractPreflight(run).accepted,true);assert.equal(m.verdict(run).title,'Доказательство не прошло проверку на точную цель');assert.equal(m.verdict(run).kind,'incomplete');assert.doesNotMatch(m.terminationInfo(run).explanation,/а не её доказательство/);workspace.renderResult(run);const box=node('guided-result');assert.match(box.textContent,/Доказательство не прошло проверку на точную цель/);assert.match(box.textContent,/Contract.lean rejected/);assert.ok(descendants(box).some(child=>child.attributes['data-contract-preflight']==='accepted'));assert.equal(JSON.stringify(run),before);}
 }));
 
 test('initial contract review is never presented as a final review after an early stop',()=>withWorkspace((workspace,node)=>{
-  const run={purpose:'prove',status:'failed',outcome:'unknown',error:'Тип леммы не должен содержать команды Lean.',contract_review:{status:'aligned',reason:'Initial scope aligned'},semantic_review:{status:'aligned'},final_semantic_review:{status:'not_performed',reason:'План отклонён до Lean'}};workspace.renderResult(run);const box=node('guided-result');assert.match(box.textContent,/План отклонён до проверки Lean/);assert.match(box.textContent,/Итоговая рецензия не проводилась: План отклонён до Lean/);assert.ok(box.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Рецензия постановки до доказательства'));assert.ok(box.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Диагностика завершения'));assert.ok(!box.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Итоговая смысловая рецензия и границы результата'));assert.notEqual(box.dataset.verdict,'proved');
+  const run={purpose:'prove',status:'failed',outcome:'unknown',error:'Тип леммы не должен содержать команды Lean.',contract_review:{status:'aligned',reason:'Initial scope aligned'},semantic_review:{status:'aligned'},final_semantic_review:{status:'not_performed',reason:'План отклонён до Lean'}};workspace.renderResult(run);const box=node('guided-result');assert.match(box.textContent,/План отклонён до проверки Lean/);assert.match(box.textContent,/Итоговая рецензия не проводилась: План отклонён до Lean/);assert.ok(descendants(box).some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Рецензия постановки до доказательства'));assert.ok(descendants(box).some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Диагностика завершения'));assert.ok(!box.children.some(child=>child.tagName==='DETAILS'&&child.children[0].textContent==='Итоговая смысловая рецензия и границы результата'));assert.notEqual(box.dataset.verdict,'proved');
   assert.equal(m.finalReview({purpose:'structure',status:'complete',semantic_review:{status:'pending'}}).status,'not_applicable');
   const checked=structuredClone(verified);checked.final_semantic_review={status:'not_performed',reason:'Review service failed'};assert.equal(m.verdict(checked).kind,'formal_only');assert.match(m.verdict(checked).title,/итоговая рецензия не выполнена/);checked.final_semantic_review={status:'mismatch',reason:'A semantic mismatch'};assert.equal(m.verdict(checked).kind,'formal_only');
 }));
@@ -372,7 +549,7 @@ test('retry creates the exact saved formal graph payload with the original mode 
   for(const change of [r=>r.status='running',r=>r.status='complete',r=>r.graph_ref.revision=2,r=>r.object_graph.transitions[0].agent_task=null,r=>r.budget=null,r=>r.budget.max_calls=0]){const invalid=structuredClone(run);change(invalid);assert.equal(m.canRetry(invalid),false);assert.throws(()=>m.retryPayload(invalid));}
 });
 test('retry is explicit, creates a new run once and never resumes or rewrites the old attempt',async()=>{
-  let workspace,node;withWorkspace((w,n)=>{workspace=w;node=n;workspace.$=node;workspace.renderResult(retryRun());});workspace.setBusy=function(value){this.busy=value;};const run=retryRun(),before=JSON.stringify(run),starts=[],errors=[];let release;workspace.cb.start=payload=>{starts.push(payload);return new Promise(resolve=>{release=resolve;});};workspace.cb.action=()=>{throw Error('Retry must not resume');};workspace.cb.error=message=>errors.push(message);assert.equal(starts.length,0);const actions=node('guided-result').children.find(child=>child.attributes.class==='guided-inline-actions');assert.ok(actions.children.some(child=>child.textContent==='Повторить проверку'));assert.ok(!actions.children.some(child=>child.textContent==='Продолжить запуск'));assert.match(node('guided-result').textContent,/16 вызовов \/ 30 мин/);
+  let workspace,node;withWorkspace((w,n)=>{workspace=w;node=n;workspace.$=node;workspace.renderResult(retryRun());});workspace.setBusy=function(value){this.busy=value;};const run=retryRun(),before=JSON.stringify(run),starts=[],errors=[];let release;workspace.cb.start=payload=>{starts.push(payload);return new Promise(resolve=>{release=resolve;});};workspace.cb.action=()=>{throw Error('Retry must not resume');};workspace.cb.error=message=>errors.push(message);assert.equal(starts.length,0);const actions=node('guided-result').children.find(child=>String(child.attributes.class||'').split(' ').includes('guided-inline-actions'));assert.ok(actions.children.some(child=>child.textContent==='Повторить проверку'));assert.ok(!actions.children.some(child=>child.textContent==='Продолжить запуск'));assert.match(node('guided-result').textContent,/16 вызовов \/ 30 мин/);
   const pending=workspace.retry(run);await workspace.retry(run);assert.equal(starts.length,1);release();await pending;assert.deepEqual(starts,[m.retryPayload(run)]);assert.equal(JSON.stringify(run),before);assert.equal(errors.length,0);assert.equal(workspace.busy,false);
 });
 
@@ -455,5 +632,5 @@ test('contract errors offer readable causes and another candidate without rerunn
   const run=preflightRun();run.termination={code:'invalid_contract',stage:'lean_contract_preflight'};Object.assign(run.contract_verification,{status:'rejected',well_typed:false,termination:run.termination,diagnostics:[{file:'ContractTypes.lean',exit_code:1,stdout:'ContractTypes.lean:7:2: error: invalid field notation\nfailed to synthesize\n MeasurableSpace X\ntype mismatch',stderr:''}]});
   const before=JSON.stringify(run),p=m.contractPreflight(run);assert.equal(p.issues.length,3);assert.match(p.issues[1],/измеримую структуру/);assert.equal(p.diagnostic.startsWith('ContractTypes.lean: ContractTypes.lean:'),false);
   workspace.renderResult(run);const result=node('guided-result');assert.match(result.textContent,/Повтор с теми же определениями не исправляет/);assert.match(result.textContent,/invalid field notation/);
-  const action=result.children.find(child=>child.attributes.class==='guided-inline-actions').children.find(child=>child.textContent==='Выбрать другую связь');assert.ok(action);let chosen;workspace.goStep=id=>chosen=id;workspace.cb.start=()=>{throw Error('View must not run');};action.onclick();assert.equal(chosen,'connections');assert.equal(JSON.stringify(run),before);
+  const action=result.children.find(child=>String(child.attributes.class||'').split(' ').includes('guided-inline-actions')).children.find(child=>child.textContent==='Выбрать другую связь');assert.ok(action);let chosen;workspace.goStep=id=>chosen=id;workspace.cb.start=()=>{throw Error('View must not run');};action.onclick();assert.equal(chosen,'connections');assert.equal(JSON.stringify(run),before);
 }));

@@ -210,16 +210,23 @@ class TransitionWorkflowTests(unittest.TestCase):
     def test_obligation_search_is_cached_per_plan_version_without_mutating_goal(self):
         run = self.create(); rid = run['id']
         node = dict(id='energy_lemma',statement='∀ x : ℝ, x ^ 2 ≥ 0')
-        diagnostics = {'error':'unknown constant helper_nonneg'}
-        with patch('research_retrieval.search',return_value=[{'id':'known_lemma'}]) as search:
+        diagnostics = {'error':"unknown constant 'helper_nonneg'"}
+        with patch('research_retrieval.search',return_value=[{'id':'known_lemma'}]) as search, \
+             patch('research_retrieval.search_library',return_value=[{'id':'compiler_lemma'}]) as symbols:
             first = self.service._retrieve_for_obligation(rid,{'revision':0},node,diagnostics)
             second = self.service._retrieve_for_obligation(rid,{'revision':0},node,diagnostics)
             self.assertEqual(first,second)
             self.assertEqual(search.call_count,1)
-            self.assertIn(node['statement'],search.call_args.args[0])
-            self.assertIn('helper_nonneg',search.call_args.args[0])
+            self.assertEqual(node['statement'],search.call_args.args[0])
+            symbols.assert_called_once_with('helper_nonneg',limit=6)
+            self.assertEqual([row['id'] for row in first],['compiler_lemma','known_lemma'])
+            record = json.loads((self.service.folder(rid)/'retrieval'/'v0-energy_lemma.json').read_text())
+            self.assertEqual(record['queries'],[
+                {'kind':'compiler_symbol','text':'helper_nonneg'},
+                {'kind':'goal','text':node['statement']}])
             self.service._retrieve_for_obligation(rid,{'revision':1},node,diagnostics)
             self.assertEqual(search.call_count,2)
+            self.assertEqual(symbols.call_count,2)
         self.assertEqual(self.service.get(rid)['object_contract_sha256'],run['object_contract_sha256'])
 
 

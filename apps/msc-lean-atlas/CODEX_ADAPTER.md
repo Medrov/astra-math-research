@@ -65,8 +65,10 @@ Cancellation/timeout sends `turn/interrupt` where IDs are known and terminates
 this adapter's process. Unknown dispatch outcomes remain explicit; closing a
 client connection is not a proof that an unknown remote turn was cancelled.
 
-Use `SHAIM_CODEX_BIN` to select the executable, otherwise PATH or the bundled
-Codex desktop binary is used. User-wide configuration is not rewritten.
+Use `AMR_CODEX_BIN` to select the executable. It takes precedence over the
+previous environment-variable name, which remains a compatibility alias.
+Without either setting, PATH or the bundled Codex desktop binary is used.
+User-wide configuration is not rewritten.
 
 ## Verification on 30 October 2026
 
@@ -74,8 +76,8 @@ Local CLI: `codex-cli 0.164.0-alpha.11.1`.
 
 - Actual initialize → account/read → model/list succeeded with existing ChatGPT
   authentication and the exact `gpt-6-astra` catalog entry.
-- One tiny real generation completed with structured output
-  `{"answer":"SHAIM_ASTRA_OK"}` in 8.994 seconds. Reported usage: 13,851 input
+- One tiny real generation returned the expected structured verification marker
+  in 8.994 seconds. Reported usage: 13,851 input
   tokens, 19 output tokens. These tokens include Codex's prompt overhead.
 - Recovery of that same completed turn succeeded in 0.61 seconds, with no second
   generation.
@@ -83,8 +85,10 @@ Local CLI: `codex-cli 0.164.0-alpha.11.1`.
   authoritative final text, model mismatch, timeout/cancel, failures,
   idempotency, locking, request identity, schema forwarding and recovery.
 
-Evidence: `verification/codex-adapter-smoke-supported/` and
-`verification/codex-adapter-recovery-check/`.
+The historical local evidence locations were
+`verification/codex-adapter-smoke-supported/` and
+`verification/codex-adapter-recovery-check/`. These runtime artifacts are not
+included in Git; this dated description does not constitute a fresh smoke test.
 
 The first pre-inference protocol probe was rejected because this CLI no longer
 accepts `readOnly.access`, although the generated schema and online example
