@@ -25,9 +25,9 @@ class PreparedExampleMetadataTests(unittest.TestCase):
     def test_metadata_links_exact_article_section_and_declared_theorem(self):
         with patch.object(lean_service, '_prepare', side_effect=AssertionError('must not compile')):
             result = self.service.structure_sources()
-        self.assertEqual(len(result['examples']), 2)
+        self.assertEqual(len(result['examples']), 3)
         self.assertEqual({item['id'] for item in result['examples']},
-                         {'arxiv_2610_38474_graph_subtraction', 'published_associator_laplacian'})
+                         {'arxiv_2610_38474_graph_subtraction', 'published_associator_laplacian', 'fibonacci_composition_bridge'})
         example = result['examples'][0]
         self.assertEqual(example['id'], 'arxiv_2610_38474_graph_subtraction')
         self.assertEqual(example['arxiv_id'], '2610.38474')

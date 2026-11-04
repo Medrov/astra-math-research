@@ -1,0 +1,100 @@
+{
+  "repository": "https://github.com/goedelarchitect/goedel-architect",
+  "commit": "300d69e97c91a2a498091c898e736af69f391960",
+  "license": "Apache-2.0",
+  "selected_symbols": {
+    "BlueprintNode": {
+      "source": "goedel_architect/graph.py",
+      "line": 44,
+      "sha256": "f266c9080ee59ebcf0d41a339290e9577cad5d4956b7d260c7ebe491d8674ff8"
+    },
+    "_LET_VALUE_COLON_EQ_RE": {
+      "source": "goedel_architect/graph.py",
+      "line": 231,
+      "sha256": "658d5421bc54554c6516a192d3b1f8daf76d507b88eca7f55190f171c0c5145c"
+    },
+    "_find_real_proof_by": {
+      "source": "goedel_architect/graph.py",
+      "line": 786,
+      "sha256": "62b17aee0d2881e3adad4bdff8639a0c887519448e1e719136d52dd9e9ea17e5"
+    },
+    "graft_proof_body": {
+      "source": "goedel_architect/graph.py",
+      "line": 800,
+      "sha256": "3e1ee63b86584554765b44c3628451c08425c7ddf196ccccf5479524e5ddc299"
+    },
+    "_reindent_tactics": {
+      "source": "goedel_architect/graph.py",
+      "line": 841,
+      "sha256": "c36741c47aee7736c6616c882612683901ed85882992d2f09409e019ddf8d832"
+    },
+    "FOUNDATIONAL_AXIOMS": {
+      "source": "goedel_architect/graph.py",
+      "line": 567,
+      "sha256": "f757ca99d6a69be367dd46e159144854598657b78e1b87513fcb9b935f435c17"
+    },
+    "classify_axioms": {
+      "source": "goedel_architect/graph.py",
+      "line": 587,
+      "sha256": "7e8358285bb710a95b3ffa7b66ec31efe16c79246deef43218a18e5b7982aec1"
+    },
+    "AnalysisResult": {
+      "source": "goedel_architect/graph.py",
+      "line": 1182,
+      "sha256": "684b071770962357b0284eaae6e68f850bb73224289a689237216c65388c0474"
+    },
+    "_IDENT_CHAR": {
+      "source": "goedel_architect/graph.py",
+      "line": 1197,
+      "sha256": "3a0023379047dce005d58e8fa1b24c076f85161fef2981861253b9e2e95236b5"
+    },
+    "strip_lean_comments": {
+      "source": "goedel_architect/graph.py",
+      "line": 1200,
+      "sha256": "cf68a36328f684aa930860c95bd71650587e71560f99fd3262c987110c8f39ec"
+    },
+    "_regex_used_names": {
+      "source": "goedel_architect/graph.py",
+      "line": 1240,
+      "sha256": "58383f698a86b3a6339954bffc5ed170360a3b104b1dc968986069a6599540f7"
+    },
+    "analyze_blueprint_from_trace": {
+      "source": "goedel_architect/graph.py",
+      "line": 1263,
+      "sha256": "6c0c6ba5f7a1f87d1c2298eb6fe7d27ac2cea5712c6b48f4751be18b67cc00e7"
+    },
+    "_highlight_line_span": {
+      "source": "goedel_architect/blueprint.py",
+      "line": 258,
+      "sha256": "347e658164e0c384178af0738117eda618a6341111543a747574a0b7bb22c383"
+    },
+    "_violation_synthetic": {
+      "source": "goedel_architect/blueprint.py",
+      "line": 280,
+      "sha256": "69f4f1911eb8030df6f3d31a4c2b301ddb8f303b591f2e0c017f7e59c317cee6"
+    },
+    "_highlight_decl_line": {
+      "source": "goedel_architect/blueprint.py",
+      "line": 703,
+      "sha256": "a52ca49037bf48f28ecc77f9a50de410271f78adb9299c60804e9f4cfe2ce3f5"
+    },
+    "_highlight_sorry_using_line": {
+      "source": "goedel_architect/blueprint.py",
+      "line": 725,
+      "sha256": "912c96910cb20b2d04ca2af4b98430cead954d6096ed2a218728a527ea620284"
+    },
+    "validate_blueprint_graph": {
+      "source": "goedel_architect/blueprint.py",
+      "line": 765,
+      "sha256": "f4790ff66129f48a452ecc31fc2749713e5d38d98ee73036f312da8b796a6753"
+    }
+  },
+  "modifications": [
+    "classify_axioms: remove ALLOW_NATIVE_DECIDE environment override; foundational axioms are fixed",
+    "analyze_blueprint_from_trace: receive BlueprintNode records directly instead of parsing a Lean skeleton"
+  ],
+  "files": {
+    "upstream_core.py": "56bd11f29c2e726c571ab1e72798ed79d8b7d148aeb7f6b62e92f53f06822729",
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  }
+}

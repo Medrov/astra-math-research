@@ -1,0 +1,7 @@
+# Retain the original CRLF bytes and terminal blank line bound by the saved hashes.
+Candidate.lean -text whitespace=cr-at-eol,-blank-at-eof
+Contract.lean -text whitespace=cr-at-eol
+Axioms.lean -text whitespace=cr-at-eol
+*.json text eol=lf
+*.py text eol=lf
+*.md text eol=lf

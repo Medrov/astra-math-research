@@ -19,11 +19,11 @@ import time
 import uuid
 
 import lean_service
+from lean_identifiers import DECLARATION_NAME as NAME, MODULE_NAME
 from platform_support import terminate_process_tree
 
 ROOT = Path(__file__).resolve().parent
 FIXTURES = ROOT / "research_fixtures"
-NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_'.]*(?:\.[A-Za-z_][A-Za-z0-9_']*)*$")
 
 GRADIENT_STATEMENT = """∀ {E : Type u} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   (f : E → ℝ) (g : E → E) {μ L : ℝ},
@@ -177,7 +177,7 @@ def _validate_source(source):
         raise ValueError("Недопустимые конструкции кандидата: " + ", ".join(forbidden or ["команда #"]))
     from research_project_library import allowed_imports
     for header in re.findall(r'(?m)^\s*import\s+([^\n]+)', masked):
-        if any(not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.]*', word) for word in header.split()):
+        if any(not MODULE_NAME.fullmatch(word) for word in header.split()):
             raise ValueError('В импортах кандидата разрешены только явные ASCII-имена закреплённых модулей.')
     for module in lean_service._imports(source):
         if not module.startswith("Mathlib.") and module not in {"Mathlib", "Init", "Std", "StructureInput"} and module not in allowed_imports():
@@ -217,19 +217,24 @@ def _run(context, env, work, filename, diagnostics, cancelled=None, output=True)
         raise RuntimeError("Lean отклонил " + filename)
 
 
-def _export(context, env, work, diagnostics, cancelled, *, modules=None):
+def _export(context, env, work, diagnostics, cancelled, *, modules=None, names=None):
     shutil.copyfile(ROOT / "tools/AtlasInspect.lean", work / "AtlasInspect.lean")
     _run(context, env, work, "AtlasInspect.lean", diagnostics, cancelled)
     export_path = work / "compiler-declarations.json"
     modules = list(modules or ["Candidate"])
-    if any(not NAME.fullmatch(module) for module in modules):
+    if any(not isinstance(module, str) or not MODULE_NAME.fullmatch(module) for module in modules):
         raise ValueError("Некорректный модуль семантического экспорта.")
+    if names is not None and (not isinstance(names, list) or len(names) > 48 or
+                              any(not isinstance(name, str) or not NAME.fullmatch(name) for name in names)):
+        raise ValueError("Некорректное имя выбранной библиотечной декларации.")
+    command = '#atlas_export ' if names is None else '#atlas_export_names '
+    selected = modules if names is None else list(dict.fromkeys(names))
     text = ('import AtlasInspect\n' + ''.join('import ' + module + '\n' for module in modules) +
-            'set_option maxRecDepth 8192\nset_option maxHeartbeats 2000000\n#atlas_export [' +
-            ', '.join(json.dumps(module) for module in modules) + '] [] ' + json.dumps(str(export_path)) + "\n")
-    (work / "AtlasDump.lean").write_text(text)
+            'set_option maxRecDepth 8192\nset_option maxHeartbeats 2000000\n' + command + '[' +
+            ', '.join(json.dumps(name, ensure_ascii=False) for name in selected) + '] [] ' + json.dumps(str(export_path)) + "\n")
+    (work / "AtlasDump.lean").write_text(text, encoding='utf-8')
     _run(context, env, work, "AtlasDump.lean", diagnostics, cancelled, output=False)
-    return json.loads(export_path.read_text())
+    return json.loads(export_path.read_text(encoding='utf-8'))
 
 
 def _audit_declarations(declarations, source, target):
@@ -262,6 +267,24 @@ def _audit_declarations(declarations, source, target):
                 unsafe_declarations=unsafe, ignored_implementation_helpers=helpers,
                 audited_roots=sorted(d['name'] for d in roots),
                 scope='logical_local_declarations_and_target_axiom_closure')
+
+
+def audited_logical_axioms(declarations, source, target):
+    """Re-use the verifier's logical roots without removing any axiom dependency.
+
+    A compiler specialization may be omitted as a root only by the common
+    audit. Its occurrence inside a theorem/definition closure still rejects.
+    This helper is for successful theorem checks, not proposition preflights.
+    """
+    target_decl = next((decl for decl in declarations if decl.get('name') == target), None)
+    if target_decl is None or target_decl.get('kind') != 'theorem':
+        raise ValueError('В экспорте отсутствует проверяемая локальная теорема: ' + target)
+    audit = _audit_declarations(declarations, source, target)
+    if audit['status'] != 'passed':
+        raise ValueError('Аудит логических деклараций отклонён: ' +
+                         ', '.join(audit['unexpected_axioms'] + audit['unsafe_declarations']))
+    roots = set(audit['audited_roots'])
+    return {axiom for decl in declarations if decl['name'] in roots for axiom in decl.get('axioms', [])}
 
 
 def _validate_type_contract(statement):
@@ -356,7 +379,7 @@ def verify_contract(task, work_dir, *, cancelled=None, source_library=None):
     infrastructure = False
     try:
         imports, prelude = task.get('imports', ['Mathlib']), task.get('prelude', '')
-        if not isinstance(imports, list) or not imports or any(not isinstance(m, str) or not NAME.fullmatch(m) for m in imports):
+        if not isinstance(imports, list) or not imports or any(not isinstance(m, str) or not MODULE_NAME.fullmatch(m) for m in imports):
             raise ValueError('Некорректные импорты формальной постановки.')
         if not isinstance(prelude, str) or re.search(r'\b(?:theorem|lemma)\b', lean_service._mask(prelude)):
             raise ValueError('Контекст постановки должен содержать определения, а не доказанные теоремы.')

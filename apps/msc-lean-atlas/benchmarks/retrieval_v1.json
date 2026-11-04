@@ -1,0 +1,657 @@
+{
+  "schema_version": 1,
+  "name": "Mechanism retrieval regression v1",
+  "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+  "seed": null,
+  "deterministic": true,
+  "scope": "Fixed textual source snapshots. Retrieval only; not proof certificates.",
+  "labeling": "Developer-authored judgments, not independently adjudicated. Held-out families (products/topology) separated from development (dynamics) before first evaluation; small regression set, not a statistical benchmark.",
+  "records": [
+    {
+      "title": "Function.Semiconj",
+      "name": "Function.Semiconj",
+      "kind": "def",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 29,
+      "statement": "def Semiconj (f : α → β) (ga : α → α) (gb : β → β) : Prop",
+      "doc_comment": "We say that `f : α → β` semiconjugates `ga : α → α` to `gb : β → β` if `f ∘ ga = gb ∘ f`.\nWe use `∀ x, f (ga x) = gb (f x)` as the definition, so given `h : Function.Semiconj f ga gb` and\n`a : α`, we have `h a : f (ga a) = gb (f a)` and `h.comp_eq : f ∘ ga = gb ∘ f`.",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Semiconj",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.semiconj_iff_comp_eq",
+      "name": "Function.semiconj_iff_comp_eq",
+      "kind": "lemma",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 37,
+      "statement": "lemma _root_.Function.semiconj_iff_comp_eq : Semiconj f ga gb ↔ f ∘ ga = gb ∘ f",
+      "doc_comment": "Definition of `Function.Semiconj` in terms of functional equality.",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.semiconj_iff_comp_eq",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Semiconj.comp_right",
+      "name": "Function.Semiconj.comp_right",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 46,
+      "statement": "theorem comp_right (h : Semiconj f ga gb) (h' : Semiconj f ga' gb') :\r\n    Semiconj f (ga ∘ ga') (gb ∘ gb')",
+      "doc_comment": "If `f` semiconjugates `ga` to `gb` and `ga'` to `gb'`,\nthen it semiconjugates `ga ∘ ga'` to `gb ∘ gb'`.",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Semiconj.comp_right",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Semiconj.comp_left",
+      "name": "Function.Semiconj.comp_left",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 65,
+      "statement": "theorem comp_left (hbc : Semiconj fbc gb gc) (hab : Semiconj fab ga gb) :\r\n    Semiconj (fbc ∘ fab) ga gc",
+      "doc_comment": "If `fbc : β → γ` semiconjugates `gb` to `gc` and `fab : α → β` semiconjugates `ga` to `gb`,\nthen `fbc ∘ fab` semiconjugates `ga` to `gc`.\n\nSee also `Function.Semiconj.trans` for a version with reversed arguments.\n\n**Backward compatibility note:** before 2024-01-13,\nthis lemma used to have the same order of arguments that `Function.Semiconj.trans` has now.",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Semiconj.comp_left",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Semiconj.id_right",
+      "name": "Function.Semiconj.id_right",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 70,
+      "statement": "theorem id_right : Semiconj f id id",
+      "doc_comment": "Any function semiconjugates the identity function to the identity function.",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Semiconj.id_right",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Semiconj.inverses_right",
+      "name": "Function.Semiconj.inverses_right",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 78,
+      "statement": "theorem inverses_right (h : Semiconj f ga gb) (ha : RightInverse ga' ga) (hb : LeftInverse gb' gb) :\r\n    Semiconj f ga' gb'",
+      "doc_comment": "If `f : α → β` semiconjugates `ga : α → α` to `gb : β → β`,\n`ga'` is a right inverse of `ga`, and `gb'` is a left inverse of `gb`,\nthen `f` semiconjugates `ga'` to `gb'` as well.",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Semiconj.inverses_right",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Semiconj.inverse_left",
+      "name": "Function.Semiconj.inverse_left",
+      "kind": "lemma",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 84,
+      "statement": "lemma inverse_left {f' : β → α} (h : Semiconj f ga gb)\r\n    (hf₁ : LeftInverse f' f) (hf₂ : RightInverse f' f) : Semiconj f' gb ga",
+      "doc_comment": "If `f` semiconjugates `ga` to `gb` and `f'` is both a left and a right inverse of `f`,\nthen `f'` semiconjugates `gb` to `ga`.",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Semiconj.inverse_left",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Commute",
+      "name": "Function.Commute",
+      "kind": "def",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 102,
+      "statement": "def Commute (f g : α → α) : Prop",
+      "doc_comment": "Two maps `f g : α → α` commute if `f (g x) = g (f x)` for all `x : α`.\nGiven `h : Function.commute f g` and `a : α`, we have `h a : f (g a) = g (f a)` and\n`h.comp_eq : f ∘ g = g ∘ f`.",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Commute",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Commute.symm",
+      "name": "Function.Commute.symm",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Conjugate",
+      "line": 123,
+      "statement": "theorem symm (h : Commute f g) : Commute g f",
+      "doc_comment": "",
+      "source_sha256": "e5e3aa3e4f3fcbcf97d7c7b33e1be84a1333608f483d30cdcc423a09dfe7bc98",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Commute.symm",
+      "file": "snapshot:Mathlib.Logic.Function.Conjugate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Conjugate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Nat.iterate",
+      "name": "Nat.iterate",
+      "kind": "def",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 36,
+      "statement": "def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α",
+      "doc_comment": "Iterate a function.",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Nat.iterate",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.iterate_zero",
+      "name": "Function.iterate_zero",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 50,
+      "statement": "theorem iterate_zero : f^[0] = id",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.iterate_zero",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.iterate_add",
+      "name": "Function.iterate_add",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 67,
+      "statement": "theorem iterate_add (m : ℕ) : ∀ n : ℕ, f^[m + n] = f^[m] ∘ f^[n]",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.iterate_add",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.iterate_fixed",
+      "name": "Function.iterate_fixed",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 86,
+      "statement": "theorem iterate_fixed {x} (h : f x = x) (n : ℕ) : f^[n] x = x",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.iterate_fixed",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Injective.iterate",
+      "name": "Function.Injective.iterate",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 89,
+      "statement": "theorem Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective f^[n]",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Injective.iterate",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Surjective.iterate",
+      "name": "Function.Surjective.iterate",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 92,
+      "statement": "theorem Surjective.iterate (Hsurj : Surjective f) (n : ℕ) : Surjective f^[n]",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Surjective.iterate",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Semiconj.iterate_right",
+      "name": "Function.Semiconj.iterate_right",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 100,
+      "statement": "theorem iterate_right {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) (n : ℕ) :\r\n    Semiconj f ga^[n] gb^[n]",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Semiconj.iterate_right",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Semiconj.iterate_left",
+      "name": "Function.Semiconj.iterate_left",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 104,
+      "statement": "theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Semiconj.iterate_left",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.Commute.comp_iterate",
+      "name": "Function.Commute.comp_iterate",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 134,
+      "statement": "theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n]",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.Commute.comp_iterate",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Function.LeftInverse.iterate",
+      "name": "Function.LeftInverse.iterate",
+      "kind": "theorem",
+      "module": "Mathlib.Logic.Function.Iterate",
+      "line": 186,
+      "statement": "theorem LeftInverse.iterate {g : α → α} (hg : LeftInverse g f) (n : ℕ) :\r\n    LeftInverse g^[n] f^[n]",
+      "doc_comment": "",
+      "source_sha256": "db593f364451c97cc73095902f1fbb45e64677376620e1fb904e7ed52a9ed520",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Function.LeftInverse.iterate",
+      "file": "snapshot:Mathlib.Logic.Function.Iterate",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Logic/Function/Iterate.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Finset.prod_insert",
+      "name": "Finset.prod_insert",
+      "kind": "theorem",
+      "module": "Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "line": 38,
+      "statement": "theorem prod_insert [DecidableEq ι] : a ∉ s → ∏ x ∈ insert a s, f x = f a * ∏ x ∈ s, f x",
+      "doc_comment": "",
+      "source_sha256": "de2572f57cd085c7c4d48d3140a6965262458a514d9d18d863c67f701b4fa045",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Finset.prod_insert",
+      "file": "snapshot:Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Finset.prod_image",
+      "name": "Finset.prod_image",
+      "kind": "theorem",
+      "module": "Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "line": 68,
+      "statement": "theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :\r\n    (∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x)",
+      "doc_comment": "",
+      "source_sha256": "de2572f57cd085c7c4d48d3140a6965262458a514d9d18d863c67f701b4fa045",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Finset.prod_image",
+      "file": "snapshot:Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Finset.prod_congr",
+      "name": "Finset.prod_congr",
+      "kind": "theorem",
+      "module": "Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "line": 77,
+      "statement": "theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g",
+      "doc_comment": "",
+      "source_sha256": "de2572f57cd085c7c4d48d3140a6965262458a514d9d18d863c67f701b4fa045",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Finset.prod_congr",
+      "file": "snapshot:Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Finset.prod_eq_one",
+      "name": "Finset.prod_eq_one",
+      "kind": "theorem",
+      "module": "Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "line": 81,
+      "statement": "theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1",
+      "doc_comment": "",
+      "source_sha256": "de2572f57cd085c7c4d48d3140a6965262458a514d9d18d863c67f701b4fa045",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Finset.prod_eq_one",
+      "file": "snapshot:Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Finset.prod_of_injOn",
+      "name": "Finset.prod_of_injOn",
+      "kind": "lemma",
+      "module": "Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "line": 202,
+      "statement": "lemma prod_of_injOn (e : ι → κ) (he : Set.InjOn e s) (hest : Set.MapsTo e s t)\r\n    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i))  :\r\n    ∏ i ∈ s, f i = ∏ j ∈ t, g j",
+      "doc_comment": "",
+      "source_sha256": "de2572f57cd085c7c4d48d3140a6965262458a514d9d18d863c67f701b4fa045",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Finset.prod_of_injOn",
+      "file": "snapshot:Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Topology.IsInducing.continuous",
+      "name": "Topology.IsInducing.continuous",
+      "kind": "lemma",
+      "module": "Mathlib.Topology.Maps.Basic",
+      "line": 139,
+      "statement": "lemma continuous (hf : IsInducing f) : Continuous f",
+      "doc_comment": "",
+      "source_sha256": "2b89ef94811091cfc99b710761c58aa2a1db249b017fed99f9bcf351326053fa",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Topology.IsInducing.continuous",
+      "file": "snapshot:Mathlib.Topology.Maps.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Topology/Maps/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Topology.IsEmbedding.comp",
+      "name": "Topology.IsEmbedding.comp",
+      "kind": "lemma",
+      "module": "Mathlib.Topology.Maps.Basic",
+      "line": 202,
+      "statement": "lemma comp (hg : IsEmbedding g) (hf : IsEmbedding f) : IsEmbedding (g ∘ f)",
+      "doc_comment": "",
+      "source_sha256": "2b89ef94811091cfc99b710761c58aa2a1db249b017fed99f9bcf351326053fa",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Topology.IsEmbedding.comp",
+      "file": "snapshot:Mathlib.Topology.Maps.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Topology/Maps/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Topology.IsEmbedding.of_leftInverse",
+      "name": "Topology.IsEmbedding.of_leftInverse",
+      "kind": "lemma",
+      "module": "Mathlib.Topology.Maps.Basic",
+      "line": 222,
+      "statement": "lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Continuous f)\r\n    (hg : Continuous g) : IsEmbedding g",
+      "doc_comment": "",
+      "source_sha256": "2b89ef94811091cfc99b710761c58aa2a1db249b017fed99f9bcf351326053fa",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Topology.IsEmbedding.of_leftInverse",
+      "file": "snapshot:Mathlib.Topology.Maps.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Topology/Maps/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    },
+    {
+      "title": "Topology.IsOpenEmbedding.of_continuous_injective_isOpenMap",
+      "name": "Topology.IsOpenEmbedding.of_continuous_injective_isOpenMap",
+      "kind": "theorem",
+      "module": "Mathlib.Topology.Maps.Basic",
+      "line": 619,
+      "statement": "theorem IsOpenEmbedding.of_continuous_injective_isOpenMap\r\n    (h₁ : Continuous f) (h₂ : Injective f) (h₃ : IsOpenMap f) : IsOpenEmbedding f",
+      "doc_comment": "",
+      "source_sha256": "2b89ef94811091cfc99b710761c58aa2a1db249b017fed99f9bcf351326053fa",
+      "extraction": "textual_unverified",
+      "proof_status": "not_checked",
+      "id": "snapshot:Topology.IsOpenEmbedding.of_continuous_injective_isOpenMap",
+      "file": "snapshot:Mathlib.Topology.Maps.Basic",
+      "source_url": "https://github.com/leanprover-community/mathlib4/blob/c44e0c8ee63ca166450922a373c7409c5d26b00b/Mathlib/Topology/Maps/Basic.lean",
+      "type_status": "textual_unverified",
+      "evidence_type": "library_declaration"
+    }
+  ],
+  "cases": [
+    {
+      "id": "dev_semiconjugacy_iterates",
+      "split": "development",
+      "queries": [
+        "conjugacy iteration"
+      ],
+      "source_statement": "Function.Semiconj f ga gb",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {
+        "snapshot:Function.Semiconj.iterate_right": 3,
+        "snapshot:Function.Semiconj.comp_right": 2,
+        "snapshot:Function.Semiconj": 1
+      },
+      "judgment_reason": "Transfer established semiconjugacy to iterates; its definition alone is only background."
+    },
+    {
+      "id": "dev_inverse_transfer",
+      "split": "development",
+      "queries": [
+        "invertible conjugacy inverse"
+      ],
+      "source_statement": "Function.Semiconj f ga gb",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {
+        "snapshot:Function.Semiconj.inverse_left": 3,
+        "snapshot:Function.Semiconj.inverses_right": 2
+      },
+      "judgment_reason": "Transfer semiconjugacy through inverses; retain all inverse assumptions."
+    },
+    {
+      "id": "dev_fixed_iterate",
+      "split": "development",
+      "queries": [
+        "fixed point iterate"
+      ],
+      "source_statement": "",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {
+        "snapshot:Function.iterate_fixed": 3
+      },
+      "judgment_reason": "A fixed point remains fixed under each iterate; no assertion of least period."
+    },
+    {
+      "id": "heldout_product_reindex",
+      "split": "held_out",
+      "queries": [
+        "Finset prod image injective"
+      ],
+      "source_statement": "Finset.prod",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {
+        "snapshot:Finset.prod_image": 3,
+        "snapshot:Finset.prod_of_injOn": 2
+      },
+      "judgment_reason": "Reindex finite products with injectivity-on-set conditions."
+    },
+    {
+      "id": "heldout_product_unit",
+      "split": "held_out",
+      "queries": [
+        "Finset prod eq one"
+      ],
+      "source_statement": "Finset.prod",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {
+        "snapshot:Finset.prod_eq_one": 3
+      },
+      "judgment_reason": "All factors one implies product one; no unsupported converse."
+    },
+    {
+      "id": "heldout_embedding_composition",
+      "split": "held_out",
+      "queries": [
+        "embedding composition"
+      ],
+      "source_statement": "Topology.IsEmbedding",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {
+        "snapshot:Topology.IsEmbedding.comp": 3
+      },
+      "judgment_reason": "Composition of topological embeddings, not merely composition of functions."
+    },
+    {
+      "id": "heldout_open_embedding",
+      "split": "held_out",
+      "queries": [
+        "continuous injective open embedding"
+      ],
+      "source_statement": "Topology.IsOpenEmbedding",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {
+        "snapshot:Topology.IsOpenEmbedding.of_continuous_injective_isOpenMap": 3
+      },
+      "judgment_reason": "Require continuity, injectivity and open-map condition."
+    },
+    {
+      "id": "negative_iterate_riemann",
+      "split": "negative",
+      "queries": [
+        "iterate Riemann hypothesis"
+      ],
+      "source_statement": "",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {},
+      "judgment_reason": "Sharing iterate cannot support a claim about the Riemann hypothesis."
+    },
+    {
+      "id": "negative_elliptic_heights",
+      "split": "negative",
+      "queries": [
+        "elliptic isogeny canonical height"
+      ],
+      "source_statement": "",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {},
+      "judgment_reason": "No relevant elliptic curve or height declarations in this fixed corpus."
+    },
+    {
+      "id": "negative_spectrum_isomorphism",
+      "split": "negative",
+      "queries": [
+        "inverse spectrum eigenvalues"
+      ],
+      "source_statement": "",
+      "profile": {
+        "objects": [],
+        "operations": [],
+        "conclusion_shape": ""
+      },
+      "relevance": {},
+      "judgment_reason": "Inverse-function lemmas do not imply equal spectra give isomorphic objects."
+    }
+  ]
+}

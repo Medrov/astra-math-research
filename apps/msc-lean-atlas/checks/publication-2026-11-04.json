@@ -1,0 +1,290 @@
+{
+  "kind": "pre_publication_validation",
+  "recorded_at": "2026-11-04T15:52:41.687212+00:00",
+  "branch": "codex/atlas-wide-search",
+  "base_commit": "25f9db8104fadbea80a2ffb2fc96ef8975b3f2c0",
+  "scope": "Current atlas application changes and two prepared walkthroughs; not a release tag or verification of arbitrary articles.",
+  "python": {
+    "command": "python -X utf8 -m unittest discover -s tests -v",
+    "working_directory": "apps/msc-lean-atlas",
+    "exit_code": 0,
+    "tests": 523,
+    "passed": 523,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_seconds": 790.564,
+    "single_all_green_full_run": true,
+    "log_sha256": "8d47ad5e7d20bfae847a6255783cc1f1b2704c1221f9ed53c8f5270f9f12e261",
+    "environment": "Python 3.12.10 on Windows; prepared Lean 4.19.0 and mathlib; ATLAS_LEAN set to elan-resolved compiler; short workspace TEMP/TMP under ignored runs/t.",
+    "notes": [
+      "The model responses used by automated tests are test doubles.",
+      "This fresh complete run supersedes the earlier split-run test assessment in demo-validation-2026-11-04.json. That historical report is preserved unchanged."
+    ]
+  },
+  "javascript": {
+    "command": "node --test tests/*.cjs",
+    "working_directory": "apps/msc-lean-atlas",
+    "node_version": "24.15.0",
+    "exit_code": 0,
+    "tests": 298,
+    "pass": 298,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 722.6698,
+    "log_sha256": "8c2500c7493241d00f5d33e03b69c5ab71c0759c0a769dca504cb7e26b83a2e9"
+  },
+  "computer_use": {
+    "entry": "/#research",
+    "actions": [
+      "Opened Research and the two ready walkthrough cards.",
+      "Expanded the explanations and checked source, mathematical mechanism, exact result and limitations.",
+      "Clicked Check 4 obligations; observed a new local verification with 4/4 obligations passed.",
+      "Clicked Check polynomial step; observed a new source compilation and passed axiom audit.",
+      "Reloaded the final interface and checked the corrected graph theorem description."
+    ],
+    "method": "Computer Use browser clicks and visible result inspection; no direct API calls to trigger the two replays.",
+    "desktop_layout": {
+      "viewport_width": 1012,
+      "document_width": 997,
+      "horizontal_overflow": false
+    },
+    "browser_console_errors_observed": [],
+    "screenshot": "docs/screenshots/ready-walkthroughs.jpg",
+    "screenshot_sha256": "48330c08fabc9e259d22095901e883c83695203a99fedc8dcf4607b942cf6915"
+  },
+  "fresh_replays": {
+    "fibonacci": {
+      "source": "FibonacciComposition.lean",
+      "created_at": "2026-11-04T15:42:20.449211+00:00",
+      "source_sha256": "455648a0db4df2d99fc29cbcbea2779c44c0995bf99573bf662294c8b416c1d0",
+      "fresh_compilation": true,
+      "success": true,
+      "diagnostics": [
+        {
+          "file": "StructureInput.lean",
+          "exit_code": 0
+        },
+        {
+          "file": "AtlasInspect.lean",
+          "exit_code": 0
+        },
+        {
+          "file": "AtlasDump.lean",
+          "exit_code": 0
+        },
+        {
+          "file": "StructureInputAxioms.lean",
+          "exit_code": 0
+        }
+      ],
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [],
+        "audited_roots": [
+          "CompositionBridge.N",
+          "CompositionBridge.N.eq_1",
+          "CompositionBridge.compare",
+          "CompositionBridge.compare.eq_1",
+          "CompositionBridge.comparison_substitution",
+          "CompositionBridge.conditional_transfer",
+          "CompositionBridge.image",
+          "CompositionBridge.image.eq_1",
+          "CompositionBridge.mu",
+          "CompositionBridge.mu.eq_1",
+          "CompositionBridge.normalization",
+          "CompositionBridge.structural_laws"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      },
+      "print_axioms": {
+        "theorems": [
+          "CompositionBridge.structural_laws",
+          "CompositionBridge.comparison_substitution",
+          "CompositionBridge.normalization",
+          "CompositionBridge.conditional_transfer"
+        ],
+        "exit_code": 0,
+        "stdout": "'CompositionBridge.structural_laws' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.comparison_substitution' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.normalization' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.conditional_transfer' depends on axioms: [propext, Classical.choice, Quot.sound]\n"
+      },
+      "model_calls_for_replay": 0,
+      "fixed_contract": {
+        "success": true,
+        "target": "CompositionBridge.conditional_transfer",
+        "target_preserved": true,
+        "obligations": [
+          {
+            "id": "structure",
+            "target": "CompositionBridge.structural_laws",
+            "statement_sha256": "30d0c460f888fdff23de37ab14e8d75ab3646d7acdeb3d11813543cb022f4df5",
+            "ok": true,
+            "expected_outcome": "proved"
+          },
+          {
+            "id": "comparison",
+            "target": "CompositionBridge.comparison_substitution",
+            "statement_sha256": "898b88e25ed0aac07db927ba4590ffd4cd6c9eff80c3a8c85792d9838d3e86aa",
+            "ok": true,
+            "expected_outcome": "proved"
+          },
+          {
+            "id": "transfer",
+            "target": "CompositionBridge.conditional_transfer",
+            "statement_sha256": "02ea905fce78862711664aa39bb302174834fe9477b66e9f58ce7315b1d134e0",
+            "ok": true,
+            "expected_outcome": "proved"
+          },
+          {
+            "id": "normalization",
+            "target": "CompositionBridge.normalization",
+            "statement_sha256": "69dd26103ba6136b34008bef3ae65917ec234e58633c822f0812f1a50ef10cdf",
+            "ok": true,
+            "expected_outcome": "proved"
+          }
+        ],
+        "diagnostics": [
+          {
+            "file": "Candidate.lean",
+            "exit_code": 0
+          },
+          {
+            "file": "AtlasInspect.lean",
+            "exit_code": 0
+          },
+          {
+            "file": "AtlasDump.lean",
+            "exit_code": 0
+          },
+          {
+            "file": "Contract.lean",
+            "exit_code": 0
+          }
+        ]
+      },
+      "scope": "Four fixed obligations of the conditional rational quadratic-form bridge. Applicability of the assumptions to Fibonacci sequence members is not verified.",
+      "source_application_status": "not_verified",
+      "novelty": "not_assessed"
+    },
+    "polynomial_graph": {
+      "source": "Arxiv261038474.lean",
+      "created_at": "2026-11-04T15:43:43.871405+00:00",
+      "source_sha256": "f6caebe6a85beaca8e5d5cfd0bb3fcd8f1ee18f0b134604f2ee212cbbf3c1a75",
+      "fresh_compilation": true,
+      "success": true,
+      "diagnostics": [
+        {
+          "file": "StructureInput.lean",
+          "exit_code": 0
+        },
+        {
+          "file": "AtlasInspect.lean",
+          "exit_code": 0
+        },
+        {
+          "file": "AtlasDump.lean",
+          "exit_code": 0
+        },
+        {
+          "file": "StructureInputAxioms.lean",
+          "exit_code": 0
+        }
+      ],
+      "audit": {
+        "status": "passed",
+        "allowed_axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ],
+        "unexpected_axioms": [],
+        "unsafe_declarations": [],
+        "ignored_implementation_helpers": [],
+        "audited_roots": [
+          "Arxiv261038474.alongGraph",
+          "Arxiv261038474.alongGraph.eq_1",
+          "Arxiv261038474.compose",
+          "Arxiv261038474.compose.eq_1",
+          "Arxiv261038474.eval_univariate",
+          "Arxiv261038474.graphCurve",
+          "Arxiv261038474.graphCurve.eq_1",
+          "Arxiv261038474.graphRestore",
+          "Arxiv261038474.graphRestore.eq_1",
+          "Arxiv261038474.graphSubtract",
+          "Arxiv261038474.graphSubtract._proof_1",
+          "Arxiv261038474.graphSubtract.eq_1",
+          "Arxiv261038474.graph_to_axis",
+          "Arxiv261038474.restore_subtract",
+          "Arxiv261038474.subtract_restore",
+          "Arxiv261038474.univariate",
+          "Arxiv261038474.univariate.eq_1"
+        ],
+        "scope": "logical_local_declarations_and_target_axiom_closure"
+      },
+      "print_axioms": {
+        "theorems": [
+          "Arxiv261038474.eval_univariate",
+          "Arxiv261038474.graph_to_axis",
+          "Arxiv261038474.subtract_restore",
+          "Arxiv261038474.restore_subtract"
+        ],
+        "exit_code": 0,
+        "stdout": "'Arxiv261038474.eval_univariate' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.graph_to_axis' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.subtract_restore' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Arxiv261038474.restore_subtract' depends on axioms: [propext, Classical.choice, Quot.sound]\n"
+      },
+      "model_calls_for_replay": 0,
+      "scope": "Prepared Arxiv261038474.lean: subtract_restore, restore_subtract, graph_to_axis and helper eval_univariate. This replay does not rerun historical Astra search or compile the separate historical Proof.lean.",
+      "whole_article_formalized": false,
+      "novelty": "not_assessed"
+    }
+  },
+  "historical_negative_example": {
+    "report": "peterson-pipeline.json",
+    "rerun_for_publication": false,
+    "proof_checked": false,
+    "outcome": "unknown",
+    "reason": "Formal contract rejected by Lean before proof search; preserved as an unsuccessful pipeline result."
+  },
+  "original_mathresearch_suite": {
+    "modified": false,
+    "rerun": false,
+    "note": "The original 11-source/149-declaration package is separate from this application validation."
+  },
+  "publication_scope": {
+    "destination": "https://github.com/Medrov/astra-math-research",
+    "branch": "codex/atlas-wide-search",
+    "phase_when_report_written": "validated before commit and push",
+    "release_created": false,
+    "runtime_databases_and_model_dialogues_included": false,
+    "assessment": "Two bounded reproducible walkthroughs and preserved unsuccessful cases; no claim of reliability on arbitrary papers."
+  },
+  "post_staging_validation": {
+    "reason": "Removed one terminal blank line from research_atlas.py after the full suite; adjusted per-file Git whitespace attributes to preserve hash-bound CRLF proofs and upstream bytes without rewriting them. No mathematical or executable behavior changed.",
+    "command": "python -X utf8 -m unittest discover -s tests -p test_atlas_search.py -v",
+    "exit_code": 0,
+    "tests": 7,
+    "passed": 7,
+    "duration_seconds": 0.507,
+    "log_sha256": "a5624a6f40c79729ca7863eb5e7565557e57b658982176afe62d99160e46898e",
+    "staged_diff_check_exit_code": 0,
+    "hash_bound_files_preserved_in_git_index": {
+      "examples/fibonacci_composition/Candidate.lean": "455648a0db4df2d99fc29cbcbea2779c44c0995bf99573bf662294c8b416c1d0",
+      "examples/fibonacci_composition/Contract.lean": "2a324f4240118af2cfc0b084756f0c7ccc39cc1c115dff89226506bf990f5a29",
+      "examples/fibonacci_composition/Axioms.lean": "ba92fabe5ec3b803a4a3ce924f242849619d870cc34b4d7b4bae2f8fecb427a5",
+      "examples/fibonacci_composition/contract.json": "98011eb06dfbd0596ae1aed7ee1bacff4ac7711c15a9c7403793f0927ac02b1d",
+      "examples/fibonacci_composition/verification-reference.json": "f30fe26d66bf994b3af9381a5facdb2b94674877d35e1402cde5104279fe821b",
+      "tools/goedel/upstream_core.py": "56bd11f29c2e726c571ab1e72798ed79d8b7d148aeb7f6b62e92f53f06822729",
+      "tools/goedel/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "web/vendor/katex/katex.min.css": "00e0b094171b07f58422075f469b4feac2b2f7bce1aeec943c08da4d697f4dcf",
+      "web/vendor/katex/katex.min.js": "fa140498b8cfc8302cbe5e7cb1bdbc1f952bc38b3fa258ede09e73edbf9a74bc",
+      "web/vendor/katex/LICENSE": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+    }
+  }
+}

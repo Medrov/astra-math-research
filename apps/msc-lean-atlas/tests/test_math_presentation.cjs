@@ -13,6 +13,7 @@ class Node {
     this.parentElement = null; this.value = text || '';
   }
   appendChild(child) { child.parentElement = this; this.childNodes.push(child); return child; }
+  append(...children) { for (const child of children) this.appendChild(child); }
   replaceChildren(...children) { this.childNodes = []; this.value = ''; for (const child of children) this.appendChild(child); }
   setAttribute(name, value) { this.attributes[name] = String(value); }
   setAttributeNS(_namespace, name, value) { this.setAttribute(name, value); }
@@ -68,6 +69,31 @@ test('Untrusted HTML prose remains text; TeX cannot create trusted links or HTML
     assert.ok(!all(node).some(n => ['A','IMG','SCRIPT','IFRAME'].includes(n.tagName)));
     assert.ok(!all(node).some(n => n.className === 'attack'));
   }
+});
+test('mechanism prose renders real KaTeX, labels the historical claim and preserves Lean as literal code', async () => {
+  const guided = require('../web/guided-research.js'), previousWindow = global.window;
+  global.window = {MathPresentation:presentation};
+  const proof = 'theorem identity (n : Nat) : n = n := by -- $n$ is code\n  rfl';
+  const claim = 'Историческая гипотеза $F = G$ здесь не формализована. <img src=x onerror=attack()>';
+  const record = {id:'fixture',title:'Mechanism',status:'verified_stored_contract',
+    formal_contract:{target:'identity',statement:'∀ n : Nat, n = n',imports:['Init'],required_obligations:[{id:'identity',target:'identity',statement:'∀ n : Nat, n = n',expected_outcome:'proved'}]},
+    provenance:{claim,assumptions:['Условие $n > 0$. <script>attack()</script>'],proof_backend:'native'},
+    semantic_review:{status:'aligned',reason:'Проверен переход $F(x)=G(x)$.',limitations:['Только $x \\in R$.']},
+    proof_source:proof,verification:{obligations:[{id:'identity',target:'identity',ok:true}]},verification_scope:'stored_contract_only'};
+  try {
+    const view = Object.create(guided.Workspace.prototype), node = box();
+    node.focus=()=>{};node.scrollIntoView=()=>{};view.$=()=>node;view.cb={api:async()=>({mechanism:record})};
+    await view.openMechanism('fixture');
+    const rendered=all(node),math=expressions(node);
+    assert.equal(math.length,4);assert.ok(math.every(n=>n.getAttribute('data-math-state')==='rendered'));
+    assert.ok(rendered.some(n=>n.tagName==='MATH'),'actual accessible KaTeX output exists');
+    assert.ok(rendered.some(n=>n.tagName==='H5'&&n.textContent==='Исходная формулировка до проверки'));
+    assert.equal(record.provenance.claim,claim);assert.ok(node.textContent.includes('здесь не формализована.'));
+    assert.ok(node.textContent.includes('<img src=x onerror=attack()>'));assert.ok(node.textContent.includes('<script>attack()</script>'));
+    assert.ok(!rendered.some(n=>['IMG','SCRIPT','IFRAME'].includes(n.tagName)));
+    const lean=rendered.find(n=>n.tagName==='PRE'&&n.textContent===proof);assert.ok(lean);assert.equal(expressions(lean).length,0);
+    for(const pre of rendered.filter(n=>n.tagName==='PRE'))assert.equal(expressions(pre).length,0);
+  } finally { global.window=previousWindow; }
 });
 test('Lean and inline/fenced code stay byte-for-byte literal; code ancestors are protected', () => {
   const code = String.raw`theorem dollar : True := by -- $x$ and \(y\)

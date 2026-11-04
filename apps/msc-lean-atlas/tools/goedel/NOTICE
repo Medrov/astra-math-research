@@ -1,0 +1,9 @@
+Goedel-Architect, https://github.com/goedelarchitect/goedel-architect
+Copyright the Goedel-Architect authors. Apache License 2.0.
+Pinned upstream commit: 300d69e97c91a2a498091c898e736af69f391960
+
+SHAIM integration extracts the upstream graph validator, canonical proof grafting,
+axiom classification and dependency/reachability analysis. The two modifications
+are listed in upstream-manifest.json. The stock CLI, LeanArchitect macros, kimina
+transport, unfinished Lean blueprints and optional axiom bypass are not used.
+Research orchestration is an adapted SHAIM integration, not the unchanged CLI.

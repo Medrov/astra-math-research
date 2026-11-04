@@ -23,10 +23,10 @@ class PreparedPublishedSourceGuards(unittest.TestCase):
         self.store=Mock();self.store.list_sources.return_value=[]
         self.mixin.structure_store=Mock(return_value=self.store)
 
-    def test_catalog_has_two_distinct_exact_sources_without_compiling(self):
+    def test_catalog_keeps_two_existing_sources_and_adds_separate_demo_without_compiling(self):
         with patch.object(lean_service,'_prepare',side_effect=AssertionError('metadata must not compile')):
             rows=self.mixin.structure_sources()['examples']
-        self.assertEqual([x['id'] for x in rows],['arxiv_2610_38474_graph_subtraction',published.CASE_ID])
+        self.assertEqual([x['id'] for x in rows],['arxiv_2610_38474_graph_subtraction',published.CASE_ID,'fibonacci_composition_bridge'])
         self.assertEqual(rows[0]['recommended_target'],'Arxiv261038474.subtract_restore')
         self.assertEqual(rows[1]['recommended_target'],published.TARGET)
         self.assertEqual(rows[1]['source_sha256'],sources._sha(sources.prepared_published_source()))

@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import research_service as rs
 import research_structure as structure
 from research_objects import validate_graph, validate_source_transition, graph_fingerprints, _hash
-from test_structure_workflow import HIT, proposal
+from test_structure_workflow import HIT, proposal, ranking
 
 
 def literary_graph():
@@ -46,9 +46,11 @@ class TransitionStructureTests(unittest.TestCase):
             source_urls={'article_html':'https://arxiv.org/html/2601.00001v1'},sections=[{'id':'S2'}],chunks=[chunk])
         self.service.arxiv=Mock();self.service.arxiv.get_paper.return_value=copy.deepcopy(self.paper);self.service.arxiv.evidence.return_value=[chunk]
         self.select=patch.object(self.service,'structure_store',side_effect=AssertionError('literature must not create a verified Lean source'));self.select.start()
+        self.types=patch('research_retrieval.search_library_types',return_value=[]);self.types.start()
+        self.resolve=patch('research_retrieval.resolve_library_types',side_effect=lambda hits,*a,**k:hits);self.resolve.start()
 
     def tearDown(self):
-        self.service.pool.shutdown(wait=True);self.select.stop();self.temp.cleanup()
+        self.service.pool.shutdown(wait=True);self.select.stop();self.types.stop();self.resolve.stop();self.temp.cleanup()
 
     def create(self, **extra):
         payload=dict(purpose='structure',mode='single',graph_id=self.graph['id'],graph_revision=1,transition_id='coordinate_change',budget=dict(max_calls=12,timeout_seconds=600))
@@ -59,11 +61,11 @@ class TransitionStructureTests(unittest.TestCase):
         self.service._started[run_id]=time.monotonic();self.service.cancel_flags[run_id]=threading.Event()
 
     def search(self):
-        run=self.create();responses=[dict(status='completed',text=json.dumps(value),usage={}) for value in [profile(),proposal(),proposal(),proposal()]]
+        run=self.create();responses=[dict(status='completed',text=json.dumps(value),usage={}) for value in [profile(),ranking(),proposal(),ranking(),proposal(),ranking(),proposal()]]
         with patch('research_codex.run_task',side_effect=responses) as model,patch('research_retrieval.search',return_value=[]), \
              patch('research_retrieval.search_library',return_value=[HIT]),patch('research_lean.verify_candidate',side_effect=AssertionError('search never proves')):
             self.service._work(run['id'])
-        result=self.service.detail(run['id']);self.assertEqual(result['status'],'complete',result.get('error'));self.assertEqual(model.call_count,4)
+        result=self.service.detail(run['id']);self.assertEqual(result['status'],'complete',result.get('error'));self.assertEqual(model.call_count,7)
         return result
 
     def test_request_freezes_only_selected_objects_claim_assumptions_and_actual_refs(self):
@@ -81,11 +83,11 @@ class TransitionStructureTests(unittest.TestCase):
         for extra in ({'source_id':'a'*32},{'target':'Input.goal'},{'graph_revision':True},{'transition_id':'missing'}):
             with self.subTest(extra=extra),self.assertRaises(ValueError):self.create(**extra)
 
-    def test_three_different_external_roots_are_required_only_for_literary_input(self):
+    def test_source_roots_are_metadata_not_exclusions(self):
         source=self.create()['contract']['source_transition'];p,routes=structure.validate_routes(profile(),source)
-        self.assertEqual(p['excluded_msc_roots'],['34','53','58']);self.assertEqual(p['source_status'],'literature_not_compiler_verified');self.assertNotIn('formal',p)
+        self.assertEqual(p['source_msc_roots'],['34','53','58']);self.assertEqual(p['excluded_msc_roots'],[]);self.assertEqual(p['source_status'],'literature_not_compiler_verified');self.assertNotIn('formal',p)
         for codes in (('53','15','47'),('34B24','15','47'),('58','15','47'),('28','28A','47')):
-            with self.subTest(codes=codes),self.assertRaises(ValueError):structure.validate_routes(profile(codes),source)
+            with self.subTest(codes=codes):self.assertEqual(len(structure.validate_routes(profile(codes),source)[1]),3)
         self.assertEqual([r['msc_code'] for r in routes],['28','15','47'])
 
     def test_literature_evidence_and_prompts_have_no_fictitious_compiler_certificate(self):
@@ -93,7 +95,7 @@ class TransitionStructureTests(unittest.TestCase):
         evidence=structure.route_evidence(dict(hits=[HIT]),source)
         self.assertEqual(evidence[0]['extraction'],'literature_transition');self.assertNotIn('lean_environment',json.dumps(evidence))
         with patch.object(self.service,'_call',return_value={'text':json.dumps(profile())}) as call:self.service._structure_profile({'run_id':run['id']})
-        prompt=call.call_args.args[2];self.assertIn('NOT been compiler verified',prompt);self.assertIn('excluded_msc_roots',prompt);self.assertNotIn('selected VERIFIED Lean theorem',prompt)
+        prompt=call.call_args.args[2];self.assertIn('NOT been compiler verified',prompt);self.assertIn('source_msc_roots',prompt);self.assertNotIn('selected VERIFIED Lean theorem',prompt)
         context=self.service._structure_proof_context(run);self.assertIn('NOT VERIFIED',context);self.assertIn('not re-proving the original article',context);self.assertIn('tautological bridges',context)
 
     def test_complete_langgraph_search_retains_exact_origin_and_library_hits_into_child_proof(self):
@@ -126,9 +128,9 @@ class TransitionStructureTests(unittest.TestCase):
     def test_resume_checks_original_revision_and_does_not_repeat_saved_routes(self):
         run=self.create();source=run['contract']['source_transition'];p,routes=structure.validate_routes(profile(),source)
         self.service.update(run['id'],structure_profile=p,structure_routes=routes)
-        with patch.object(self.service,'_call',side_effect=[{'text':json.dumps(proposal())}]*3) as model,patch('research_retrieval.search_library',return_value=[HIT]) as search:
+        with patch.object(self.service,'_call',side_effect=[{'text':json.dumps(x)} for x in (ranking(),proposal())]*3) as model,patch('research_retrieval.search_library',return_value=[HIT]) as search:
             self.service._structure_search({'run_id':run['id']});self.service._structure_search({'run_id':run['id']})
-        self.assertEqual(model.call_count,3);self.assertEqual(search.call_count,3)
+        self.assertEqual(model.call_count,6);self.assertEqual(search.call_count,6)
         changed=validate_graph(self.graph);changed['transitions'][0]['claim']='An explicitly revised source claim.'
         self.service.registry.revise(self.graph['id'],changed,1)
         self.service._check(run['id']) # old pinned revision is still available and valid
@@ -157,9 +159,13 @@ class TransitionStructureTests(unittest.TestCase):
         bad=copy.deepcopy(ready);bad['agent_task']['imports']=['StructureInput']
         with patch.object(self.service,'_call',return_value={'text':json.dumps(bad)}),self.assertRaisesRegex(ValueError,'не имеет проверенного'):
             self.service._formalize_transition({'run_id':child['id']})
-        with patch.object(self.service,'_call',return_value={'text':json.dumps(ready)}) as formalizer:
+        def prepare_reply(run_id, role, prompt, key):
+            self.assertIn(role, ('formalize_transition', 'library_context'))
+            return {'text':json.dumps(ready if role == 'formalize_transition' else {'requests':[]})}
+        with patch.object(self.service,'_call',side_effect=prepare_reply) as formalizer:
             self.service._formalize_transition({'run_id':child['id']})
-        self.assertIn('COMMON-STRUCTURE BRIDGE, not the original article',formalizer.call_args.args[2])
+        self.assertEqual([call.args[1] for call in formalizer.call_args_list], ['formalize_transition','library_context'])
+        self.assertIn('COMMON-STRUCTURE BRIDGE, not the original article',formalizer.call_args_list[0].args[2])
         with patch.object(self.service,'_call',return_value={'text':json.dumps(dict(status='aligned',reason='Test only.',limitations=[]))}) as reviewer:
             self.service._validate_transition({'run_id':child['id']})
         self.assertIn('unrelated generic lemma',reviewer.call_args.args[2]);updated=self.service.get(child['id'])

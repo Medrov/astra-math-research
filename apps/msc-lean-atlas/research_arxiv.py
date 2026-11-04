@@ -24,6 +24,16 @@ ALLOWED_HOSTS = {'arxiv.org', 'export.arxiv.org'}
 IDENTIFIER = re.compile(r'(?P<base>(?:\d{4}\.\d{4,5}|[A-Za-z][A-Za-z.\-]*/\d{7}))(?:(?:v)(?P<version>[1-9]\d{0,4}))?\Z')
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'}
 SKIP = {'script', 'style', 'nav', 'aside', 'footer', 'header', 'noscript'}
+MSC_EXTRACTION_VERSION = 1
+MSC_LABEL = re.compile(
+    r'^\s*(?:(?:19|20)\d{2}\s+)?(?:'
+    r'Mathemat(?:ics|ical)\s+Subject\s+Classifications?|'
+    r'AMS\s+(?:Subject\s+)?Classifications?|'
+    r'MSC(?=\s*(?:[:.\-–]|\(?\s*(?:19|20)\d{2}|classes\b))'
+    r'(?:\s*[-–]?\s*(?:19|20)\d{2})?(?:\s+classes)?)\b'
+    r'(?:\s*\(?\s*(?:19|20)\d{2}\s*\)?)?\s*[:.\-–]?\s*', re.I)
+MSC_CODE = re.compile(r'(?<![\w])\d{2}(?:[A-Z](?:\d{2})?)?(?![\w])', re.I)
+MSC_BLOCKS = {'p', 'div', 'td', 'tr', 'dd', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'}
 
 
 class ArxivImportError(ValueError):
@@ -208,6 +218,96 @@ def _render(node):
     return ''.join(_render(child) for child in node.children)
 
 
+def _msc_codes(text):
+    """Read only the local classification list, never later prose/citations."""
+    label = MSC_LABEL.match(text)
+    body = text[label.end():] if label else text
+    # Classification records are short. A long container is not a reliable
+    # field, even when its opening words happen to look like an MSC heading.
+    if len(body) > 1000:
+        return []
+    codes, end = [], 0
+    for match in MSC_CODE.finditer(body):
+        # A bare bracketed number is indistinguishable from a citation number;
+        # do not promote it to a broad MSC class from this ambiguous spelling.
+        if len(match.group()) == 2 and re.search(r'\[\s*$', body[:match.start()]) and re.match(r'\s*\]', body[match.end():]):
+            break
+        gap = body[end:match.start()]
+        gap = re.sub(r'\b(?:primary|secondary|and|classes?|classifications?)\b', '', gap, flags=re.I)
+        if re.sub(r'[\s,;:.()\[\]/&\-–]', '', gap):
+            break
+        codes.append(match.group().upper())
+        end = match.end()
+    return sorted(set(codes))
+
+
+def _msc_evidence(root, source_document, source_sha256):
+    """Extract explicit MSC fields/short labelled blocks from retained HTML.
+
+    Article prose, bibliography entries and quoted classifications of other
+    works are not classification metadata for this paper.
+    """
+    if source_document == 'article_html':
+        root = next((n for n in _walk(root) if n.tag == 'article'), None)
+        if root is None:
+            raise ArxivImportError('В сохранённом HTML статьи отсутствует article.')
+    records = []
+    excluded_classes = {'ltx_bibliography', 'ltx_biblist', 'ltx_bibitem', 'ltx_cite',
+                        'references', 'bibliography', 'citation'}
+
+    def excluded(node):
+        classes = set(node.attrs.get('class', '').lower().split())
+        return (node.tag in SKIP or node.tag == 'blockquote' or
+                bool(classes & excluded_classes) or
+                node.attrs.get('id', '').lower() in {'bib', 'references', 'bibliography'})
+
+    def visible(node):
+        if isinstance(node, str):
+            return node
+        if excluded(node):
+            return ''
+        if node.tag == 'br':
+            return '\n'
+        value = ''.join(visible(child) for child in node.children)
+        return ' ' + value + ' ' if node.tag in MSC_BLOCKS else value
+
+    def visit(node, path):
+        if not isinstance(node, _Node) or excluded(node):
+            return
+        classes = node.attrs.get('class', '').lower().split()
+        field = any(c in ('math-class', 'ltx_classification') or
+                    re.fullmatch(r'msc(?:[-_].*|(?:19|20)\d{2})?', c) for c in classes)
+        meta_name = node.attrs.get('name', node.attrs.get('property', '')).lower()
+        metadata = node.tag == 'meta' and (meta_name in {'msc', 'citation_msc', 'citation_msc_class', 'dc.subject.msc'} or
+                                         re.fullmatch(r'(?:citation_)?msc(?:19|20)\d{2}', meta_name))
+        # Do not flatten a whole article/div into a guessed classification.
+        inline_block = node.tag in MSC_BLOCKS and not any(
+            isinstance(child, _Node) and child.tag in MSC_BLOCKS | {'section', 'article', 'table', 'ul', 'ol'}
+            for child in node.children)
+        text = ''
+        if field or metadata or inline_block or node.tag == 'tr':
+            text = re.sub(r'\s+', ' ', node.attrs.get('content', '') if metadata else visible(node)).strip()
+        labelled_row = node.tag == 'tr' and len(text) <= 1000 and MSC_LABEL.match(text)
+        if field or metadata or labelled_row or (inline_block and MSC_LABEL.match(text)):
+            records.append(dict(codes=_msc_codes(text), source_document=source_document,
+                source_sha256=source_sha256, locator=node.attrs.get('id') or path,
+                quote=text[:1000]))
+            return
+        for index, child in enumerate(node.children):
+            if isinstance(child, _Node):
+                visit(child, path + '/' + child.tag + '[' + str(index + 1) + ']')
+
+    visit(root, root.tag)
+    return records
+
+
+def _msc_fields(evidence):
+    codes = sorted({code for item in evidence for code in item['codes']})
+    return dict(msc_codes=codes,
+        msc_status='source_reported' if codes else ('unknown' if evidence else 'not_found_in_retained_html'),
+        msc_evidence=evidence, msc_extraction_version=MSC_EXTRACTION_VERSION)
+
+
 def _metadata(raw, base, requested_version):
     root = _Tree(raw).root
     meta = {}
@@ -248,10 +348,9 @@ def _metadata(raw, base, requested_version):
         abstract = re.sub(r'^Abstract:\s*', '', _clean(_render(block))) if block else ''
     if not title or not authors or not abstract:
         raise ArxivImportError('Неполные метаданные arXiv: нужны заголовок, авторы и аннотация.')
-    msc_nodes = [n for n in _walk(root) if 'msc' in n.attrs.get('class', '').lower() or n.has('math-class')]
-    codes = sorted(set(re.findall(r'\b\d{2}[A-Z]\d{2}\b', ' '.join(_plain(n) for n in msc_nodes))))
     return dict(arxiv_id=base, version=version, versioned_id=f'{base}v{version}',
-                title=title, authors=authors, abstract=abstract, msc_codes=codes)
+                title=title, authors=authors, abstract=abstract,
+                **_msc_fields(_msc_evidence(root, 'abstract_html', _sha(raw))))
 
 
 def _extract_article(raw, paper):
@@ -263,10 +362,7 @@ def _extract_article(raw, paper):
     article = next((n for n in _walk(root) if n.tag == 'article'), None)
     if article is None:
         raise ArxivImportError('Полный HTML статьи недоступен: отсутствует article. Аннотация не подменяет статью.')
-    classifications = [n for n in _walk(article) if n.has('ltx_classification')]
-    codes = re.findall(r'\b\d{2}[A-Z]\d{2}\b', ' '.join(_plain(n) for n in classifications))
-    paper['msc_codes'] = sorted(set(paper['msc_codes'] + codes))
-    paper['msc_status'] = 'source_reported' if paper['msc_codes'] else 'not_reported_in_html'
+    paper.update(_msc_fields(paper.get('msc_evidence', []) + _msc_evidence(root, 'article_html', _sha(raw))))
     base_url = paper['source_urls']['html']
     sections, section_ids = [], set()
     math_nodes = [n for n in _walk(article) if n.tag == 'math']
@@ -405,13 +501,21 @@ class ArxivLibrary:
         folder = self._folder(versioned_id)
         try:
             paper = json.loads((folder / 'paper.json').read_text(encoding='utf-8'))
+            retained = {}
             for filename, key in [('abstract.html', 'abstract_html'), ('article.html', 'article_html'), ('chunks.json', 'chunks')]:
-                if _sha((folder / filename).read_bytes()) != paper['snapshot_sha256'][key]:
+                retained[key] = (folder / filename).read_bytes()
+                if _sha(retained[key]) != paper['snapshot_sha256'][key]:
                     raise ArxivImportError('Хеш сохранённого источника arXiv не совпадает: ' + filename)
             base, version = parse_reference(versioned_id)
             if paper['versioned_id'] != f'{base}v{version}':
                 raise ArxivImportError('Сохранённая версия arXiv не совпадает с запросом.')
-            paper['chunks'] = json.loads((folder / 'chunks.json').read_text(encoding='utf-8'))
+            # Refresh derived display metadata from the same hash-checked HTML.
+            # Neither cached files nor the pinned chunk/run snapshots are rewritten.
+            msc_evidence = []
+            for document in ('abstract_html', 'article_html'):
+                msc_evidence += _msc_evidence(_Tree(retained[document]).root, document, _sha(retained[document]))
+            paper.update(_msc_fields(msc_evidence))
+            paper['chunks'] = json.loads(retained['chunks'].decode('utf-8'))
             # Derive provenance for older snapshots without rewriting pinned files.
             for chunk in paper['chunks']:
                 chunk.setdefault('snapshot_sha256', paper['snapshot_sha256']['article_html'])
