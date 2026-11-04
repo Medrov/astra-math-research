@@ -2,6 +2,8 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+import hashlib
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -9,6 +11,11 @@ import research_retrieval as retrieval
 
 
 class DeclarationExtractionTests(unittest.TestCase):
+    def test_compound_end_closes_all_named_scopes_without_fabricating_namespace(self):
+        source='namespace Topology\nsection Q\nnamespace Q\ntheorem first : True := by trivial\nend Q\nend Topology.Q\nnamespace Topology\ntheorem second : True := by trivial\nend Topology\n'
+        rows=list(retrieval.extract_declarations(source,'Demo','demo','hash'))
+        self.assertEqual([r['name'] for r in rows],['Topology.Q.first','Topology.second'])
+
     def test_noncomputable_section_and_attribute_assignment(self):
         source = '''namespace F
 noncomputable section
@@ -104,6 +111,55 @@ class IncrementalIndexTests(unittest.TestCase):
     def test_search_never_builds_missing_index(self):
         self.assertEqual(retrieval.search_library('x', index_path=self.index), [])
         self.assertFalse(self.index.exists())
+
+    def test_type_channel_is_not_claimed_as_compiler_verified(self):
+        self.source.write_text('namespace F\ntheorem transfer (f : Function.Semiconj a b c) : True := by trivial\nend F\n')
+        retrieval.build_index(self.index,self.roots)
+        results=retrieval.search_library_types('Function.Semiconj f g h',index_path=self.index)
+        self.assertEqual(results[0]['name'],'F.transfer')
+        self.assertEqual(results[0]['type_status'],'textual_unverified')
+        self.assertNotIn('elaborated_type',results[0])
+        pool=retrieval.hybrid_pool(['unmatchedword'],{'objects':[]},'Function.Semiconj f g h',index_path=self.index)
+        self.assertEqual(pool[0]['retrieval_channels'],['textual_type_signature'])
+        self.assertEqual(pool[0]['type_status'],'textual_unverified')
+
+    def test_vocabulary_expansion_is_transparent_and_deduplicated(self):
+        self.source.write_text('namespace Function\ntheorem semiconj : True := by trivial\nend Function\n')
+        retrieval.build_index(self.index,self.roots)
+        pool=retrieval.hybrid_pool(['conjugacy','conjugacy'],{'objects':[]},'',index_path=self.index)
+        self.assertEqual(len(pool),1)
+        self.assertIn('vocabulary_expansion',pool[0]['retrieval_channels'])
+        self.assertNotIn('semantic_assessment',pool[0])
+
+    def test_type_resolution_requires_current_source_and_compiler_evidence(self):
+        retrieval.build_index(self.index,self.roots)
+        hit=retrieval.search_library('sum_eq_zero',index_path=self.index)[0]
+        with patch('research_lean._export',side_effect=AssertionError('stale source must not reach compiler')):
+            bad=dict(hit,source_sha256='0'*64)
+            result=retrieval.resolve_library_types([bad],self.folder/'resolution')
+        self.assertEqual(result[0]['type_status'],'stale')
+        self.assertNotIn('elaborated_type',result[0])
+        with patch('lean_service._prepare',side_effect=ValueError('compiler unavailable')):
+            result=retrieval.resolve_library_types([hit],self.folder/'missing-compiler')
+        self.assertEqual(result[0]['type_status'],'not_resolved')
+        self.assertNotIn('elaborated_type',result[0])
+
+
+@unittest.skipUnless(Path(retrieval.lean_service.default_context()['lean']).is_file(),'Prepared Lean unavailable')
+class RealTypeResolution(unittest.TestCase):
+    def test_selected_mathlib_name_is_resolved_with_complete_type(self):
+        context=retrieval.lean_service.default_context()
+        source=Path(context['mathlib'])/'Mathlib/Logic/Function/Iterate.lean'
+        raw=source.read_bytes()
+        rows=list(retrieval.extract_declarations(raw.decode('utf-8'),'Mathlib.Logic.Function.Iterate',str(source),hashlib.sha256(raw).hexdigest()))
+        hit=next(row for row in rows if row['name']=='Function.Semiconj.iterate_right')
+        with tempfile.TemporaryDirectory(prefix='retrieval-real-type-') as directory:
+            resolved=retrieval.resolve_library_types([hit],directory,timeout_seconds=60)[0]
+        self.assertEqual(resolved['type_status'],'compiler_resolved',resolved.get('type_resolution_reason'))
+        self.assertIn('Semiconj',resolved['elaborated_type'])
+        self.assertEqual(resolved['resolved_imports'],['Mathlib.Logic.Function.Iterate'])
+        self.assertEqual(resolved['verification_scope'],'existing_library_type_only')
+        self.assertTrue(resolved['requires_new_proof'])
 
 
 if __name__ == '__main__':

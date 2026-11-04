@@ -1,0 +1,82 @@
+{
+  "format_version": 1,
+  "kind": "portable_known_proof_example",
+  "title": "Conditional Fibonacci-step bridge through composition of a quadratic form",
+  "export_date": "2026-11-04",
+  "source": {
+    "title": "A Pair of Diophantine Equations Involving the Fibonacci Numbers",
+    "arxiv_id": "2409.02933v1",
+    "url": "https://arxiv.org/abs/2409.02933v1",
+    "section_url": "https://arxiv.org/html/2409.02933v1#S2",
+    "section": "2. The case of Fibonacci numbers squared",
+    "transition_id": "quartic_step"
+  },
+  "scope": {
+    "kind": "conditional_common_structure",
+    "source_application_status": "not_verified",
+    "novelty": "not_assessed",
+    "msc": [
+      {
+        "code": "15A63",
+        "origin": "reviewer_inferred",
+        "source_verified": false
+      }
+    ],
+    "limitations": [
+      "No definition or specialization to a Fibonacci sequence is formalized here.",
+      "The hypotheses c = a + b and (b^2 - a*c)^2 = 1 remain explicit.",
+      "This does not prove the entire article, its full formula (1.7), or Diophantine existence or uniqueness."
+    ]
+  },
+  "origin": {
+    "proof_backend": "native",
+    "model": "gpt-6-astra",
+    "method": "model-generated accepted composition; existing proof replay for publication, not blind rediscovery",
+    "proof_calls": 10,
+    "proof_tokens": 204464,
+    "proof_elapsed_seconds": 1113.656,
+    "seed": null,
+    "seed_note": "Model sampling seed unavailable; no seed has been assigned retrospectively.",
+    "accepted_revision_note": "This is the accepted revised draft, whose quadraticity is expressed as the diagonal of an explicitly bilinear form; it is not the original failed draft.",
+    "source_artifact_sha256": {
+      "verification.json": "c9b04d6943030f1ba8fd4369678ec3d2426610c595b3cca15b2058d64394d548",
+      "independent-audit.json": "2c1427326126e616ed31732df7989c19bdb3089a81bad71f8881ef6e20cfdc39",
+      "result.md": "6b09a75c3e1a8a93fcf1b6fe8668dcb9173946c0a92bbb71777c57ff132e3746",
+      "selection-review.md": "ed5d80bede0500287ac4808648ef5d0ae3893d12eaa1b33dc8d6023a15fceb64"
+    },
+    "proof_copy": "Candidate.lean and Contract.lean are byte-identical copies of the accepted checked artifacts."
+  },
+  "environment": {
+    "lean_toolchain": "leanprover/lean4:v4.19.0",
+    "lean_version": "4.19.0",
+    "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "external_cache": "Prepared dependency .olean caches are reused; all three example modules are checked freshly."
+  },
+  "expected": {
+    "primary_target": "CompositionBridge.conditional_transfer",
+    "required_obligation_count": 4,
+    "contract_examples": 5,
+    "audited_theorems": [
+      "CompositionBridge.compare.eq_1",
+      "CompositionBridge.structural_laws",
+      "CompositionBridge.N.eq_1",
+      "CompositionBridge.mu.eq_1",
+      "CompositionBridge.comparison_substitution",
+      "CompositionBridge.normalization",
+      "CompositionBridge.image.eq_1",
+      "CompositionBridge.conditional_transfer"
+    ],
+    "allowed_axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "files_sha256": {
+    "Candidate.lean": "455648a0db4df2d99fc29cbcbea2779c44c0995bf99573bf662294c8b416c1d0",
+    "Contract.lean": "2a324f4240118af2cfc0b084756f0c7ccc39cc1c115dff89226506bf990f5a29",
+    "Axioms.lean": "ba92fabe5ec3b803a4a3ce924f242849619d870cc34b4d7b4bae2f8fecb427a5",
+    "contract.json": "98011eb06dfbd0596ae1aed7ee1bacff4ac7711c15a9c7403793f0927ac02b1d",
+    "verification-reference.json": "f30fe26d66bf994b3af9381a5facdb2b94674877d35e1402cde5104279fe821b"
+  }
+}

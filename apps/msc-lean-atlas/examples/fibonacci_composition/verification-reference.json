@@ -1,0 +1,124 @@
+{
+  "kind": "historical_verification_reference",
+  "fresh_package_verification": false,
+  "recorded_date": "2026-11-04",
+  "source_file_sha256": {
+    "Candidate.lean": "455648a0db4df2d99fc29cbcbea2779c44c0995bf99573bf662294c8b416c1d0",
+    "Contract.lean": "2a324f4240118af2cfc0b084756f0c7ccc39cc1c115dff89226506bf990f5a29"
+  },
+  "formal_result": {
+    "success": true,
+    "status": "complete",
+    "outcome": "proved",
+    "target_preserved": true,
+    "obligations_passed": true,
+    "obligations": [
+      {
+        "id": "structure",
+        "target": "CompositionBridge.structural_laws",
+        "statement_sha256": "30d0c460f888fdff23de37ab14e8d75ab3646d7acdeb3d11813543cb022f4df5",
+        "ok": true,
+        "expected_outcome": "proved"
+      },
+      {
+        "id": "comparison",
+        "target": "CompositionBridge.comparison_substitution",
+        "statement_sha256": "898b88e25ed0aac07db927ba4590ffd4cd6c9eff80c3a8c85792d9838d3e86aa",
+        "ok": true,
+        "expected_outcome": "proved"
+      },
+      {
+        "id": "transfer",
+        "target": "CompositionBridge.conditional_transfer",
+        "statement_sha256": "02ea905fce78862711664aa39bb302174834fe9477b66e9f58ce7315b1d134e0",
+        "ok": true,
+        "expected_outcome": "proved"
+      },
+      {
+        "id": "normalization",
+        "target": "CompositionBridge.normalization",
+        "statement_sha256": "69dd26103ba6136b34008bef3ae65917ec234e58633c822f0812f1a50ef10cdf",
+        "ok": true,
+        "expected_outcome": "proved"
+      }
+    ],
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "audit": {
+      "status": "passed",
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "unexpected_axioms": [],
+      "unsafe_declarations": [],
+      "ignored_implementation_helpers": [],
+      "audited_roots": [
+        "CompositionBridge.N",
+        "CompositionBridge.N.eq_1",
+        "CompositionBridge.compare",
+        "CompositionBridge.compare.eq_1",
+        "CompositionBridge.comparison_substitution",
+        "CompositionBridge.conditional_transfer",
+        "CompositionBridge.image",
+        "CompositionBridge.image.eq_1",
+        "CompositionBridge.mu",
+        "CompositionBridge.mu.eq_1",
+        "CompositionBridge.normalization",
+        "CompositionBridge.structural_laws"
+      ],
+      "scope": "logical_local_declarations_and_target_axiom_closure"
+    }
+  },
+  "independent_rebuild": {
+    "success": true,
+    "checks": [
+      {
+        "command": [
+          "lean",
+          "-o",
+          "Candidate.olean",
+          "Candidate.lean"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 6.86,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "lean",
+          "-o",
+          "Contract.olean",
+          "Contract.lean"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 6.64,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "lean",
+          "Axioms.lean"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 5.469,
+        "stdout": "'CompositionBridge.compare.eq_1' depends on axioms: [propext]\n'CompositionBridge.structural_laws' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.N.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.mu.eq_1' depends on axioms: [propext]\n'CompositionBridge.comparison_substitution' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.normalization' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CompositionBridge.image.eq_1' depends on axioms: [propext]\n'CompositionBridge.conditional_transfer' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "semantic_review": {
+    "status": "aligned",
+    "method": "model_review_not_formal_certificate",
+    "scope": "conditional_common_structure",
+    "source_application_status": "not_verified",
+    "independent_agent_review": "separate agent review of exact statements and source scope; reviewer did not author the proof"
+  },
+  "novelty": "not_assessed"
+}

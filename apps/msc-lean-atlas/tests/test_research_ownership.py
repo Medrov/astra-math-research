@@ -115,6 +115,7 @@ class OwnershipTests(unittest.TestCase):
     def test_real_second_process_can_cancel_without_stealing_owner(self):
         self.service._started[self.rid]=time.monotonic()
         self.service.cancel_flags[self.rid]=threading.Event()
+        self.service.update(self.rid,title='Итерация ∀ n — исходный контекст 🌍')
         script = """import json,sys
 sys.path.insert(0,sys.argv[1])
 import research_service
@@ -124,15 +125,25 @@ def forbid_dispatch(*args,**kwargs):
 service.pool.submit=forbid_dispatch
 before=service.start(sys.argv[3])
 after=service.cancel(sys.argv[3])
-print(json.dumps({'before_status':before['status'],'owner_pid':after['owner_pid'],'cancel_requested':after['cancel_requested']}))
+service.update(sys.argv[3],title='Дочерняя запись: ∃ x, x = x ✅')
+service.event(sys.argv[3],'test','Сохранён Unicode: α → β')
+print(json.dumps({'before_status':before['status'],'before_title':before['title'],'owner_pid':after['owner_pid'],'cancel_requested':after['cancel_requested'],'utf8_mode':sys.flags.utf8_mode}))
 service.pool.shutdown(wait=True)
 """
+        environment=dict(os.environ,PYTHONUTF8='0')
         process=subprocess.run([sys.executable,'-c',script,str(rs.ROOT),self.temp.name,self.rid],
-                               capture_output=True,text=True,timeout=15,check=True)
+                               capture_output=True,text=True,encoding='utf-8',errors='replace',
+                               timeout=15,check=False,env=environment)
+        self.assertEqual(process.returncode,0,msg='Child stderr:\n'+process.stderr+'\nChild stdout:\n'+process.stdout)
         observed=json.loads(process.stdout)
+        self.assertEqual(observed['utf8_mode'],0)
+        self.assertEqual(observed['before_title'],'Итерация ∀ n — исходный контекст 🌍')
         self.assertEqual(observed['before_status'],'queued')
         self.assertEqual(observed['owner_pid'],os.getpid())
         self.assertTrue(observed['cancel_requested'])
+        persisted=json.loads((self.service.folder(self.rid)/'run.json').read_text(encoding='utf-8'))
+        self.assertEqual(persisted['title'],'Дочерняя запись: ∃ x, x = x ✅')
+        self.assertTrue(any(event['message']=='Сохранён Unicode: α → β' for event in persisted['events']))
         with self.assertRaises(rs.StopRun) as caught:
             self.service._check(self.rid)
         self.assertEqual(caught.exception.status,'cancelled')

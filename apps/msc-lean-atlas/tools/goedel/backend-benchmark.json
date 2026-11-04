@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "protocol": "sha1m-native-vs-goedel-adapted-v1",
+  "model": "gpt-6-astra",
+  "mode": "multi",
+  "backends": ["native", "goedel-adapted"],
+  "budget_per_run": {"max_calls": 8, "timeout_seconds": 600},
+  "seed": null,
+  "seed_status": "unavailable_in_codex_app_server",
+  "objective": "Fraction of all exact obligations independently checked by Lean with aligned semantic review; compare actual calls, tokens and elapsed time.",
+  "stop_conditions": ["all required goals checked and final review completed", "call or time cap reached", "cancellation or infrastructure failure", "bounded refinement exhausted"],
+  "source_visibility": "fixture-proofs-visible-in-repository; target prompts exclude fixture proof bodies; not blind rediscovery; retrieval and model training overlap are not ruled out",
+  "cases": [
+    {"case_id": "graph_energy", "split": "development", "kind": "known_positive_connection", "expected_outcome": "proved"},
+    {"case_id": "strict_inequality", "split": "heldout_protocol", "kind": "negative_control_explicit_negation", "expected_outcome": "refuted"},
+    {"case_id": "graph_energy_negative", "split": "heldout_protocol", "kind": "negative_control_missing_hypothesis", "expected_outcome": "refuted"}
+  ],
+  "default_case_ids": ["graph_energy", "strict_inequality"],
+  "heldout_limit": "Protocol-held-out cases are excluded from adapter tuning; their names and solutions are public, so this is not training-data isolation.",
+  "interpretation": "Small engineering comparison; no claim of statistical superiority, scientific novelty or general theorem-proving efficacy."
+}

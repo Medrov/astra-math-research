@@ -134,3 +134,44 @@ test('closed native dialog explicitly overrides legacy research-history display 
   assert.match(css,/dialog\.research-history\[open\]\s*\{\s*display\s*:\s*flex/);
   assert.doesNotMatch(css,/(?:^|\n)\.research-history\[open\]/);
 });
+
+test('compact rows keep the opening action separate from a complete native reason disclosure',()=>{
+  const {workspace:w,opened}=fixture(),reason='  Точное уточнение\n'+('Сохранить все предпосылки. '.repeat(120))+'<img src=x onerror=attack()>  ';
+  w.render([run('version',{source_lineage:{parent_run_id:'parent',kind:'correction',reason}})],null);
+  const row=w.rows.get('version');assert.equal(w.list.dataset.layout,'rows');assert.deepEqual(row.button.children.map(n=>n.className),['research-history-main','research-history-meta']);assert.equal(row.reasonDetails.tagName,'DETAILS');assert.equal(row.reasonDetails.parentNode,row.item);assert.equal(row.reasonDetails.open,false);assert.equal(row.reasonSummary.tagName,'SUMMARY');assert.equal(row.reasonSummary.textContent,'Причина исправления');assert.match(row.reasonSummary.getAttribute('aria-label'),/Полиномиальная замена/);assert.equal(row.reason.textContent,reason);assert.equal(row.reason.children.length,0);assert.equal(row.version.textContent,'Исправленная версия');assert.equal(row.button.textContent.includes(reason),false);
+  row.reasonSummary.dispatch('click');row.reasonDetails.open=true;assert.deepEqual(opened,[]);assert.equal(w.pendingId,null);
+});
+
+test('lineage labels use only the explicit kind and do not call a continuation a correction',()=>{
+  const {workspace:w}=fixture(),cases=[['correct','correction','Исправленная версия','Причина исправления'],['continue','atlas_continuation','Продолжение поиска','Контекст продолжения'],['unknown','future_kind','Связанная попытка','Контекст связанной попытки'],['legacy',undefined,'Связанная попытка','Контекст связанной попытки']],runs=cases.map(([id,kind])=>run(id,{source_lineage:{parent_run_id:'parent',root_run_id:'root',kind,reason:'Полный сохранённый контекст'}}));
+  const before=JSON.stringify(runs);w.render(runs,null);
+  for(const[id,,label,heading]of cases){const row=w.rows.get(id);assert.equal(row.version.textContent,label);assert.equal(row.reasonSummary.textContent,heading);assert.equal(row.reasonDetails.hidden,false);assert.doesNotMatch(row.button.textContent,/parent|root|future_kind/);}
+  assert.equal(JSON.stringify(runs),before);assert.equal(history.summaryOf(run('unrelated')).version,'');
+});
+
+test('all status filters report visible and total counts even without a search query',()=>{
+  const {workspace:w}=fixture();w.render([run('active',{status:'running'}),run('failure',{status:'failed'}),run('proof',{outcome:'proved'}),run('search',{purpose:'structure'})],null);assert.equal(w.count.textContent,'Сохранено: 4');
+  for(const name of ['active','attention','search','result']){w.filterButtons.get(name).dispatch('click');assert.equal(w.count.textContent,'Показано: 1 из 4');assert.equal([...w.rows.values()].filter(row=>!row.item.hidden).length,1);for(const[key,button]of w.filterButtons)assert.equal(button.getAttribute('aria-pressed'),String(key===name));}
+  w.search.value='Нет совпадения';w.search.dispatch('input');assert.equal(w.count.textContent,'Найдено: 0 из 4');assert.equal(w.empty.hidden,false);assert.match(w.empty.textContent,/запрос или фильтр/);assert.equal(w.filter,'result');w.search.value='';w.search.dispatch('input');w.filterButtons.get('all').dispatch('click');assert.equal(w.count.textContent,'Сохранено: 4');
+});
+
+test('source headings restart for each visible context segment without changing the existing run order',()=>{
+  const {workspace:w}=fixture(),runs=[run('a1',{source_title:'Источник A',source_lineage:{root_run_id:'r1'}}),run('a2',{source_title:'Источник A',source_lineage:{root_run_id:'r2'}}),run('b',{source_title:'Источник B',outcome:'proved',source_lineage:{root_run_id:'r3'}}),run('a3',{source_title:'Источник A',source_lineage:{root_run_id:'r4'}})],before=JSON.stringify(runs);
+  w.render(runs,null);assert.deepEqual(w.runs.map(r=>r.id),['a1','a2','b','a3']);assert.deepEqual(['a1','a2','b','a3'].map(id=>w.rows.get(id).group.hidden),[false,true,false,false]);assert.equal(w.rows.get('a3').group.textContent,'Источник A');assert.equal(w.rows.get('a3').group.tagName,'H3');
+  w.filterButtons.get('attention').dispatch('click');assert.equal(w.rows.get('b').item.hidden,true);assert.deepEqual(['a1','a2','a3'].map(id=>w.rows.get(id).group.hidden),[false,true,true]);w.filterButtons.get('all').dispatch('click');assert.equal(w.rows.get('a3').group.hidden,false);assert.equal(JSON.stringify(runs),before);
+});
+
+test('polling preserves an open reason, its keyboard focus and scroll while updating exact text',()=>{
+  const {workspace:w,doc}=fixture(),version=run('v',{source_lineage:{parent_run_id:'parent',kind:'correction',reason:'Первая причина'}}),other=run('other');
+  w.render([version,other],null);w.show();const row=w.rows.get('v'),summary=row.reasonSummary;row.reasonDetails.open=true;summary.focus();w.scroll.scrollTop=165;w.render([other,{...version,status:'running',source_lineage:{...version.source_lineage,reason:'Новая сохранённая\nпричина'}}],'v');
+  assert.equal(w.rows.get('v'),row);assert.equal(row.reasonDetails.open,true);assert.equal(row.reasonSummary,summary);assert.equal(doc.activeElement,summary);assert.equal(w.scroll.scrollTop,165);assert.equal(row.reason.textContent,'Новая сохранённая\nпричина');assert.equal(row.status.textContent,'Идёт проверка');assert.equal(row.button.getAttribute('aria-current'),'page');
+});
+
+test('hidden or removed reason focus falls back to a visible control',()=>{
+  const {workspace:w,doc}=fixture(),version=run('v',{source_lineage:{parent_run_id:'parent',kind:'correction',reason:'Уточнение'}});w.render([version],null);w.show();const row=w.rows.get('v');row.reasonSummary.focus();w.render([{...version,source_lineage:{...version.source_lineage,reason:''}}],null);assert.equal(row.reasonDetails.hidden,true);assert.equal(doc.activeElement,row.button);
+  w.render([version],null);row.reasonSummary.focus();w.filter='active';w.updateVisibility();assert.equal(row.item.hidden,true);assert.equal(doc.activeElement,w.search);assert.equal(w.count.textContent,'Показано: 0 из 1');
+});
+
+test('a reason without lineage is preserved as record context without fabricating a version',()=>{
+  const {workspace:w}=fixture();w.render([run('context',{source_lineage:{reason:'Сохранённое замечание без parent'}})],null);const row=w.rows.get('context');assert.equal(row.version.hidden,true);assert.equal(row.reasonDetails.hidden,false);assert.equal(row.reasonSummary.textContent,'Контекст записи');assert.equal(row.reason.textContent,'Сохранённое замечание без parent');
+});

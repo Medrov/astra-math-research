@@ -9,10 +9,11 @@
   let serial=0;
 
   function statusOf(run){
-    const search=searching(run);
+    const search=searching(run);if(run.status==='draft')return {kind:'draft',label:'Новая версия · не запускалась'};
     if(run.status==='queued')return {kind:'active',label:'В очереди'};
     if(run.status==='running')return {kind:'active',label:search?'Идёт поиск':'Идёт проверка'};
     if(run.status==='cancelling')return {kind:'active',label:'Сохраняем и останавливаем'};
+    if(search&&finished.has(run.status)&&run.outcome_summary?.title)return {kind:run.outcome_summary.technical_failure?'incomplete':'search',label:run.outcome_summary.title};
     if(!search&&run.formal_outcome==='proved'&&(!finished.has(run.status)||!['proved','refuted'].includes(run.outcome)))return {kind:'formal',label:'Lean-цель проверена · '+(finished.has(run.status)?'смысл не подтверждён':guided()?.terminationInfo(run)?.title||'запуск прерван')};
     const termination=guided()?.terminationInfo(run);if(termination)return {kind:'incomplete',label:termination.title};
     if(run.status==='cancelled')return {kind:'incomplete',label:'Остановлено'};
@@ -35,10 +36,13 @@
     if(!text(run.display_title)&&/^Найти общую структуру для Lean-теоремы\s+/u.test(title))title='Поиск общей структуры';
     // Only explicit metadata is used. case_id / graph_ref / target names are
     // never guessed into a paper name or scientific description.
-    const source=text(run.source_title);
+    const source=text(run.source_title)||text(run.source_card?.title);
     const rawDate=text(run.created_at),date=rawDate?new Date(rawDate):null;
     const valid=date&&Number.isFinite(date.getTime());
-    return {id:run.id,title,source,kind,status:statusOf(run),
+    const parent=text(run.source_lineage?.parent_run_id),lineageKind=text(run.source_lineage?.kind);
+    const version=parent?lineageKind==='correction'?'Исправленная версия':lineageKind==='atlas_continuation'?'Продолжение поиска':'Связанная попытка':'';
+    return {id:run.id,title,source,kind,status:statusOf(run),parent,root:text(run.source_lineage?.root_run_id)||parent||run.id,lineageKind,version,
+      reason:typeof run.source_lineage?.reason==='string'?run.source_lineage.reason:'',
       date:valid?new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(date):'Дата не сохранена',
       datetime:valid?date.toISOString():'',
       searchable:[title,text(run.title),source].join(' ')};
@@ -50,6 +54,9 @@
     return normalize(query).trim().split(/\s+/u).filter(Boolean).every(word=>haystack.includes(word));
   }
 
+  function groupRuns(runs){
+    const groups=new Map();for(const run of runs){const key=text(run.source_lineage?.root_run_id)||text(run.source_title)||text(run.source_card?.title)||'ungrouped';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(run);}return [...groups.values()].flat();
+  }
   class Workspace {
     constructor({container,onOpen,onError}={}){
       if(!container?.ownerDocument||typeof onOpen!=='function')throw new TypeError('HistoryWorkspace requires a container and onOpen callback.');
@@ -70,9 +77,9 @@
       this.search.placeholder='Название или источник';this.search.autocomplete='off';
       this.count=this.el('p','research-history-count');this.count.setAttribute('role','status');this.count.setAttribute('aria-live','polite');this.count.setAttribute('aria-atomic','true');
       this.error=this.el('p','research-history-error');this.error.setAttribute('role','alert');this.error.hidden=true;
-      tools.append(label,this.search,this.count,this.error);
+      this.filter='all';this.filters=this.el('div','research-history-filter');this.filters.setAttribute('role','group');this.filters.setAttribute('aria-label','Фильтр истории');this.filterButtons=new Map();for(const[id,title]of [['all','Все'],['active','В работе'],['attention','Требуют внимания'],['search','Поиски'],['result','Результаты']]){const button=this.el('button','',title);button.type='button';button.setAttribute('aria-pressed',String(id==='all'));button.addEventListener('click',()=>{this.filter=id;for(const[key,item]of this.filterButtons)item.setAttribute('aria-pressed',String(key===id));this.updateVisibility();});this.filterButtons.set(id,button);this.filters.append(button);}tools.append(label,this.search,this.filters,this.count,this.error);
       this.scroll=this.el('div','research-history-scroll');
-      this.list=this.el('ul','research-history-list');this.list.setAttribute('aria-label','Сохранённые исследования');
+      this.list=this.el('ul','research-history-list');this.list.dataset.layout='rows';this.list.setAttribute('aria-label','Сохранённые исследования');
       this.empty=this.el('p','research-history-empty');this.empty.hidden=true;
       this.scroll.append(this.list,this.empty);this.dialog.append(header,tools,this.scroll);container.append(this.dialog);
       this.search.addEventListener('input',()=>{this.updateVisibility();this.scroll.scrollTop=0;});
@@ -92,24 +99,28 @@
       const item=this.el('li','research-history-row'),button=this.el('button','research-history-card');button.type='button';
       const top=this.el('span','research-history-card-top'),kind=this.el('span','research-history-kind');
       const current=this.el('span','research-history-current','Сейчас открыто');current.hidden=true;top.append(kind,current);
-      const title=this.el('strong','research-history-title'),source=this.el('span','research-history-source');
+      const main=this.el('span','research-history-main'),title=this.el('strong','research-history-title'),source=this.el('span','research-history-source');
       const meta=this.el('span','research-history-meta'),status=this.el('span','research-history-status'),date=this.el('time','research-history-date');
-      meta.append(status,date);button.append(top,title,source,meta);item.append(button);
+      const version=this.el('span','workspace-history-version'),group=this.el('h3','research-history-group-title workspace-history-source-heading');group.hidden=true;meta.append(status,date);main.append(top,title,source,version);button.append(main,meta);
+      const reasonDetails=this.el('details','research-history-version-details'),reasonSummary=this.el('summary'),reason=this.el('p','research-history-version-reason');reasonDetails.hidden=true;reasonDetails.append(reasonSummary,reason);item.append(group,button,reasonDetails);
       button.addEventListener('click',()=>this.open(id));
-      return {item,button,kind,current,title,source,status,date,summary:null};
+      return {item,button,main,kind,current,title,source,status,date,version,group,reasonDetails,reasonSummary,reason,summary:null};
     }
 
     render(runs,currentId){
       const focus=this.doc.activeElement,position=this.scroll.scrollTop;
-      const focusedRow=[...this.rows.entries()].find(([,row])=>row.button===focus)?.[0];
+      const focusedRow=[...this.rows.entries()].find(([,row])=>row.button===focus||row.reasonSummary===focus)?.[0];
       this.currentId=currentId;const seen=new Set();
-      this.runs=array(runs).filter(run=>run&&typeof run.id==='string'&&run.id&&!seen.has(run.id)&&seen.add(run.id));
+      this.runs=groupRuns(array(runs).filter(run=>run&&typeof run.id==='string'&&run.id&&!seen.has(run.id)&&seen.add(run.id)));
       for(const [id,row]of this.rows)if(!seen.has(id)){row.item.remove();this.rows.delete(id);}
       for(let index=0;index<this.runs.length;index++){
         const run=this.runs[index],summary=summaryOf(run);let row=this.rows.get(run.id);
         if(!row){row=this.createRow(run.id);this.rows.set(run.id,row);}
         row.summary=summary;
-        row.title.textContent=summary.title;row.kind.textContent=summary.kind;
+        row.title.textContent=summary.title;row.kind.textContent=summary.kind;row.version.textContent=summary.version;row.version.hidden=!summary.version;
+        row.reasonDetails.hidden=!text(summary.reason);row.reason.textContent=summary.reason;
+        row.reasonSummary.textContent=summary.version==='Исправленная версия'?'Причина исправления':summary.version==='Продолжение поиска'?'Контекст продолжения':summary.parent?'Контекст связанной попытки':'Контекст записи';
+        row.reasonSummary.setAttribute('aria-label',row.reasonSummary.textContent+' · '+summary.title);
         row.source.textContent=summary.source?'Источник: '+summary.source:'';row.source.hidden=!summary.source;
         row.status.textContent=summary.status.label;row.status.dataset.kind=summary.status.kind;
         row.date.textContent=summary.date;if(summary.datetime)row.date.setAttribute('datetime',summary.datetime);else row.date.removeAttribute('datetime');
@@ -121,20 +132,20 @@
       this.updateVisibility();this.updatePending();
       if(focusedRow){
         const row=this.rows.get(focusedRow);
-        if(row&&!row.item.hidden){if(this.doc.activeElement!==row.button)row.button.focus({preventScroll:true});}
+        if(row&&!row.item.hidden){const target=focus===row.reasonSummary&&!row.reasonDetails.hidden?row.reasonSummary:row.button;if(this.doc.activeElement!==target)target.focus({preventScroll:true});}
         else this.search.focus({preventScroll:true});
       }
       this.scroll.scrollTop=position;
     }
 
     updateVisibility(){
-      let visible=0;
-      for(const row of this.rows.values()){row.item.hidden=!matches(row.summary,this.search.value);if(!row.item.hidden)visible++;}
+      let visible=0,previousGroup=null;
+      for(const run of this.runs){const row=this.rows.get(run.id),summary=row.summary;const state=this.filter==='all'||this.filter==='active'&&summary.status.kind==='active'||this.filter==='attention'&&['incomplete','formal','draft'].includes(summary.status.kind)||this.filter==='search'&&searching(run)||this.filter==='result'&&summary.status.kind==='result';row.item.hidden=!state||!matches(summary,this.search.value);row.group.hidden=true;if(!row.item.hidden){visible++;const group=summary.source?'source:'+summary.source:'unknown';row.group.textContent=summary.source||'Другие исследования';row.group.hidden=group===previousGroup;previousGroup=group;}else if(this.doc.activeElement===row.button||this.doc.activeElement===row.reasonSummary)this.search.focus({preventScroll:true});}
       const total=this.rows.size;
-      const count=this.search.value.trim()?'Найдено: '+visible+' из '+total:'Сохранено: '+total;
+      const count=this.search.value.trim()?'Найдено: '+visible+' из '+total:this.filter!=='all'?'Показано: '+visible+' из '+total:'Сохранено: '+total;
       if(this.count.textContent!==count)this.count.textContent=count;
       this.empty.hidden=visible!==0;
-      this.empty.textContent=total?'Ничего не найдено. Попробуйте другое название или источник.':'Здесь появятся ваши поиски и проверки.';
+      this.empty.textContent=total?'Ничего не найдено. Измените запрос или фильтр.':'Здесь появятся ваши поиски и проверки.';
     }
 
     updatePending(){
@@ -165,5 +176,5 @@
     hide(){if(this.dialog.open)this.dialog.close();this.restoreFocus();}
     restoreFocus(){const node=this.returnFocus;this.returnFocus=null;if(node?.isConnected&&typeof node.focus==='function')node.focus({preventScroll:true});}
   }
-  return {Workspace,summaryOf,statusOf,matches};
+  return {Workspace,summaryOf,statusOf,matches,groupRuns};
 });

@@ -16,7 +16,7 @@ test('Structure search requires an explicit model mode and pins source and targe
   const s=source(),budget={max_calls:8,timeout_seconds:600};
   assert.throws(()=>structure.payload(s,'Example.identity',{mode:'pilot',budget}));
   const actual=structure.payload(s,'Example.identity',{mode:'multi',budget,question:'  Find the same inverse construction.  '});
-  assert.deepEqual(actual,{purpose:'structure',source_id:s.id,target:'Example.identity',mode:'multi',budget,question:'Find the same inverse construction.'});
+  assert.deepEqual(actual,{purpose:'structure',search_scope:'atlas',source_id:s.id,target:'Example.identity',mode:'multi',budget,question:'Find the same inverse construction.'});
   assert.equal('case_id' in actual,false);assert.equal('paper_ids' in actual,false);assert.equal('question' in structure.payload(s,'Example.identity',{budget}),false);
 });
 test('Ranking binds candidates to real saved transitions and never invents missing graphs',()=>{
@@ -142,5 +142,16 @@ test('opening an article search invalidates a pending Lean-source restore and re
 
 test('pinned article context is rendered on the first queued response before any profile, route or graph',()=>withRenderer((workspace,node)=>{
   const run=articleSearch();run.status='queued';run.structure_profile=null;run.structure_routes=null;run.object_graph=null;workspace.callbacks.api=()=>{throw Error('Initial context must not need source restoration');};workspace.render(run,true);
-  const box=node('structure-results'),origin=descendants(box).find(element=>element.attributes.class==='structure-origin');assert.ok(origin);assert.match(origin.textContent,/Замена координаты/);assert.ok(origin.textContent.includes(run.contract.source_transition.transition.claim));assert.match(box.textContent,/Astra составляет структурный профиль исходного перехода/);assert.equal(descendants(box).filter(element=>element.attributes['data-structure-route']).length,3);assert.equal(descendants(box).filter(element=>element.attributes['data-structure-candidate']).length,0);
+  const box=node('structure-results'),origin=descendants(box).find(element=>element.attributes.class==='structure-origin');assert.ok(origin);assert.match(origin.textContent,/Замена координаты/);assert.ok(origin.textContent.includes(run.contract.source_transition.transition.claim));assert.match(box.textContent,/Astra составляет структурный профиль исходного перехода/);assert.equal(descendants(box).filter(element=>element.attributes['data-structure-route']).length,0);assert.equal(descendants(box).filter(element=>element.attributes['data-structure-candidate']).length,0);
+}));
+for(const count of [0,1,4])test('a loaded profile renders exactly '+count+' saved MSC routes without quota placeholders',()=>withRenderer((workspace,node)=>{
+  const run=articleSearch(),route=run.structure_routes[0],transition=run.object_graph.transitions[0];run.status='running';
+  run.structure_routes=Array.from({length:count},(_,index)=>({...structuredClone(route),id:'route_'+(index+1),title:'Saved direction '+(index+1),status:'searched',candidates:count===1?[]:[{transition_id:'bridge_'+(index+1),title:'Candidate '+(index+1),rank:1}]}));
+  run.object_graph.transitions=Array.from({length:count},(_,index)=>({...structuredClone(transition),id:'bridge_'+(index+1),title:'Candidate '+(index+1)}));
+  const before=JSON.stringify(run);workspace.render(run,true);const box=node('structure-results'),all=descendants(box);
+  assert.deepEqual(all.filter(element=>element.attributes['data-structure-route']).map(element=>element.attributes['data-structure-route']),run.structure_routes.map(route=>route.id));
+  assert.equal(all.filter(element=>element.attributes['data-structure-candidate']).length,count===1?0:count);assert.doesNotMatch(box.textContent,/Ожидает профиля|Область ещё не выбрана/);assert.equal(JSON.stringify(run),before);
+  if(count===0){assert.match(box.textContent,/Обоснованные направления не предложены/);assert.doesNotMatch(box.textContent,/Кандидаты появятся/);}
+  if(count===1)assert.match(box.textContent,/Источники найдены/);
+  if(count===4)assert.match(box.textContent,/Направление 4/);
 }));
