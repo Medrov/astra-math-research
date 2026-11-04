@@ -67,7 +67,7 @@ test('search stages do not convert saved candidate count into proof evidence',()
 test('resource metrics preserve observed usage and identify the selected backend',()=>{
   const metrics=workspace.resourceUsage(run({proof_backend:'goedel-adapted'}));assert.equal(metrics.calls,1);assert.equal(metrics.seconds,37.485);assert.equal(metrics.tokens,32883);assert.match(metrics.backend,/Goedel/);
   const empty=workspace.resourceUsage({usage:{calls:-1,total_tokens:'not measured'}});assert.equal(empty.calls,0);assert.equal(empty.tokens,0);
-  assert.match(workspace.resourceUsage(run({mode:'multi'})).backend,/AMR \/ native/);assert.doesNotMatch(workspace.resourceUsage(run({mode:'multi'})).backend,/Локальная проверка/);
+  assert.match(workspace.resourceUsage(run({mode:'multi'})).backend,/AMR · Astra \+ Lean/);assert.doesNotMatch(workspace.resourceUsage(run({mode:'multi'})).backend,/Локальная проверка/);
 });
 test('source fields preserve object definitions and all assumptions without fabricating grounding',()=>{
   const card={input_objects:[{id:'a',title:'A',definition:'An object',assumptions:['x > 0']}],output_objects:[{title:'B'}],assumptions:['R is a ring'],operations:['Map A to B'],conclusion:'A ≃ B',scope:'Conditional bridge'};

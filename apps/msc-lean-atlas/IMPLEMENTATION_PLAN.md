@@ -1,5 +1,10 @@
 # Pipeline and UI upgrade — 2026-11-03
 
+Historical plan and completion record for the 3 November stage. Its publication
+authorization and Mobbin availability describe that stage only. For the current
+interface and later work, see [README.md](README.md) and
+[UI_MOBBIN_REVIEW.md](../../docs/UI_MOBBIN_REVIEW.md).
+
 Authorized scope: eight As Is → To Be tasks agreed in the Codex conversation.
 Work branch: `codex/research-pipeline-ui`. The original MathResearch kit is immutable.
 
