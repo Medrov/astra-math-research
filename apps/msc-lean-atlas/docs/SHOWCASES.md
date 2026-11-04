@@ -70,7 +70,7 @@ lake env python apps/msc-lean-atlas/examples/fibonacci_composition/verify.py
 типы всех четырёх обязательств, хеши и допустимые аксиомы.
 [Подробное воспроизведение](../examples/fibonacci_composition/README.md).
 
-## 2. Полиномиальный граф: вычитание и восстановление координат
+## 2. Пример Ивана Дорофеева: полиномиальный граф → ось
 
 **Источник:** A. S. Frolov, I. S. Dorofeev,
 [On the motivic approach to the Abhyankar rectifiability problem and concrete
