@@ -70,12 +70,14 @@ lake env python apps/msc-lean-atlas/examples/fibonacci_composition/verify.py
 типы всех четырёх обязательств, хеши и допустимые аксиомы.
 [Подробное воспроизведение](../examples/fibonacci_composition/README.md).
 
-## 2. Пример Ивана Дорофеева: полиномиальный граф → ось
+## 2. Example: On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications
 
 **Источник:** A. S. Frolov, I. S. Dorofeev,
 [On the motivic approach to the Abhyankar rectifiability problem and concrete
 rectifications, arXiv:2610.38474v1, §9.1](https://arxiv.org/html/2610.38474v1#S9.SS1).
-Проверяется заключительный полиномиальный шаг раздела.
+Карточка в интерфейсе показывает пометку **Example** и точное название статьи.
+Проверяется заключительный шаг §9.1: вычитание полиномиального графа,
+обратные преобразования и перевод графа в координатную ось.
 
 **Объекты и механизм.** Для коммутативного кольца `K` с единицей и полиномов
 `b,w ∈ K[t]` рассмотрены преобразования

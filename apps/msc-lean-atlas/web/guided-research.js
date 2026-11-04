@@ -19,10 +19,10 @@
       replay:'Кнопка заново проверит сохранённое доказательство против всех четырёх точных обязательств и выполнит аудит аксиом. Это повтор готового результата без Astra.'
     },
     {
-      id:'arxiv_2610_38474_graph_subtraction',title:'Полиномиальный граф → ось',label:'Пример Ивана Дорофеева',
-      summary:'Шаг §9.1 статьи Фролова–Дорофеева: два обратных преобразования выпрямляют полиномиальный граф.',
+      id:'arxiv_2610_38474_graph_subtraction',title:'On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications',label:'Example',
+      summary:'§9.1 · Polynomial graph subtraction: two inverse coordinate changes send the graph to the coordinate axis.',
       saved:'Сохранённое доказательство · 3 равенства',button:'Проверить полиномиальный шаг',
-      source:'Frolov–Dorofeev · On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications · §9.1',url:'https://arxiv.org/html/2610.38474v1#S9.SS1',
+      source:'On the motivic approach to the Abhyankar rectifiability problem and concrete rectifications · §9.1',url:'https://arxiv.org/html/2610.38474v1#S9.SS1',
       steps:[
         ['Источник и подготовка','Из статьи выделен заключительный шаг §9.1. Astra получила доказательство после ошибок Lean и пересмотра графа лемм, имея доступ к подготовленной постановке. Это не слепое переоткрытие.'],
         ['Объекты и переход','Для коммутативного кольца K с единицей и b,w ∈ K[t] преобразование S(x,y,z) = (y, x − b(y), z − w(y)) имеет обратное S⁻¹(T,X,Z) = (X + b(T), T, Z + w(T)).'],
