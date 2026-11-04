@@ -67,7 +67,7 @@ test('search stages do not convert saved candidate count into proof evidence',()
 test('resource metrics preserve observed usage and identify the selected backend',()=>{
   const metrics=workspace.resourceUsage(run({proof_backend:'goedel-adapted'}));assert.equal(metrics.calls,1);assert.equal(metrics.seconds,37.485);assert.equal(metrics.tokens,32883);assert.match(metrics.backend,/Goedel/);
   const empty=workspace.resourceUsage({usage:{calls:-1,total_tokens:'not measured'}});assert.equal(empty.calls,0);assert.equal(empty.tokens,0);
-  assert.match(workspace.resourceUsage(run({mode:'multi'})).backend,/SHAIM \/ native/);assert.doesNotMatch(workspace.resourceUsage(run({mode:'multi'})).backend,/Локальная проверка/);
+  assert.match(workspace.resourceUsage(run({mode:'multi'})).backend,/AMR · Astra \+ Lean/);assert.doesNotMatch(workspace.resourceUsage(run({mode:'multi'})).backend,/Локальная проверка/);
 });
 test('source fields preserve object definitions and all assumptions without fabricating grounding',()=>{
   const card={input_objects:[{id:'a',title:'A',definition:'An object',assumptions:['x > 0']}],output_objects:[{title:'B'}],assumptions:['R is a ring'],operations:['Map A to B'],conclusion:'A ≃ B',scope:'Conditional bridge'};
@@ -111,7 +111,7 @@ test('grounding identifies proposals, preserves quotes literally and refuses exe
 test('a revised draft saves the chosen available backend without starting any research',async()=>{
   const {doc}=dom(),requests=[],opened=[],originalDocument=global.document;doc.body=new Element('body',doc);
   const create=doc.createElement.bind(doc);doc.createElement=tag=>{const node=create(tag);node.focus=()=>{};node.showModal=()=>{node.open=true;};node.close=()=>{node.open=false;node.onclose?.();};node.remove=()=>{};return node;};global.document=doc;
-  try{const view=Object.create(guided.Workspace.prototype);view.backends=[{id:'native',title:'SHAIM',description:'Native controller',available:true},{id:'goedel-adapted',title:'Goedel',description:'Adapted controller',available:true},{id:'offline',title:'Unavailable',available:false}];
+  try{const view=Object.create(guided.Workspace.prototype);view.backends=[{id:'native',title:'AMR',description:'Native controller',available:true},{id:'goedel-adapted',title:'Goedel',description:'Adapted controller',available:true},{id:'offline',title:'Unavailable',available:false}];
     view.prose=(value,tag='p')=>view.el(tag,{},value);view.cb={api:async(path,payload)=>{requests.push({path,payload});return {run:{id:'revision',status:'draft',ready_to_start:true}};}};view.openRun=async id=>opened.push(id);
     view.openRevision(run({source_card:{editable:true,title:'Bridge',conclusion:'A = B',assumptions:['Ring R']}}));
     const nodes=all(view.revisionDialog),form=nodes.find(node=>node.tagName==='FORM'),select=nodes.find(node=>node.tagName==='SELECT'),reason=nodes.find(node=>node.tagName==='TEXTAREA');

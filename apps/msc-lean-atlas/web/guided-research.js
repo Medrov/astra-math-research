@@ -356,7 +356,7 @@
       const box=this.$('workspace-mechanism-detail'),token=this.mechanismToken=(this.mechanismToken||0)+1;box.replaceChildren(this.prose('Открываем описание…'));
       try{const response=await this.cb.api('/api/research/mechanisms/'+encodeURIComponent(id));if(token!==this.mechanismToken)return;
         const item=response.mechanism||response,contract=item.formal_contract||{},origin=item.provenance||{},review=item.semantic_review||{},verification=item.verification||{},library=item.source_library;
-        const backend=origin.proof_backend||item.proof_backend,backendLabel=({'native':'SHAIM / native · Astra + Lean','goedel-adapted':'Goedel · адаптированный процесс'})[backend]||backend||'не сохранён';
+        const backend=origin.proof_backend||item.proof_backend,backendLabel=({'native':'AMR · Astra + Lean','goedel-adapted':'Goedel · адаптированный процесс'})[backend]||backend||'не сохранён';
         box.replaceChildren(this.el('h3',{},item.title||origin.title||id));
         box.append(this.el('p',{class:'guided-note'},item.status==='needs_recheck'?'Окружение изменилось. Сохранённая проверка требует повторения.':'Сохранённый контракт проверен; это не сертификат нового применения.'),this.el('p',{},'Процесс доказательства: '+backendLabel));
         box.append(this.el('h4',{},'Точный формальный контракт'),this.el('p',{},'Цель: '+(contract.target||'не сохранена')),this.el('pre',{class:'workspace-mechanism-type'},contract.statement||'Точный тип не сохранён.'));

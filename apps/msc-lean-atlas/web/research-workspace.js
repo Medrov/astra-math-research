@@ -38,7 +38,7 @@
     const usage=run?.usage||{},budget=run?.budget||{};
     return {calls:nonnegative(usage.calls),callLimit:nonnegative(budget.max_calls),seconds:elapsedSeconds(run),
       timeLimit:nonnegative(budget.timeout_seconds),tokens:nonnegative(usage.total_tokens),
-      backend:({'native':'SHAIM / native · Astra + Lean','goedel-adapted':'Goedel · адаптированный процесс'})[run?.proof_backend]||text(run?.proof_backend?.name)||text(run?.contract?.proof_backend?.name)||text(run?.proof_backend)||'SHAIM / native · Astra + Lean'};
+      backend:({'native':'AMR · Astra + Lean','goedel-adapted':'Goedel · адаптированный процесс'})[run?.proof_backend]||text(run?.proof_backend?.name)||text(run?.contract?.proof_backend?.name)||text(run?.proof_backend)||'AMR · Astra + Lean'};
   }
   function stageFor(phase){
     if(/final_semantic|final_review|publish|certif/.test(phase))return 5;

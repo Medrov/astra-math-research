@@ -14,7 +14,7 @@ test('browser script order preserves both the app controller and view exports, a
   const document={body:new Element('body'),createElement:tag=>new Element(tag),getElementById:node,querySelector:node,querySelectorAll:()=>[]};
   const oldType='∀ (f : Nat → Nat) (n : Nat), Function.iterate f n = Function.iterate f n',newType=oldType.replaceAll('Function.iterate','Nat.iterate');
   const previous={id:'previous',source_card:{title:'Iteration bridge',formal_statement:oldType}},current={id:'current',source_lineage:{parent_run_id:'previous',reason:'Resolve the pinned library name'},source_card:{title:'Iteration bridge',formal_statement:newType}};
-  const requests=[],backends={default:'native',backends:[{id:'native',title:'SHAIM',available:true,description:'Native'}]};
+  const requests=[],backends={default:'native',backends:[{id:'native',title:'AMR',available:true,description:'Native'}]};
   const transport=async route=>{requests.push(route);if(route==='/api/research/backends')return backends;if(route==='/api/research/runs/previous')return {run:previous};throw Error('Unexpected request: '+route);};
   const context={document,URL,location:{href:'http://localhost/#research',hash:'#research'},ResizeObserver:class{observe(){}},addEventListener(){},fetch:async route=>({ok:true,json:()=>transport(route)}),setTimeout,clearTimeout};context.window=context;
   vm.createContext(context);

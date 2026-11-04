@@ -1,7 +1,11 @@
 # Implementation contract
 
 Local Python 3.9+ standard-library backend, static HTML/CSS/JS UI; bind 127.0.0.1.
-Keep existing SHAIM and astra-math-research proof sources and reports unchanged.
+Keep existing AMR and astra-math-research proof sources and reports unchanged.
+
+This document records the original Lean prototype contract, including its
+two-file API. The current research interface and dependencies are described in
+[README.md](README.md); the two-file prototype is not the main user workflow.
 
 ## Dataset
 

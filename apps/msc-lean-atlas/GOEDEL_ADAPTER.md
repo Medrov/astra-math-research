@@ -1,4 +1,4 @@
-# Goedel-Architect в SHAIM
+# Goedel-Architect в AMR
 
 `goedel-adapted` — производная интеграция реального ядра
 [Goedel-Architect](https://github.com/goedelarchitect/goedel-architect),
@@ -27,7 +27,7 @@
 ## Адаптация к правилам проекта
 
 Штатный Goedel использует LeanArchitect и промежуточные Lean-заглушки.
-SHAIM хранит blueprint как JSON с полными типами и зависимостями. Синтетический
+AMR хранит blueprint как JSON с полными типами и зависимостями. Синтетический
 корень обязательств — только запись графа, не Lean-декларация. Независимые
 обязательные цели сохраняются даже вне пути к основной цели.
 

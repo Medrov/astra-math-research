@@ -380,7 +380,7 @@ class ResearchService(StructureResearchMixin, DraftRepairMixin, ResearchVersions
     def proof_backends(self):
         import research_goedel
         adapted = research_goedel.backend_metadata()
-        return dict(default='native', backends=[dict(id='native', title='SHAIM', available=True,
+        return dict(default='native', backends=[dict(id='native', title='AMR', available=True,
                     description='Собственный контроллер графа лемм с независимой проверкой Lean.'),
                     dict(adapted, title='Goedel-Architect · адаптированный', available=adapted.get('status') == 'ready',
                          description='Адаптированное ядро Goedel-Architect; полная проверка в закреплённом Lean.')])
