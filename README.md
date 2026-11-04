@@ -66,10 +66,10 @@
 - История, версии постановок, ограниченные бюджеты и сохранение частичных результатов.
 - Готовые разборы с повторной локальной проверкой без нового вызова модели.
 
-README описывает ветку **`codex/atlas-wide-search`**. Последний отдельный
+README описывает актуальную версию в ветке **`main`**. Последний отдельный
 [релиз v0.3.0](https://github.com/Medrov/astra-math-research/releases/tag/v0.3.0)
-предшествует текущему интерфейсу; команды ниже выбирают актуальную ветку.
-[Изменения ветки](apps/msc-lean-atlas/RELEASE_NOTES.md).
+предшествует текущему интерфейсу; изменения после него ещё не оформлены
+отдельным релизом. [Список изменений](apps/msc-lean-atlas/RELEASE_NOTES.md).
 
 ## Быстрый запуск
 
@@ -92,7 +92,6 @@ README описывает ветку **`codex/atlas-wide-search`**. Послед
 ```powershell
 git clone https://github.com/Medrov/astra-math-research.git
 cd astra-math-research
-git switch --track origin/codex/atlas-wide-search
 lake update
 lake exe cache get
 
@@ -118,7 +117,6 @@ $env:ATLAS_LEAN = (& elan which lean).Trim()
 ```sh
 git clone https://github.com/Medrov/astra-math-research.git
 cd astra-math-research
-git switch --track origin/codex/atlas-wide-search
 lake update
 lake exe cache get
 
