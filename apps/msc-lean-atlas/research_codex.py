@@ -315,7 +315,8 @@ def run_task(prompt, work_dir, model=DEFAULT_MODEL, timeout_s=120, on_event=None
                         state['text'] = _turn_text(turn)
                     if turn.get('error'):
                         state['error'] = turn['error'].get('message', 'Codex turn failed')
-                public = {'method': method, 'params': {'turn': {'id': turn.get('id'), 'status': turn.get('status')}}}
+                public = {'method': method, 'params': {'threadId': state.get('thread_id'),
+                          'turn': {'id': turn.get('id'), 'status': turn.get('status')}}}
                 persist()
             elif method in ('model/rerouted', 'model/reroute'):
                 state['status'] = 'model_mismatch'

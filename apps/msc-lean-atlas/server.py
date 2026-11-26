@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Local MSC/Lean atlas. Explicit research runs may send supplied context to Codex."""
 import argparse
+import base64
+import binascii
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -9,7 +11,7 @@ from pathlib import Path, PureWindowsPath
 import re
 import threading
 import traceback
-from urllib.parse import urlsplit, unquote, parse_qs
+from urllib.parse import urlsplit, unquote, parse_qs, quote
 import uuid
 
 import analysis_engine
@@ -23,6 +25,10 @@ JOBS={}
 LOCK=threading.Lock()
 RESEARCH=None
 BATCHES=None
+PROGRAMS=None
+FILES=None
+SERVICES_LOCK=threading.Lock()
+LEAN_CHECKS=threading.BoundedSemaphore(2)
 
 def research():
     global RESEARCH
@@ -41,6 +47,28 @@ def research_batches():
         with LOCK:
             if BATCHES is None: BATCHES=ResearchBatches(service)
     return BATCHES
+
+def programs():
+    global PROGRAMS
+    with SERVICES_LOCK:
+        if PROGRAMS is None:
+            from research_programs import ProgramService
+            PROGRAMS = ProgramService(research())
+    return PROGRAMS
+
+def lean_files():
+    global FILES
+    with SERVICES_LOCK:
+        if FILES is None:
+            from research_lean_files import LeanFiles
+            FILES = LeanFiles(research().root / 'lean-files')
+    return FILES
+
+def program_sources(payload):
+    ids = payload.get('attachment_ids', [])
+    if not isinstance(ids, list) or len(ids) > 8:
+        raise ValueError('К программе можно приложить до восьми файлов или архивов.')
+    return [lean_files().evidence(id_) for id_ in dict.fromkeys(safe_id(i) for i in ids)]
 
 def now(): return datetime.now(timezone.utc).isoformat()
 
@@ -157,10 +185,60 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Length',str(len(body)));self.send_header('Cache-Control','no-store')
         self.send_header('X-Content-Type-Options','nosniff');self.end_headers();self.wfile.write(body)
 
+    def download(self, item):
+        name, body = item
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/zip' if name.lower().endswith('.zip') else 'text/plain; charset=utf-8')
+        self.send_header('Content-Disposition', "attachment; filename*=UTF-8''" + quote(name, safe=''))
+        self.send_header('Content-Length', str(len(body)))
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.end_headers()
+        self.wfile.write(body)
+
+    def lean_check(self, operation):
+        if not LEAN_CHECKS.acquire(blocking=False):
+            return self.json_response({'error':'Lean занят двумя проверками. Повторите через несколько секунд.'},429)
+        try:
+            return self.json_response(operation())
+        finally:
+            LEAN_CHECKS.release()
+
     def do_GET(self):
         try:
             if not self.local_host(): return self.json_response({'error':'Этот сервис доступен только через localhost.'},403)
             path=urlsplit(self.path).path
+            if path == '/api/research/queue':
+                return self.json_response({'tasks': programs().queue.list()})
+            if path == '/api/research/programs':
+                mode = parse_qs(urlsplit(self.path).query).get('mode', [None])[0]
+                return self.json_response({'programs': programs().list_programs(mode)})
+            match = re.fullmatch(r'/api/research/library-sources/([a-f0-9]{64})', path)
+            if match:
+                from research_pattern_catalog import read_source
+                expected = parse_qs(urlsplit(self.path).query).get('sha256', [''])[0]
+                body = read_source(match[1], expected)
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                self.send_header('Content-Length', str(len(body)))
+                self.send_header('X-Content-Type-Options', 'nosniff')
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            match = re.fullmatch(r'/api/research/programs/([a-f0-9]{32})/lean', path)
+            if match:
+                return self.download(lean_files().for_program(programs().get(match[1]), research()))
+            match = re.fullmatch(r'/api/research/programs/([a-f0-9]{32})', path)
+            if match:
+                return self.json_response(programs().get(match[1]))
+            match = re.fullmatch(r'/api/research/lean-files/([a-f0-9]{32})(/download)?', path)
+            if match:
+                if match[2]:
+                    return self.download(lean_files().download(match[1]))
+                return self.json_response(lean_files().get(match[1]))
+            match = re.fullmatch(r'/api/research/runs/([a-f0-9]{32})/lean', path)
+            if match:
+                return self.download(lean_files().for_run(research().get(match[1]), research().folder(match[1])))
             if path=='/api/research/status': return self.json_response(research().status())
             if path=='/api/research/cases': return self.json_response({'cases':research().public_cases()})
             if path=='/api/research/backends': return self.json_response(research().proof_backends())
@@ -174,7 +252,10 @@ class Handler(BaseHTTPRequestHandler):
             if path.startswith('/api/structure/sources/'):
                 source=research().structure_store().get(path.rsplit('/',1)[1])
                 return self.json_response({'source':dict(source,id=source['source_id'])})
-            if path=='/api/research/runs': return self.json_response({'runs':research().list_runs()})
+            if path=='/api/research/runs':
+                mode = parse_qs(urlsplit(self.path).query).get('mode', [None])[0]
+                runs = research().list_runs(mode) if mode is not None else research().list_runs()
+                return self.json_response({'runs': runs})
             if path=='/api/research/batches':
                 query=parse_qs(urlsplit(self.path).query)
                 revision=query.get('graph_revision',[None])[0]
@@ -253,6 +334,37 @@ class Handler(BaseHTTPRequestHandler):
             payload=json.loads(self.rfile.read(length))
             if not isinstance(payload,dict): raise ValueError('Тело запроса должно быть JSON-объектом.')
             path=urlsplit(self.path).path
+            if path == '/api/research/programs':
+                return self.json_response(programs().create(payload, sources=program_sources(payload)),202)
+            match = re.fullmatch(r'/api/research/programs/([a-f0-9]{32})/continue', path)
+            if match:
+                return self.json_response(programs().continue_patterns(match[1], payload.get('budget'),
+                                          generation=payload.get('generation')), 202)
+            match = re.fullmatch(r'/api/research/programs/([a-f0-9]{32})/(cancel|resume)', path)
+            if match:
+                operation = programs().cancel if match[2] == 'cancel' else programs().resume
+                return self.json_response(operation(match[1]))
+            if path == '/api/research/lean-files':
+                try:
+                    raw = base64.b64decode(payload['data'], validate=True)
+                except (KeyError, ValueError, binascii.Error, TypeError) as exc:
+                    raise ValueError('Нужен файл .lean или ZIP в формате base64.') from exc
+                return self.lean_check(lambda: lean_files().upload(payload.get('filename'), raw,
+                    payload.get('target', ''), payload.get('expected_statement', '')))
+            match = re.fullmatch(r'/api/research/lean-files/([a-f0-9]{32})/members/(\d{1,3})', path)
+            if match:
+                return self.lean_check(lambda: lean_files().select_member(match[1], int(match[2])))
+            match = re.fullmatch(r'/api/research/lean-files/([a-f0-9]{32})/recheck', path)
+            if match:
+                return self.lean_check(lambda: lean_files().recheck(match[1]))
+            match = re.fullmatch(r'/api/research/runs/([a-f0-9]{32})/lean/recheck', path)
+            if match:
+                def recheck_run():
+                    run = research().get(match[1])
+                    name, content = lean_files().for_run(run, research().folder(match[1]))
+                    report = run['result']['verification']
+                    return lean_files().upload(name, content, report['target'], report['expected_statement'])
+                return self.lean_check(recheck_run)
             if path=='/api/research/runs': return self.json_response(research().create(payload),202)
             if path=='/api/research/batches/preview': return self.json_response(research_batches().preview(payload))
             if path=='/api/research/batches': return self.json_response(research_batches().create(payload),202)
@@ -295,6 +407,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--port',type=int,default=8765);args=p.parse_args()
     if not (ROOT/'data/msc2020.json').exists(): raise SystemExit('Сначала запустите python3 import_msc.py')
     server=ThreadingHTTPServer(('127.0.0.1',args.port),Handler)
+    programs()
     print(f'MSC × Lean: http://127.0.0.1:{server.server_port}',flush=True)
     try: server.serve_forever()
     except KeyboardInterrupt: pass
