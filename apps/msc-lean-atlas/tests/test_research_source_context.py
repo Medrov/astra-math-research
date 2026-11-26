@@ -12,6 +12,17 @@ from research_source_context import verify_candidate
 
 @unittest.skipUnless(isolated_lean_available(), 'Prepared Lean, mathlib and sandbox-exec or bubblewrap required')
 class SourceContextTests(unittest.TestCase):
+    def test_attached_module_can_use_generated_result_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            store = LeanFiles(root / 'lean-files')
+            item = store.upload('AmrResult.lean', b'def value : Nat := 7\n')
+            source = store.evidence(item['id'])
+            proof = 'import AmrResult\ntheorem demo : value = 7 := rfl\n'
+            receipt = verify_candidate(root, [source], proof, 'demo', root / 'check', 'value = 7')
+            self.assertTrue(receipt['success'], receipt.get('error'))
+            self.assertEqual(set(receipt['kernel_recheck']['module_sha256']), {'AmrResult', 'AMRResultProof'})
+
     def test_replays_original_module_and_rejects_a_changed_definition(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

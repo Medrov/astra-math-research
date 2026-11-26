@@ -97,6 +97,15 @@ class ValidationTests(Fixture):
         with self.assertRaisesRegex(ValueError, 'Циклические импорты'):
             files._modules('loop.zip', zip_bytes(source[:1] + [('Helper.lean', 'import Result\n')]))
 
+    def test_manifest_must_match_producer_and_version(self):
+        source = ('Proof/Demo.lean', b'theorem demo : True := trivial')
+        for name, tag in [('Other-lean-bundle.json', files.BUNDLE_FORMAT),
+                          (files.BUNDLE_MANIFEST, 'amr-independent-lean-v2')]:
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'формат манифеста'):
+                files._modules('set.zip', zip_bytes([source, (name, json.dumps({'format': tag}))]))
+        with self.assertRaisesRegex(ValueError, 'повторяется'):
+            files._modules('set.zip', zip_bytes([source, (files.BUNDLE_MANIFEST, '{}'), ('Other-lean-bundle.json', '{}')]))
+
     def test_cancellation_during_slot_wait(self):
         busy = threading.BoundedSemaphore(1)
         busy.acquire()
@@ -168,6 +177,23 @@ class RealChecks(Fixture):
         self.assertEqual(self.svc.recheck(report['id'])['files'], report['files'])
         self.assertEqual(self.svc.get(report['id'])['status'], 'compiled')
 
+    def test_existing_v1_archive_can_be_rechecked_and_its_member_selected(self):
+        source = b'def AMRActualType := 7\ntheorem demo : True := trivial\n'
+        spec = {'root': 'Proof', 'sources': [{'name': 'AMRContract.lean', 'sha256': hashlib.sha256(source).hexdigest()}],
+                'target': 'demo', 'expected_statement': 'True'}
+        previous_format = 'previous-independent-lean-v1'
+        manifest = json.dumps({'format': previous_format, 'entries': [spec]})
+        bundle = zip_bytes([('Proof/AMRContract.lean', source), ('Previous-lean-bundle.json', manifest)])
+        report = self.svc.upload('previous.zip', bundle)
+        self.assertEqual(report['status'], 'compiled', report)
+        # A stored receipt from this producer carries the format used when it was checked.
+        aid = report['id']
+        report['bundle_format'] = previous_format
+        (self.svc.root / aid / 'report.json').write_text(json.dumps(report))
+        self.assertTrue(self.svc.select_member(aid, 0)['checks'][0]['target_preserved'])
+        self.assertEqual(self.svc.download(aid), ('previous.zip', bundle))
+        self.assertTrue(self.svc.recheck(aid)['checks'][0]['target_preserved'])
+
     def test_program_bundle_rechecks_colliding_declarations_independently(self):
         runs = {}
         for i, suffix in enumerate(['one', 'two'], 1):
@@ -193,7 +219,9 @@ class RealChecks(Fixture):
 
         tasks = [{'run_id': 'one', 'formal_outcome': 'proved'}, {'run_id': 'two', 'formal_outcome': 'refuted'}]
         name, bundle = self.svc.for_program({'tasks': tasks}, Runs())
-        self.assertTrue(name.endswith('.zip'))
+        self.assertEqual(name, 'AMR-proofs.zip')
+        with zipfile.ZipFile(io.BytesIO(bundle)) as archive:
+            self.assertEqual(json.loads(archive.read(files.BUNDLE_MANIFEST))['format'], files.BUNDLE_FORMAT)
         report = self.svc.upload(name, bundle)
         self.assertEqual(report['status'], 'compiled', report)
         self.assertFalse(report['target_preserved'])

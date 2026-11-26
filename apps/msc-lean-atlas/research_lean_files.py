@@ -32,10 +32,12 @@ MAX_FILES = 32
 MODULE = r"[A-Za-z_][A-Za-z0-9_]*"
 MODULE_NAME = re.compile(rf"{MODULE}(?:\.{MODULE})*")
 TARGET_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*")
-RESERVED = {"Init", "Lean", "Std", "Lake", "Mathlib", "AtlasInspect", "AtlasDump", "AMRContract"}
+RESERVED = {"Init", "Lean", "Std", "Lake", "Mathlib", "AtlasInspect", "AtlasDump"}
 SLOTS = threading.BoundedSemaphore(2)
 BUNDLE_MANIFEST = "AMR-lean-bundle.json"
-BUNDLE_FORMAT = "amr-independent-lean-v1"
+BUNDLE_SCHEMA = "independent-lean-v1"
+BUNDLE_FORMAT = "amr-" + BUNDLE_SCHEMA
+MANIFEST_NAME = re.compile(r"([A-Za-z][A-Za-z0-9]*)-lean-bundle\.json")
 
 
 def _sha(data):
@@ -76,7 +78,8 @@ def _entries(filename, data):
                     raise ValueError("В ZIP допускаются обычные незашифрованные файлы.")
                 if item.is_dir() or parts[0] == "__MACOSX" or parts[-1] == ".DS_Store":
                     continue
-                is_manifest = item.filename == BUNDLE_MANIFEST
+                # v1 producers use the same archive schema under a producer-prefixed name.
+                is_manifest = MANIFEST_NAME.fullmatch(item.filename)
                 if not is_manifest and (not item.filename.endswith(".lean") or parts[-1].casefold() == "lakefile.lean"):
                     raise ValueError("ZIP должен содержать только исходники .lean без конфигурации Lake.")
                 total += item.file_size
@@ -92,7 +95,7 @@ def _entries(filename, data):
                 if len(content) != item.file_size:
                     raise ValueError("Размер файла в ZIP не соответствует содержимому.")
                 if is_manifest:
-                    manifest = content
+                    manifest = (is_manifest.group(1).lower(), content)
                 else:
                     entries[item.filename] = content
     except (zipfile.BadZipFile, EOFError, RuntimeError, zlib.error) as error:
@@ -107,7 +110,7 @@ def _modules(filename, data):
     if not entries:
         raise ValueError("В архиве нет файлов .lean.")
     if manifest is not None:
-        return _independent_modules(entries, manifest)
+        return _independent_modules(entries, *manifest)
     return _source_modules(entries)
 
 
@@ -163,12 +166,12 @@ def _source_modules(entries):
         prefix += heads.pop() + "/"
 
 
-def _independent_modules(entries, raw_manifest):
+def _independent_modules(entries, producer, raw_manifest):
     try:
         manifest = json.loads(raw_manifest.decode("utf-8"))
     except (ValueError, RecursionError) as error:
         raise ValueError("Некорректный JSON манифеста доказательств.") from error
-    if not isinstance(manifest, dict) or manifest.get("format") != BUNDLE_FORMAT:
+    if not isinstance(manifest, dict) or manifest.get("format") != producer + "-" + BUNDLE_SCHEMA:
         raise ValueError("Неизвестный формат манифеста доказательств.")
     specs = manifest.get("entries")
     if not isinstance(specs, list) or not 0 < len(specs) <= len(entries):
@@ -339,6 +342,11 @@ def _check(files, target, statement, report, deadline, extra_statement="", cance
                         raise ValueError("Некорректный результат экспорта деклараций.")
                     return json.loads(path.read_text())
 
+        def driver_file(stem):
+            while (work / (stem + ".lean")).exists():
+                stem += "Check"
+            return stem + ".lean"
+
         for f in files:
             path = work / f["name"]
             if any((library / Path(f["name"]).with_suffix(".olean")).exists() for library in libraries):
@@ -369,21 +377,17 @@ def _check(files, target, statement, report, deadline, extra_statement="", cance
             report["actual_statement"] = declaration["type"]
         if statement:
             # Definitional equality of complete types, including all hypotheses.
-            contract = (imports + "universe u v w\nset_option autoImplicit false\n"
-                        "private def AMRActualType.{a} {α : Sort a} (_ : α) := α\n")
+            contract = imports + "universe u v w\nset_option autoImplicit false\n"
             for checked_type in dict.fromkeys([statement, extra_statement]):
                 if checked_type:
-                    contract += "example : AMRActualType (@" + target + ") = (" + checked_type + ") := rfl\n"
-            (work / "AMRContract.lean").write_text(contract)
-            step("AMRContract.lean", False)
+                    contract += "example : (fun {α : Sort _} (_ : α) => α) (@" + target + ") = (" + checked_type + ") := rfl\n"
+            contract_file = driver_file("AMRContract")
+            (work / contract_file).write_text(contract)
+            step(contract_file, False)
             report["target_preserved"] = True
         if target:
             report["kernel_recheck"] = dict(status="failed", target=target)
-            # Keep previously valid uploads that happen to use the driver's name.
-            driver = "AMRKernel"
-            while (work / (driver + ".lean")).exists():
-                driver += "Check"
-            raw = step(driver + ".lean", False, research_lean.kernel_command(modules, target))
+            raw = step(driver_file("AMRKernel"), False, research_lean.kernel_command(modules, target))
             hashes = {f["module"]: _sha(f["content"].encode()) for f in files}
             report["kernel_recheck"] = research_lean.kernel_certificate(raw, target, hashes, statement, context)
         report["status"] = "verified" if statement else "compiled"
@@ -500,7 +504,7 @@ class LeanFiles:
         meta, files = self._load(attachment_id)
         report = self.get(attachment_id)
         checks = report.get("checks", [])
-        if (report["status"] not in ("verified", "compiled") or report.get("bundle_format") != BUNDLE_FORMAT
+        if (report["status"] not in ("verified", "compiled") or "bundle_contract" not in files[0]
                 or meta["sha256"] != report["sha256"]):
             raise ValueError("Выберите группу в успешно проверенном архиве программы.")
         if type(index) is not int or not 0 <= index < len(checks):
@@ -533,7 +537,7 @@ class LeanFiles:
         public = [d for d in report["declarations"] if d["kind"] in ("def", "theorem", "inductive", "opaque")
                   and not any(part.startswith("_") for part in d["name"].split("."))]
         return dict(id=attachment_id, name=meta["filename"], files=meta["files"], sha256=meta["sha256"],
-                    bundle_format=report.get("bundle_format"),
+                    bundle_format=BUNDLE_FORMAT if "bundle_contract" in files[0] else None,
                     contract_source="bundle" if meta.get("origin") else "user" if meta.get("expected_statement") else None,
                     status=report["status"], target=meta["target"], expected_statement=meta["expected_statement"],
                     target_preserved=report["target_preserved"], order=[f["module"] for f in files],

@@ -56,7 +56,7 @@
   }
   function route() {
     const url = new URL(location.href);
-    // Old AMR links opened pattern searches from the research tab.
+    // Older links opened pattern searches from the research tab.
     if (url.hash === '#research' && (url.searchParams.get('workflow') === 'patterns' || url.searchParams.has('pattern'))) {
       url.hash = 'problems';
       history.replaceState(null, '', url);

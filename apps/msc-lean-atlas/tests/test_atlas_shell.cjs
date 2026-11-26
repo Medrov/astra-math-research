@@ -60,7 +60,7 @@ test('wide catalog starts open and atlas research action only transfers the sele
 });
 
 
-test('legacy AMR pattern links reach the programs tab without losing their program ID', async () => {
+test('legacy pattern links reach the programs tab without losing their program ID', async () => {
   const {get, tabs, skip, context} = await mount(false, 'http://localhost/?workflow=patterns&program=sample#research');
   assert.equal(context.location.hash, '#problems');
   assert.equal(context.location.searchParams.get('program'), 'sample');

@@ -54,7 +54,8 @@ def verify_candidate(root, sources, source, target, work_dir, expected_statement
                     raise ValueError('Два вложения задают разные версии модуля ' + module['module'])
                 files[module['name']] = body
         module = 'AMRResult'
-        while module + '.lean' in files:
+        source_names = {name.casefold() for name in files}
+        while module.casefold() + '.lean' in source_names:
             module += 'Proof'
         (work / 'Candidate.lean').write_text(source, encoding='utf-8')
         package = io.BytesIO()
