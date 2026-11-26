@@ -53,6 +53,38 @@ class ValidationTests(Fixture):
                 self.svc.upload(name, raw)
         self.assertFalse(self.svc.root.exists())
 
+    def test_download_follows_the_run_across_checkouts_and_checks_original_bytes(self):
+        folder = self.root / 'current' / ('a' * 32)
+        checked = folder / 'composition' / 'v0'
+        checked.mkdir(parents=True)
+        original = self.root / 'old' / folder.name / 'composition' / 'v0'
+        original.mkdir(parents=True)
+        for name, raw in [('Candidate.lean', b'theorem t : True := trivial'), ('sources.zip', b'checked bundle')]:
+            with self.subTest(name=name):
+                (original / name).write_bytes(raw)
+                (checked / name).write_bytes(raw)
+                receipt = dict(success=True, target_preserved=True, audit={'status':'passed'}, workspace=str(original))
+                digest = hashlib.sha256(raw).hexdigest()
+                if name.endswith('.zip'):
+                    receipt.update(bundle_file=name, bundle_sha256=digest)
+                else:
+                    receipt.update(source_sha256=digest)
+                run = {'result':{'verification':receipt}}
+                self.assertEqual(self.svc.for_run(run, folder), (name, raw))
+                receipt['workspace'] = 'C:\\archive\\' + folder.name + '\\composition\\v0'
+                self.assertEqual(self.svc.for_run(run, folder), (name, raw))
+                receipt['workspace'] = str(original)
+                (checked / name).write_bytes(b'modified')
+                with self.assertRaisesRegex(ValueError, 'сумма'):
+                    self.svc.for_run(run, folder)
+                (checked / name).unlink()
+                # The old checkout still contains matching bytes, but is never opened.
+                with self.assertRaisesRegex(ValueError, 'отсутствует'):
+                    self.svc.for_run(run, folder)
+                receipt['workspace'] = str(folder / '..' / '..' / 'old' / folder.name / 'composition' / 'v0')
+                with self.assertRaisesRegex(ValueError, 'отсутствует'):
+                    self.svc.for_run(run, folder)
+
     def test_invalid_and_missing_ids(self):
         with self.assertRaises(ValueError):
             self.svc.get('../')

@@ -4,7 +4,7 @@ from __future__ import annotations
 from contextlib import closing
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import sqlite3
 import subprocess
@@ -83,15 +83,22 @@ def _archive_certificate(receipt, data):
     return None
 
 
-def _source_path(run_dir, report):
-    # Historical workspaces may have been moved to a different checkout.
-    location = Path(report.get('workspace', ''))
-    parts = location.parts
-    if run_dir.name not in parts:
+def run_artifact_path(run_dir, recorded_workspace, filename):
+    """Locate an archived artifact under this run, discarding the original checkout prefix."""
+    if not isinstance(recorded_workspace, str) or filename not in ('Candidate.lean', 'sources.zip'):
         return None
-    relative = Path(*parts[parts.index(run_dir.name) + 1:]) / 'Candidate.lean'
-    candidate = (run_dir / relative).resolve()
-    if candidate.is_relative_to(run_dir.resolve()) and candidate.is_file():
+    folder = Path(run_dir).resolve()
+    # A verifier receipt may have come from Windows or POSIX. Do not touch the
+    # recorded absolute path: only the suffix following this run ID is meaningful.
+    parts = PurePosixPath(recorded_workspace.replace('\\', '/')).parts
+    if folder.name not in parts or '..' in parts:
+        return None
+    suffix = parts[len(parts) - parts[::-1].index(folder.name):]
+    workspace = folder.joinpath(*suffix).resolve()
+    if not workspace.is_relative_to(folder):
+        return None
+    candidate = (workspace / filename).resolve()
+    if candidate.is_relative_to(workspace) and candidate.is_file():
         return candidate
     return None
 
@@ -111,7 +118,7 @@ def _cards(run_dir, run):
         report = proof.get('verification', {})
         if node is None or not _valid_report(report, name, node['statement']):
             continue
-        path = _source_path(run_dir, report)
+        path = run_artifact_path(run_dir, report.get('workspace'), 'Candidate.lean')
         if path is None or not path.is_relative_to((run_dir/'lean').resolve()) or path.stat().st_size > 250000:
             continue
         # Only index the original Candidate module and its verifier receipt.

@@ -23,6 +23,7 @@ import zlib
 
 import lean_service
 import research_lean
+from research_registry import run_artifact_path
 
 
 MAX_UPLOAD_BYTES = 2 * 1024 * 1024
@@ -561,12 +562,9 @@ class LeanFiles:
         if not (isinstance(verification, dict) and verification.get("success") and verification.get("target_preserved") and
                 verification.get("audit", {}).get("status") == "passed" and verification.get("workspace")):
             raise ValueError("У запуска пока нет принятого Lean-исходника с проверенным типом.")
-        folder = Path(run_dir).resolve()
-        workspace = Path(verification["workspace"]).resolve()
         bundle = verification.get("bundle_file")
-        name = bundle or "Candidate.lean"
-        source = (workspace / name).resolve()
-        if not workspace.is_relative_to(folder) or not source.is_relative_to(workspace) or not source.is_file():
+        source = run_artifact_path(run_dir, verification['workspace'], bundle or 'Candidate.lean')
+        if source is None:
             raise ValueError("Проверенный исходник отсутствует в каталоге запуска.")
         raw = source.read_bytes()
         if _sha(raw) != verification.get("bundle_sha256" if bundle else "source_sha256"):
