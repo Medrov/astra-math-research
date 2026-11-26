@@ -12,3 +12,7 @@ web/vendor/katex/LICENSE -text
 # The adapted Goedel backend verifies the pinned upstream source and license bytes.
 tools/goedel/upstream_core.py -text whitespace=-blank-at-eof
 tools/goedel/LICENSE -text
+
+# Preserve the SHAIM proof receipts and the exact upstream QED prompt bytes.
+examples/triangle_counterexample/*.lean -text whitespace=-blank-at-eof
+qed_upstream/prompts/** -text whitespace=-blank-at-eol

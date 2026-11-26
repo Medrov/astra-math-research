@@ -503,8 +503,13 @@ def resolve_library_types(hits, work_dir, *, cancelled=None, timeout_seconds=45)
     return resolved
 
 
-def search(query, cases, limit=8):
+def search(query, cases, limit=8, *, registry_root=None, task=None, exclude_run=None):
     """Rank fusion of two lexical indexes; never triggers a rebuild or model call."""
+    archive = []
+    if registry_root is not None:
+        import research_registry
+        research_registry.refresh(registry_root)
+        archive = research_registry.search(registry_root, query, task=task, exclude_run=exclude_run, limit=min(3, limit))
     curated = _curated_search(query, cases, limit)
     try:
         library = search_library(query, limit)
@@ -517,7 +522,7 @@ def search(query, cases, limit=8):
     rows = [dict(item, fused_rank_score=(1.15 if symbol_query and backend == 'library' else 1) / (60 + rank))
             for backend, results in (('library', library), ('curated', curated))
             for rank, item in enumerate(results, start=1)]
-    return sorted(rows, key=lambda d: -d['fused_rank_score'])[:limit]
+    return archive + sorted(rows, key=lambda d: -d['fused_rank_score'])[:limit-len(archive)]
 
 
 def manifest(cases):

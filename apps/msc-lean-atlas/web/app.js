@@ -21,17 +21,32 @@
   function download(name,value,type='application/json'){const blob=new Blob([typeof value==='string'?value:JSON.stringify(value,null,2)],{type});const url=URL.createObjectURL(blob),a=el('a',{href:url,download:name});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 
   function showTab(tab,writeURL=true){
-    state.activeTab=tab==='research'?'research':'map';
+    state.activeTab = ['research','problems'].includes(tab) ? tab : 'map';
+    $('problems-panel').hidden = state.activeTab !== 'problems';
     $('map-panel').hidden=state.activeTab!=='map';
     $('research-panel').hidden=state.activeTab!=='research';
-    const skip=document.querySelector('.workspace-skip');if(skip){skip.href=state.activeTab==='map'?'#map-title':'#research-title';skip.textContent=state.activeTab==='map'?'К карте математики':'К содержимому исследования';}
+    const skip=document.querySelector('.workspace-skip');
+    if (skip) {
+      skip.href = '#' + state.activeTab + '-title';
+      skip.textContent = {map:'К карте математики', research:'К содержимому исследования', problems:'К программам SHAIM'}[state.activeTab];
+    }
     for(const button of document.querySelectorAll('[data-tab]')){
       const active=button.dataset.tab===state.activeTab;
       button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));
     }
-    if(writeURL){const url=new URL(location.href);url.searchParams.delete('run');url.hash=state.activeTab;history.replaceState(null,'',url);}
-    if(state.activeTab==='map'){window.ResearchWorkspace?.hide();requestAnimationFrame(renderGraph);}
-    else window.ResearchWorkspace?.show();
+    if (writeURL) {
+      const url = new URL(location.href);
+      for (const key of ['run','program','pattern','qed','workflow']) url.searchParams.delete(key);
+      if (state.activeTab === 'problems') {
+        for (const key of ['research','step','object_graph','graph_revision']) url.searchParams.delete(key);
+      }
+      url.hash = state.activeTab;
+      history.replaceState(null, '', url);
+    }
+    if (state.activeTab === 'research') window.ResearchWorkspace?.show();
+    else window.ResearchWorkspace?.hide();
+    window.ProgramWorkspace?.show(state.activeTab);
+    if (state.activeTab === 'map') requestAnimationFrame(renderGraph);
   }
   function showMap(){showTab('map');}
   function setCatalogOpen(open){
@@ -39,9 +54,20 @@
     results.hidden=!open;toggle.setAttribute('aria-expanded',String(open));
     toggle.textContent=open?'Скрыть каталог':'Показать каталог';
   }
-  function route(){showTab(location.hash==='#research'?'research':'map');}
+  function route() {
+    const url = new URL(location.href);
+    // Old SHAIM links opened pattern searches from the research tab.
+    if (url.hash === '#research' && (url.searchParams.get('workflow') === 'patterns' || url.searchParams.has('pattern'))) {
+      url.hash = 'problems';
+      history.replaceState(null, '', url);
+    }
+    const tab = url.hash.slice(1);
+    if (tab === 'problems' || tab === 'research') showTab(tab, false);
+    else showTab('map', url.hash !== '#map' || url.searchParams.has('run'));
+  }
   function startResearch(){const node=viewNode(state.selected);showTab('research');window.ResearchWorkspace?.setContext(node?.id===MSC_ROOT.id?null:node);}
   window.MSCAtlas={
+    route,
     open(code){if(state.nodeMap.has(code)){showMap();selectNode(code);}},
     selected(){return viewNode(state.selected);},
     lookup(code){
@@ -88,10 +114,12 @@
   document.querySelector('[data-tab="map"]').onclick=showMap;
   document.querySelector('.workspace-skip')?.addEventListener('click',event=>{
     event.preventDefault();
-    const target=$(state.activeTab==='map'?'map-title':'research-title');
+    const target=$(state.activeTab+'-title');
     target?.focus({preventScroll:true});target?.scrollIntoView({block:'start'});
   });
-  document.querySelector('[data-tab="research"]').onclick=()=>showTab('research');
+  for (const button of document.querySelectorAll('[data-tab]')) {
+    if (button.dataset.tab !== 'map') button.onclick = () => showTab(button.dataset.tab);
+  }
   $('research-selected').onclick=startResearch;
   document.querySelector('.brand').onclick=event=>{event.preventDefault();showMap();};
   $('msc-search').addEventListener('input',()=>{state.catalogPage=0;setCatalogOpen(true);renderCatalog();});

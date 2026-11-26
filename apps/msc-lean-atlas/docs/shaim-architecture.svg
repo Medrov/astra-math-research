@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1050" viewBox="0 0 1240 1050" role="img" aria-labelledby="title desc" lang="ru">
+<title id="title">Архитектура SHAIM. Математические исследования</title>
+<desc id="desc">Четыре пользовательских маршрута. Самостоятельный поиск и исследовательская программа запускают общий координатор. Он передаёт фиксированную цель исполнителям SHAIM и получает результат для следующего шага. Заданная задача идёт непосредственно к исполнителю. QED готовит текстовый ответ или эскиз. Lean проверяет формальную цель. Astra отдельно оценивает смысл, а SHAIM сохраняет результаты и проверенные леммы.</desc>
+<defs>
+<marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1l6 3.5L1 8" fill="none" stroke="#526575" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></marker>
+<marker id="loop" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1l7 4-7 4" fill="none" stroke="#207267" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+<style>text{font-family:Arial,"Helvetica Neue",sans-serif;fill:#172b3c} .muted{fill:#485d6c}.white{fill:#ffffff}.pale{fill:#dfeef3}.teal{fill:#185d53}.purple{fill:#584274}.meta{font-family:Menlo,monospace;fill:#4f6574}</style>
+</defs>
+<rect x="0" y="0" width="1240" height="1050" rx="0" fill="#f6f8f8" stroke="none" stroke-width="1.6"/>
+<text x="48" y="73" font-size="49" font-weight="700" class="" text-anchor="start" letter-spacing="-1.8">Архитектура SHAIM</text>
+<text x="1192" y="59" font-size="14" font-weight="700" class="muted" text-anchor="end" letter-spacing="1.4">26 НОЯБРЯ 2026</text>
+<text x="50" y="111" font-size="26" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Математические исследования</text>
+<text x="50" y="151" font-size="16" font-weight="700" class="muted" text-anchor="start" letter-spacing="0">Модель для всех ролей</text>
+<text x="258" y="151" font-size="17" font-weight="400" class="" text-anchor="start" letter-spacing="0">gpt-6-astra через локальный Codex App Server</text>
+<path d="M48 174H1192" fill="none" stroke="#cbd4d6" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="48" y="211" font-size="23" font-weight="700" class="" text-anchor="start" letter-spacing="0">Поиск паттернов</text>
+<path d="M48 222h560" fill="none" stroke="#8b9ca5" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="632" y="211" font-size="23" font-weight="700" class="" text-anchor="start" letter-spacing="0">Исследования</text>
+<path d="M632 222h560" fill="none" stroke="#8b9ca5" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="48" y="236" width="275" height="107" rx="12" fill="#ffffff" stroke="#cdd8dc" stroke-width="1.6"/>
+<text x="64" y="267" font-size="19.5" font-weight="700" class="" text-anchor="start" letter-spacing="0">Заданная задача</text>
+<text x="64" y="297" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Готовый пилот, один агент</text>
+<text x="64" y="320" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">или команда ролей.</text>
+<rect x="333" y="236" width="275" height="107" rx="12" fill="#ffffff" stroke="#cdd8dc" stroke-width="1.6"/>
+<text x="349" y="267" font-size="19.5" font-weight="700" class="" text-anchor="start" letter-spacing="0">Самостоятельный поиск</text>
+<text x="349" y="297" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Тема, коды MSC, леммы</text>
+<text x="349" y="320" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">SHAIM, mathlib, файлы Lean.</text>
+<rect x="632" y="236" width="275" height="107" rx="12" fill="#ffffff" stroke="#cdd8dc" stroke-width="1.6"/>
+<text x="648" y="267" font-size="19.5" font-weight="700" class="" text-anchor="start" letter-spacing="0">Программа</text>
+<text x="648" y="297" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Пользователь задаёт</text>
+<text x="648" y="320" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">исследовательский вопрос.</text>
+<rect x="917" y="236" width="275" height="107" rx="12" fill="#ffffff" stroke="#cdd8dc" stroke-width="1.6"/>
+<text x="933" y="267" font-size="19.5" font-weight="700" class="" text-anchor="start" letter-spacing="0">Отдельная задача QED</text>
+<text x="933" y="297" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Пользователь запрашивает</text>
+<text x="933" y="320" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">текстовое решение.</text>
+<path d="M186 344V563" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="203" y="448" font-size="16" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Прямой запуск</text>
+<path d="M470 344V376" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M770 344V376" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M1055 344V376" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="333" y="378" width="574" height="136" rx="15" fill="#203d50" stroke="none" stroke-width="1.6"/>
+<text x="354" y="414" font-size="29" font-weight="700" class="white" text-anchor="start" letter-spacing="0">Координатор программы</text>
+<text x="355" y="448" font-size="18.3" font-weight="400" class="pale" text-anchor="start" letter-spacing="0">В поиске паттернов сравнивает минимум два утверждения.</text>
+<text x="355" y="476" font-size="18.3" font-weight="400" class="pale" text-anchor="start" letter-spacing="0">Поручает доказать гипотезу или её отрицание.</text>
+<rect x="939" y="378" width="253" height="136" rx="14" fill="#f2eef7" stroke="#d7cce3" stroke-width="1.6"/>
+<text x="956" y="411" font-size="25" font-weight="700" class="purple" text-anchor="start" letter-spacing="0">QED</text>
+<text x="956" y="442" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Даёт текстовое решение.</text>
+<text x="956" y="465" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">По запросу программы</text>
+<text x="956" y="488" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">готовит эскиз.</text>
+<path d="M938 468H908" fill="none" stroke="#806499" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 5" marker-end="url(#arrow)"/>
+<path d="M590 515V563" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M612 936V963Q612 973 622 973H1200Q1211 973 1211 962V548Q1211 537 1200 537H827Q816 537 816 526V515" fill="none" stroke="#207267" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 5" marker-end="url(#loop)"/>
+<rect x="48" y="565" width="1144" height="225" rx="16" fill="#ffffff" stroke="#c4d2d7" stroke-width="1.6"/>
+<text x="69" y="602" font-size="28" font-weight="700" class="" text-anchor="start" letter-spacing="0">Исполнение задачи в SHAIM</text>
+<text x="1171" y="600" font-size="15" font-weight="400" class="meta" text-anchor="end" letter-spacing="0">ResearchService · LangGraph</text>
+<text x="70" y="630" font-size="17" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Маршрут команды агентов. Локальный пилот сразу передаёт готовый исходник в Lean.</text>
+<rect x="70" y="648" width="304" height="99" rx="10" fill="#eff3f7" stroke="#d5dfe6" stroke-width="1"/>
+<text x="85" y="678" font-size="22" font-weight="700" class="" text-anchor="start" letter-spacing="0">План и критика</text>
+<text x="85" y="706" font-size="16.5" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Планировщик строит граф лемм.</text>
+<text x="85" y="728" font-size="16.5" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Критик проверяет план.</text>
+<rect x="415" y="648" width="327" height="99" rx="10" fill="#eff3f7" stroke="#d5dfe6" stroke-width="1"/>
+<text x="430" y="678" font-size="22" font-weight="700" class="" text-anchor="start" letter-spacing="0">Формализация</text>
+<text x="430" y="706" font-size="16.5" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Агенты пишут доказательства</text>
+<text x="430" y="728" font-size="16.5" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">готовых к работе лемм.</text>
+<rect x="783" y="648" width="387" height="99" rx="10" fill="#e5f2ed" stroke="#b7d8c9" stroke-width="1"/>
+<text x="798" y="678" font-size="22" font-weight="700" class="teal" text-anchor="start" letter-spacing="0">Проверка Lean</text>
+<text x="798" y="706" font-size="16.5" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Компиляция, сверка типа, аудит</text>
+<text x="798" y="728" font-size="16.5" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">аксиом и зависимостей.</text>
+<path d="M376 697H411" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M744 697H780" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M925 749V763Q925 771 917 771H601Q593 771 593 763V749" fill="none" stroke="#526575" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 5" marker-end="url(#arrow)"/>
+<rect x="644" y="757" width="227" height="24" rx="0" fill="#ffffff" stroke="none" stroke-width="1.6"/>
+<text x="757" y="774" font-size="15" font-weight="400" class="muted" text-anchor="middle" letter-spacing="0">Диагностика для доработки</text>
+<path d="M974 791V823" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="48" y="825" width="325" height="110" rx="12" fill="#ffffff" stroke="#cbd6db" stroke-width="1.6"/>
+<text x="64" y="856" font-size="23" font-weight="700" class="" text-anchor="start" letter-spacing="0">Память SHAIM</text>
+<text x="64" y="881" font-size="16.9" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">SQLite хранит состояние.</text>
+<text x="64" y="902" font-size="16.9" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Архив хранит .lean и ZIP,</text>
+<text x="64" y="923" font-size="16.9" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">реестр — проверенные леммы.</text>
+<rect x="415" y="825" width="327" height="110" rx="12" fill="#e5f2ed" stroke="#b7d8c9" stroke-width="1.6"/>
+<text x="431" y="856" font-size="23" font-weight="700" class="teal" text-anchor="start" letter-spacing="0">Исход попытки</text>
+<text x="431" y="881" font-size="16.9" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Доказано · опровергнуто ·</text>
+<text x="431" y="902" font-size="16.9" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">вопрос остался открытым.</text>
+<rect x="783" y="825" width="409" height="110" rx="12" fill="#ffffff" stroke="#cbd6db" stroke-width="1.6"/>
+<text x="799" y="856" font-size="23" font-weight="700" class="" text-anchor="start" letter-spacing="0">Смысловая проверка</text>
+<text x="799" y="881" font-size="16.9" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Astra сверяет доказанную формулу</text>
+<text x="799" y="902" font-size="16.9" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">с исходным вопросом и условиями.</text>
+<path d="M781 877H745" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M413 877H376" fill="none" stroke="#526575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="897" y="1003" font-size="16" font-weight="700" class="teal" text-anchor="middle" letter-spacing="0">Следующая подзадача в пределах бюджета программы</text>
+<text x="49" y="1002" font-size="16" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">Проверенные леммы доступны</text>
+<text x="49" y="1023" font-size="16" font-weight="400" class="muted" text-anchor="start" letter-spacing="0">следующим запускам.</text>
+</svg>

@@ -237,6 +237,24 @@ def _export(context, env, work, diagnostics, cancelled, *, modules=None, names=N
     return json.loads(export_path.read_text(encoding='utf-8'))
 
 
+def kernel_command(modules, target):
+    imports = ''.join('import ' + module + '\n' for module in modules)
+    return ('import AtlasInspect\n' + imports + 'set_option maxRecDepth 8192\n#atlas_recheck '
+            + json.dumps(modules, ensure_ascii=False) + ' ' + json.dumps(target, ensure_ascii=False) + ' ')
+
+
+def kernel_certificate(raw, target, sources, statement, context):
+    names = raw['checked']
+    if (raw.get('status') != 'passed' or raw.get('scope') != 'project_dependency_closure'
+            or raw.get('target') != target or not isinstance(names, list) or target not in names
+            or raw.get('checked_count') != len(names)):
+        raise ValueError('Ядро Lean не подтвердило зависимости целевого утверждения.')
+    return dict(raw, version=1, module_sha256=sources,
+                contract_sha256=_sha(statement) if statement else None,
+                lean_version=context['lean_version'], mathlib_revision=context.get('mathlib_revision'),
+                mathlib_manifest_sha256=context.get('mathlib_manifest_sha256'))
+
+
 def _audit_declarations(declarations, source, target):
     """Audit logical roots, retaining their full transitive axiom closures.
 
@@ -507,7 +525,7 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
     result = dict(status="failed", outcome="unknown", success=False, target=target,
                   source_sha256=_sha(source) if isinstance(source, str) else None,
                   expected_statement=expected_statement, target_preserved=False,
-                  obligations=[], obligations_passed=False,
+                  obligations=[], obligations_passed=False, kernel_recheck=dict(status="pending", target=target),
                   workspace=str(work), started_at=_now(), diagnostics=[], declarations=[], axioms=[],
                   audit=dict(status="pending", allowed_axioms=sorted(lean_service.ALLOWED_AXIOMS)),
                   semantic_review=dict(status="not_established", note="Lean проверяет тип; смысл и неизменность определений проверяются отдельно."))
@@ -534,7 +552,7 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
                                       statement_sha256=_sha(item["statement"]), ok=False,
                                       expected_outcome=item["expected_outcome"])
                                  for item in obligations]
-        (work / "Candidate.lean").write_text(source)
+        (work / "Candidate.lean").write_bytes(source.encode("utf-8"))
         stage = 'lean_environment'
         context, env = lean_service._prepare({}, work)
         result["context"] = context
@@ -633,7 +651,23 @@ def verify_candidate(source, target, work_dir, expected_statement=None, *, requi
         if expected_statement is not None:
             result["target_preserved"] = True
             result["contract_sha256"] = _sha(expected_statement)
-        for item in result["obligations"]:
+        stage = 'lean_kernel_recheck'
+        result['kernel_recheck']['status'] = 'failed'
+        if progress:
+            progress("Ядро Lean повторно проверяет доказательство и его локальные зависимости.")
+        project_sources = {item['module']: item['sha256'] for item in (result.get('project_library') or {}).get('sources', [])}
+        if structure_payload is not None:
+            project_sources['StructureInput'] = structure_payload['source_sha256']
+        project_sources['Candidate'] = result['source_sha256']
+        def replay(name, statement, receipt_path):
+            driver = kernel_command(list(project_sources), name) + json.dumps(str(receipt_path)) + '\n'
+            (work / 'SHAIMKernel.lean').write_text(driver, encoding='utf-8')
+            _run(context, env, work, 'SHAIMKernel.lean', result['diagnostics'], cancelled, output=False)
+            return kernel_certificate(json.loads(receipt_path.read_text(encoding='utf-8')), name, project_sources, statement, context)
+        result['kernel_recheck'] = replay(target, expected_statement, work / 'kernel-recheck.json')
+        for i, (item, spec) in enumerate(zip(result["obligations"], obligations)):
+            item["kernel_recheck"] = (result['kernel_recheck'] if item['target'] == target and spec['statement'] == expected_statement
+                                      else replay(item['target'], spec['statement'], work / f'kernel-obligation-{i}.json'))
             item["ok"] = True
         result["obligations_passed"] = True
         result.update(status="complete", outcome="proved", success=True,
@@ -731,6 +765,7 @@ def run_pilot(case_id, work_dir, progress=None, cancelled=None, *, transition_ta
                  checks=[dict(id="lean_compilation", passed=bool(result.get("compilation_success"))),
                          dict(id="axiom_audit", passed=result["audit"]["status"] == "passed"),
                          dict(id="immutable_target_type", passed=result["target_preserved"]),
+                         dict(id="kernel_recheck", passed=result["kernel_recheck"]["status"] == "passed"),
                          dict(id="final_composition", passed=result["success"])],
                  semantic_review=semantic,
                  artifacts=[dict(kind="lean_source", path=str(Path(result["workspace"]) / "Candidate.lean")),

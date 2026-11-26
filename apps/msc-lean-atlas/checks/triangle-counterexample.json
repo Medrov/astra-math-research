@@ -1,0 +1,70 @@
+{
+  "model": "gpt-6-astra",
+  "transport": "codex-app-server",
+  "date": "2026-11-26",
+  "examples": [
+    {
+      "file": "examples/triangle_counterexample/Counterexample.lean",
+      "outcome": "refuted",
+      "program_model_calls": 2,
+      "target": "Heldout.refute_third_edge",
+      "expected_statement": "¬ (∀ (w01 w12 a b x0 x1 x2 : ℝ), a < b → TriangleEnergy.laplacianForm w01 w12 a x0 x1 x2 < TriangleEnergy.laplacianForm w01 w12 b x0 x1 x2)",
+      "source_sha256": "1dd33659832bb336b82feaa375a35f362496efbb4f6590d14ef5e4d1050169b1",
+      "axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "kernel_recheck": {
+        "target": "Heldout.refute_third_edge",
+        "status": "passed",
+        "scope": "project_dependency_closure",
+        "checked_count": 2,
+        "checked": [
+          "Heldout.refute_third_edge",
+          "TriangleEnergy.laplacianForm"
+        ],
+        "version": 1,
+        "module_sha256": {
+          "Candidate": "1dd33659832bb336b82feaa375a35f362496efbb4f6590d14ef5e4d1050169b1"
+        },
+        "contract_sha256": "ab3f71e10831891242b293a6c3bf5a5a29d99f4149ac671047f303c4e41c375a",
+        "lean_version": "Lean (version 4.19.0, arm64-apple-darwin23.6.0, commit 6caaee842e94, Release)",
+        "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+        "mathlib_manifest_sha256": "5c6421b650bc87a2427a892a39e5522dc44543ca4ac1bd6e9f08d536c044a752"
+      }
+    },
+    {
+      "file": "examples/triangle_counterexample/StrictIncrease.lean",
+      "outcome": "proved",
+      "program_model_calls": 6,
+      "target": "TriangleEnergy.strict_increase_on_distinct_endpoints",
+      "expected_statement": "∀ (w01 w12 a b x0 x1 x2 : ℝ), a < b → x0 ≠ x2 → TriangleEnergy.laplacianForm w01 w12 a x0 x1 x2 < TriangleEnergy.laplacianForm w01 w12 b x0 x1 x2",
+      "source_sha256": "01c650e9cab5db02b62b65ef1dda691f2e9d5a50ae212d189934b6da0668061c",
+      "axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "kernel_recheck": {
+        "target": "TriangleEnergy.strict_increase_on_distinct_endpoints",
+        "status": "passed",
+        "scope": "project_dependency_closure",
+        "checked_count": 3,
+        "checked": [
+          "TriangleEnergy.laplacianForm",
+          "TriangleEnergy.laplacian_third_weight_difference",
+          "TriangleEnergy.strict_increase_on_distinct_endpoints"
+        ],
+        "version": 1,
+        "module_sha256": {
+          "Candidate": "01c650e9cab5db02b62b65ef1dda691f2e9d5a50ae212d189934b6da0668061c"
+        },
+        "contract_sha256": "3183324de3b4854a825f98cb64bcebe19adc650176be5b6be7873216a56daa32",
+        "lean_version": "Lean (version 4.19.0, arm64-apple-darwin23.6.0, commit 6caaee842e94, Release)",
+        "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+        "mathlib_manifest_sha256": "5c6421b650bc87a2427a892a39e5522dc44543ca4ac1bd6e9f08d536c044a752"
+      }
+    }
+  ]
+}

@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/research-history.css">
   <link rel="stylesheet" href="/research-workspace.css">
   <link rel="stylesheet" href="/atlas-search.css">
+  <link rel="stylesheet" href="/problems.css">
   <script defer src="/vendor/graph-libs.min.js"></script>
   <script defer src="/graph-model.js"></script>
   <script defer src="/graph-presentation.js"></script>
@@ -33,6 +34,8 @@
   <script defer src="/candidate-checks.js"></script>
   <script defer src="/research-history.js"></script>
   <script defer src="/research.js"></script>
+  <script defer src="/problems.js"></script>
+  <script defer src="/programs.js"></script>
   <script defer src="/app.js"></script>
 </head>
 <body>
@@ -46,6 +49,7 @@
     <nav class="top-nav" aria-label="Разделы приложения">
       <button type="button" class="nav-tab active" data-tab="map" aria-selected="true"><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M5 5L15 7L9 15L5 5Z" stroke="currentColor" stroke-width="1.25"/><circle cx="5" cy="5" r="2" fill="currentColor"/><circle cx="15" cy="7" r="2" fill="currentColor"/><circle cx="9" cy="15" r="2" fill="currentColor"/></svg><span>Карта математики</span></button>
       <button type="button" class="nav-tab" data-tab="research" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><rect x="6" y="2" width="8" height="5" rx="1" stroke="currentColor" stroke-width="1.25"/><path d="M10 7V10M4 13V10H16V13" stroke="currentColor" stroke-width="1.25"/><rect x="1" y="13" width="6" height="5" rx="1" stroke="currentColor" stroke-width="1.25"/><rect x="13" y="13" width="6" height="5" rx="1" stroke="currentColor" stroke-width="1.25"/></svg><span>Исследования</span></button>
+      <button type="button" class="nav-tab" data-tab="problems" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M3 3.5h5.5L10 5l1.5-1.5H17v12h-5.5L10 17l-1.5-1.5H3zM10 5v12" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg><span>Программы SHAIM</span></button>
     </nav>
     <div class="sidebar-bottom"><p>Исследуйте области.<br>Выбирайте направления.</p><span class="connection-status" id="connection-status"><i></i>Подключение…</span></div>
   </header>
@@ -119,6 +123,7 @@
         <div><p class="eyebrow">AMR · математическая лаборатория</p><h1 id="research-title" tabindex="-1">Лаборатория связей</h1><p class="lead">Выберите источник. Astra найдёт направления поиска, а Lean проверит выбранный переход.</p></div>
         <div class="research-page-actions"><button type="button" id="guided-history-open" class="button secondary">История <span id="guided-history-count"></span></button><button type="button" id="research-new" class="button secondary">＋ Новое исследование</button></div>
       </div>
+      <div id="research-parent-program" class="research-hint" hidden></div>
       <div id="research-error" class="notice error" role="alert" hidden></div>
       <section id="guided-research" class="guided-research" aria-label="Исследование по шагам">
         <section id="workspace-context" class="workspace-context" aria-label="Контекст исследования" hidden></section>
@@ -270,6 +275,116 @@
       </dialog>
     </section>
 
+    <section id="problems-panel" class="app-panel" aria-labelledby="problems-title" hidden>
+      <div class="page-heading research-page-heading">
+        <div><p class="eyebrow">Astra App Server · Lean</p><h1 id="problems-title" tabindex="-1">Программы SHAIM</h1></div>
+        <button type="button" id="qed-new" class="button secondary" hidden>＋ Новая задача</button>
+      </div>
+      <div class="program-switch" role="group" aria-label="Режим исследования">
+        <button type="button" id="mode-program" aria-pressed="true">Исследовательская программа</button>
+        <button type="button" id="mode-pattern-discovery" aria-pressed="false">Поиск паттернов</button>
+        <button type="button" id="mode-qed" aria-pressed="false">Отдельная задача QED</button>
+      </div>
+      <div id="pattern-slot" hidden></div>
+      <template id="pattern-fields">
+        <h2>Область поиска</h2>
+        <p class="research-hint">Astra сопоставит проверенные утверждения, предложит гипотезу и попробует доказать или опровергнуть её в Lean.</p>
+        <label class="field-label" for="pattern-context">Исходные результаты</label>
+        <select id="pattern-context"><option value="graph_energy">Энергия взвешенного треугольника</option><option value="">По теме, кодам MSC или файлам</option></select>
+        <label class="field-label" for="pattern-question">Тема поиска</label>
+        <textarea id="pattern-question" rows="2" maxlength="12000" placeholder="Например, изменение энергии при изменении веса ребра"></textarea>
+        <label class="field-label" for="pattern-msc">Области MSC</label>
+        <input id="pattern-msc" placeholder="Например, 05C50" maxlength="120">
+      </template>
+      <div id="program-workspace" class="qed-layout">
+        <div class="qed-main">
+          <div id="program-error" class="notice error" role="alert" hidden></div>
+          <form id="program-form" class="qed-card">
+            <div class="program-focus-fields">
+            <h2>Новая программа</h2>
+            <label class="field-label" for="program-question">Что исследовать?</label>
+            <textarea id="program-question" rows="3" required minlength="5" maxlength="12000" placeholder="Какое утверждение об объектах из ваших файлов нужно проверить?">Как изменение веса одного ребра влияет на энергию взвешенного треугольника?</textarea>
+            <label class="field-label" for="program-context">Исходные определения</label>
+            <select id="program-context"><option value="graph_energy">Энергия взвешенного треугольника</option><option value="">Из вопроса и приложенных файлов</option></select>
+            </div>
+            <fieldset class="program-upload"><legend>Исходники Lean</legend>
+              <label for="program-file">Файл .lean или .zip с модулями Lean</label>
+              <input type="file" id="program-file" accept=".lean,.zip">
+              <p class="research-hint">До 32 модулей, 250 КБ на файл и 2 МиБ на комплект.</p>
+              <details><summary>Сверить с точной формулировкой</summary>
+                <label class="field-label" for="program-target">Полное имя теоремы</label><input type="text" id="program-target" placeholder="TriangleEnergy.graph_energy_eq">
+                <label class="field-label" for="program-statement">Ожидаемый тип в Lean</label><textarea id="program-statement" rows="2" placeholder="∀ n : Nat, n + 0 = n"></textarea>
+              </details>
+              <button type="button" id="program-check-file" class="button small secondary">Проверить файл</button>
+              <p id="program-file-message" role="status" class="research-hint"></p>
+              <div id="program-inputs"></div>
+            </fieldset>
+            <details class="qed-limits"><summary>Настройки программы</summary><div class="research-budget">
+              <label for="program-calls"><span>Вызовов Astra</span><input id="program-calls" type="number" min="1" max="96" value="20" required></label>
+              <label for="program-seconds"><span>Время в секундах</span><input id="program-seconds" type="number" min="30" max="7200" value="900" required></label>
+            </div>
+              <label class="program-check"><input type="checkbox" id="program-counterexample" checked> Искать контрпример перед доказательством</label>
+              <label class="program-check"><input type="checkbox" id="program-qed"> Запрашивать эскизы QED</label>
+            </details>
+            <div class="qed-submit-row"><button class="button primary" id="program-start" type="submit">Запустить программу</button><span id="program-connection" class="research-hint" role="status"></span></div>
+          </form>
+          <article id="program-detail" hidden>
+            <header class="qed-run-header"><h2 id="program-title"></h2><div id="program-actions"></div></header>
+            <p id="program-status" class="research-progress" role="status"></p>
+            <p id="program-reason"></p>
+            <section><h3>Подзадачи</h3><div id="program-tasks"></div></section>
+            <div id="program-sources"></div>
+            <details id="program-log"><summary>Журнал программы</summary><ol></ol></details>
+          </article>
+        </div>
+        <aside class="qed-aside">
+          <div class="program-history-title"><h2>Программы</h2><button class="text-button" type="button" id="program-new">＋ Новая</button></div>
+          <div id="program-history" class="research-history"></div>
+          <details class="program-queue" id="program-queue">
+            <summary>Общая очередь задач</summary>
+            <div id="program-queue-rows" class="research-history"></div>
+          </details>
+        </aside>
+      </div>
+      <div id="qed-error" class="notice error" role="alert" hidden></div>
+      <div id="qed-workspace" class="qed-layout" hidden>
+        <div class="qed-main">
+          <form id="qed-form" class="qed-card">
+            <h2>Постановка задачи</h2>
+            <label class="field-label" for="qed-case">Готовая постановка или свой вопрос</label>
+            <select id="qed-case"><option value="custom">Своя задача</option></select>
+            <div id="qed-preset" hidden><p id="qed-claim"></p><details id="qed-contract"><summary>Условия и формальная цель</summary><pre id="qed-statement"></pre></details></div>
+            <div id="qed-custom">
+              <label class="field-label" for="qed-question">Вопрос и условия</label>
+              <textarea id="qed-question" rows="5" minlength="5" maxlength="12000" placeholder="Сформулируйте утверждение. Укажите объекты, условия и что требуется доказать или опровергнуть."></textarea>
+            </div>
+            <label class="field-label" for="qed-route">Маршрут QED</label>
+            <select id="qed-route"><option value="auto">По сложности задачи</option><option value="full">С планом и рецензированием</option></select>
+            <details class="qed-limits"><summary>Лимиты запуска</summary><div class="research-budget">
+              <label for="qed-calls"><span>Вызовов Astra</span><input id="qed-calls" type="number" min="1" max="24" value="12" required></label>
+              <label for="qed-seconds"><span>Время в секундах</span><input id="qed-seconds" type="number" min="30" max="1800" value="900" required></label>
+            </div></details>
+            <div class="qed-submit-row"><button id="qed-start" class="button primary" type="submit" disabled>Запустить QED</button><span id="qed-connection" class="research-hint" role="status">Проверяем Astra App Server…</span></div>
+          </form>
+          <article id="qed-run" hidden>
+            <header class="qed-run-header"><h2 id="qed-run-title">Задача</h2><div id="qed-actions"><button type="button" id="qed-show-work" class="button small secondary" aria-controls="qed-steps" hidden>Ход работы ↓</button><button type="button" id="qed-cancel" class="button small secondary" hidden>Остановить</button><button type="button" id="qed-resume" class="button small secondary" hidden>Продолжить</button></div></header>
+            <div id="qed-progress" class="research-progress" role="status" aria-live="polite"><span class="research-state-dot"></span><span id="qed-progress-text"></span><span id="qed-usage"></span></div>
+            <details class="qed-question-detail"><summary>Исходная постановка</summary><div id="qed-run-question" class="qed-prose"></div></details>
+            <div id="qed-result" class="qed-card" hidden><h3 id="qed-result-title">Результат</h3><p id="qed-review" class="research-hint"></p><div id="qed-proof" class="qed-prose"></div></div>
+            <section class="qed-work"><h3 id="qed-work-heading" tabindex="-1">Ход работы</h3><div id="qed-steps"></div><details id="qed-events"><summary>Журнал событий</summary><ol></ol></details></section>
+          </article>
+        </div>
+        <aside class="qed-aside">
+          <div class="qed-method"><h2>Как работает QED</h2><ol>
+            <li><strong>Обзор задачи</strong><p>Astra оценивает сложность. В автоматическом режиме простая задача может получить решение за один вызов.</p></li>
+            <li><strong>План и доказательство</strong><p>На полном маршруте Astra выделяет промежуточные утверждения и связывает их в доказательство.</p></li>
+            <li><strong>Рецензирование</strong><p>Проверяет структуру и детали, возвращается к шагам с замечаниями.</p></li>
+          </ol></div>
+          <div class="research-history-heading"><h2>Последние запуски</h2><button id="qed-refresh" type="button" class="text-button" aria-label="Обновить запуски QED">↻</button></div>
+          <div id="qed-history" class="research-history"></div>
+        </aside>
+      </div>
+    </section>
   </main>
   <footer class="app-footer"><span>AMR · Атлас математики</span><span>Исследовательское пространство · MSC2020</span></footer>
 </body>
