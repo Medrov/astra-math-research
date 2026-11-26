@@ -1,6 +1,7 @@
 import Lean
 import Lean.Util.CollectAxioms
 import Lean.Util.FoldConsts
+import Lean.Replay
 
 open Lean Elab Command Meta
 
@@ -115,4 +116,47 @@ elab_rules : command
       ("missing_names", toJson missing),
       ("imported_modules", toJson (env.header.moduleNames.map Name.toString))]
     liftIO <| IO.FS.writeFile output.getString result.compress
+/-- Replay just the target's compiled project declarations into a fresh kernel
+    environment. Only the installed libraries imported by the project are trusted. -/
+def kernelRecheck (env : Environment) (modules : Array String) (target : Name) : IO Json := do
+  let mut imports : Array Import := #[]
+  for mod in modules do
+    let some idx := env.header.moduleNames.idxOf? mod.toName
+      | throw <| IO.userError s!"Missing project module {mod}"
+    for imp in env.header.moduleData[idx]!.imports do
+      unless modules.contains imp.module.toString || imports.any (·.module == imp.module) do
+        imports := imports.push imp
+  let base ← importModules imports {} 0
+  if base.header.moduleNames.any (fun n => modules.contains n.toString) then
+    throw <| IO.userError "The base environment already imports a project module"
+  unless modules.contains (moduleOf env target) && (env.find? target).any (·.isTheorem) do
+    throw <| IO.userError s!"Expected a local theorem: {target}"
+  let mut decls : Std.HashMap Name ConstantInfo := {}
+  let mut todo := #[target]
+  while !todo.isEmpty do
+    let n := todo.back!
+    todo := todo.pop
+    if !decls.contains n && modules.contains (moduleOf env n) then
+      let some ci := env.find? n | throw <| IO.userError s!"Missing declaration {n}"
+      if ci.isUnsafe || ci.isPartial || ci.isAxiom then
+        throw <| IO.userError s!"Uncheckable project dependency: {n}"
+      decls := decls.insert n ci
+      todo := todo ++ ci.getUsedConstantsAsSet.toArray
+      -- Reconstruct mutual inductive blocks in their entirety, including
+      -- constructors that are not explicitly mentioned in this proof term.
+      if let .inductInfo info := ci then todo := todo ++ info.all.toArray
+  let checked ← Environment.replay decls base
+  for (n, _) in decls do
+    unless checked.contains n do throw <| IO.userError s!"Kernel did not replay {n}"
+  let names := (decls.toArray.map (fun p => p.1.toString)).qsort (· < ·)
+  return Json.mkObj [("target", toJson target.toString), ("checked", toJson names),
+                     ("checked_count", toJson names.size), ("status", "passed"),
+                     ("scope", "project_dependency_closure")]
+
+syntax "#atlas_recheck " "[" str,* "]" str str : command
+elab_rules : command
+  | `(#atlas_recheck [$mods:str,*] $target:str $output:str) => do
+    let result ← liftIO <| kernelRecheck (← getEnv) (mods.getElems.map (·.getString)) target.getString.toName
+    liftIO <| IO.FS.writeFile output.getString result.compress
+
 end AtlasInspect

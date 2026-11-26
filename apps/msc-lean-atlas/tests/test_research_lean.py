@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -63,6 +64,34 @@ class RealLeanContractTests(unittest.TestCase):
         self.assertTrue(result["success"], json.dumps(result, ensure_ascii=False))
         self.assertTrue(result["target_preserved"])
         self.assertEqual(result["audit"]["status"], "passed")
+
+    def test_kernel_replays_only_transitive_project_dependencies(self):
+        source = ("inductive Token where | mark\n"
+                  "def aliasToken : Token := Token.mark\n"
+                  "theorem helper : aliasToken = Token.mark := rfl\n"
+                  "theorem unusedHelper : True := True.intro\n"
+                  "theorem answer : aliasToken = Token.mark := helper")
+        result = service.verify_candidate(source, "answer", self.work, "aliasToken = Token.mark")
+        self.assertTrue(result["success"], result)
+        cert = result["kernel_recheck"]
+        self.assertEqual(cert["checked"], ["Token", "Token.mark", "aliasToken", "answer", "helper"])
+        self.assertEqual(cert["checked_count"], len(cert["checked"]))
+        self.assertEqual(cert["module_sha256"], {"Candidate": result["source_sha256"]})
+        self.assertEqual(cert["status"], "passed")
+
+    def test_failed_kernel_stage_keeps_successful_first_build_open(self):
+        real_run = service._run
+        def reject(context, env, work, filename, *args, **kwargs):
+            if filename == "AMRKernel.lean":
+                raise RuntimeError("kernel unavailable")
+            return real_run(context, env, work, filename, *args, **kwargs)
+        with patch.object(service, "_run", side_effect=reject):
+            report = service.verify_candidate("theorem demo : True := True.intro", "demo", self.work, "True")
+        self.assertTrue(report["compilation_success"])
+        self.assertTrue(report["target_preserved"])
+        self.assertEqual(report["kernel_recheck"]["status"], "failed")
+        self.assertFalse(report["success"])
+        self.assertEqual(report["outcome"], "unknown")
 
     def test_compiled_wrong_target_is_not_accepted(self):
         result = service.verify_candidate("theorem weak : True := by trivial", "weak", self.work,

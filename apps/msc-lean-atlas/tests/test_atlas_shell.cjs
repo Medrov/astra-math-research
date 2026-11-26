@@ -16,15 +16,16 @@ class Element{
   get textContent(){return this.text+this.children.map(n=>typeof n==='string'?n:n.textContent).join('');}
 }
 const descendants=node=>[node,...node.children.filter(n=>typeof n!=='string').flatMap(descendants)];
-async function mount(wide=false){
+async function mount(wide=false, href='http://localhost/#map'){
   const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);};
   get('research-selected').disabled=true; // Initial disabled attribute in index.html.
-  const tabs=['map','research'].map(tab=>{const e=new Element('button');e.dataset.tab=tab;return e;}),skip=new Element('a'),brand=new Element('a');
+  const tabs=['map','research','problems'].map(tab=>{const e=new Element('button');e.dataset.tab=tab;return e;}),skip=new Element('a'),brand=new Element('a');
   const document={getElementById:get,createElement:tag=>new Element(tag),createTextNode:text=>String(text),querySelectorAll:()=>tabs,querySelector:selector=>selector==='.brand'?brand:selector==='.workspace-skip'?skip:tabs.find(e=>selector.includes('"'+e.dataset.tab+'"'))};
   const graph={nodes:[{id:'11',code:'11',title:'Number theory',level:0},{id:'15',code:'15',title:'Linear algebra',level:0},{id:'11A',code:'11A',title:'Elementary number theory',level:1,parent_id:'11'},{id:'11A01',code:'11A01',title:'Divisibility',level:2,parent_id:'11A'}],edges:[],meta:{}};
   const requests=[],contexts=[],views=[],events={};
   class GraphView{constructor(){this.selected=null;views.push(this);}resize(){}select(id){this.selected=id;}navigate(id){this.selected=id;}}
-  const context={document,URL,location:{href:'http://localhost/#map',hash:'#map'},history:{replaceState(){}},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>graph};},requestAnimationFrame:()=>0,cancelAnimationFrame(){},ResizeObserver:class{observe(){}},MSCGraphView:GraphView,Event:class{},setTimeout,console};
+  const location=new URL(href);
+  const context={document,URL,location,history:{replaceState(state,title,url){location.href=url.href;}},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>graph};},requestAnimationFrame:()=>0,cancelAnimationFrame(){},ResizeObserver:class{observe(){}},MSCGraphView:GraphView,Event:class{},setTimeout,console};
   context.window=context;context.matchMedia=()=>({matches:wide});context.addEventListener=(name,fn)=>{events[name]=fn;};context.dispatchEvent=()=>{};
   context.ResearchWorkspace={show(){},hide(){},setContext:n=>contexts.push(n)};
   vm.createContext(context);vm.runInContext(fs.readFileSync(require.resolve('../web/app.js'),'utf8'),context);
@@ -56,4 +57,27 @@ test('wide catalog starts open and atlas research action only transfers the sele
   let prevented=false;skip.listeners.click({preventDefault(){prevented=true;}});assert.equal(prevented,true);assert.equal(get('research-title').focused,true);assert.equal(get('research-panel').hidden,false);
   tabs[0].onclick();assert.equal(get('map-panel').hidden,false);assert.equal(skip.href,'#map-title');
   assert.equal(views.length,1);assert.equal(views[0].selected,'11A01');assert.deepEqual(requests,['/api/graph']);
+});
+
+
+test('legacy AMR pattern links reach the programs tab without losing their program ID', async () => {
+  const {get, tabs, skip, context} = await mount(false, 'http://localhost/?workflow=patterns&program=sample#research');
+  assert.equal(context.location.hash, '#problems');
+  assert.equal(context.location.searchParams.get('program'), 'sample');
+  assert.equal(get('problems-panel').hidden, false);
+  assert.equal(get('research-panel').hidden, true);
+  assert.equal(skip.href, '#problems-title');
+  tabs.find(button => button.dataset.tab === 'research').onclick();
+  assert.equal(context.location.hash, '#research');
+  assert.equal(context.location.search, '');
+  assert.equal(get('research-panel').hidden, false);
+  assert.equal(get('problems-panel').hidden, true);
+});
+
+test('opening an existing atlas study keeps its run, graph and step URL parameters', async () => {
+  const href = 'http://localhost/?research=existing&object_graph=graph&step=proof#research';
+  const {get, context} = await mount(false, href);
+  assert.equal(context.location.href, href);
+  assert.equal(get('research-panel').hidden, false);
+  assert.equal(get('problems-panel').hidden, true);
 });
